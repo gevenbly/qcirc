@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+
+  <title>testgui2</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="menustyle.css">
+  <link rel="stylesheet" href="iconstyles.css">
+</head>
+
+<body>
+  <div id="mainWindow">
+    <img src="https://assets.codepen.io/8119935/pencilbigH_1.png" id="renameicon" />
+    <img src="https://assets.codepen.io/8119935/pencilbig_1.png" id="renameiconH" />
+    
+    <div > 
+      <img src="https://assets.codepen.io/8119935/openright_2.png" id="openrighticon" />
+    <\div> 
+<!--     onclick="toggleRightGui()" -->
+    <div >
+      <img src="https://assets.codepen.io/8119935/logo3.png" id="toplogo" style="height:68px;"/>
+    <\div>
+    
+    <div class="navbar" id="navbar1">
+      <div class="dropdown">
+      <img src="https://assets.codepen.io/8119935/logosmall4.png" style="height:24px;" id="smalllogo"/>
+      </div>
+        
+      <div class="dropdown">
+        <button onclick="doDropClicks('dropFileElm')" onmouseenter="doDropOvers('dropFileElm')" class="clickdropbtn">File </button>
+        <div class="clickdown-content" id="dropFileElm">
+          <a href="#">Link 1</a>
+          <a href="#">Link 2</a>
+          <a href="#">Link 3</a>
+        </div>
+      </div>
+      <div class="dropdown">
+        <button onclick="doDropClicks('dropEditElm')" onmouseenter="doDropOvers('dropEditElm')" class="clickdropbtn">Edit </button>
+        <div class="clickdown-content" id="dropEditElm">
+          <a href="#">Link 1</a>
+          <a href="#">Link 2</a>
+          <a href="#">Link 3</a>
+        </div>
+      </div>
+      <div class="dropdown">
+        <button onclick="doDropClicks('dropLayerElm')" onmouseenter="doDropOvers('dropLayerElm')" class="clickdropbtn">Layer </button>
+        <div class="clickdown-content" id="dropLayerElm">
+          <a href="#">Link 1</a>
+          <a href="#">Link 2</a>
+          <a href="#">Link 3</a>
+        </div>
+      </div>
+      <div class="dropdown">
+        <button onclick="doDropClicks('dropOptionsElm')" onmouseenter="doDropOvers('dropOptionsElm')" class="clickdropbtn">Options </button>
+        <div class="clickdown-content" id="dropOptionsElm">
+          <a href="#">Link 1</a>
+          <a href="#">Link 2</a>
+          <a href="#">Link 3</a>
+        </div>
+      </div>
+      <div class="dropdown">
+        <button onclick="doDropClicks('dropAboutElm')" onmouseenter="doDropOvers('dropAboutElm')" class="clickdropbtn">About </button>
+        <div class="clickdown-content" id="dropAboutElm">
+          <a href="#">Link 1</a>
+          <a href="#">Link 2</a>
+          <a href="#">Link 3</a>
+        </div>
+      </div>
+    </div>
+    <br>
+    
+    <div class="navbar" id="navbar2">
+      <div class="labinput">
+      <input type="checkbox" id="showGrid" checked>
+      <label for="showGrid">Show grid</label>
+      </div>
+      <div class="labinput">
+      <input type="checkbox" id="snapGrid">
+      <label for="snapGrid">Snap to grid</label>
+      </div>
+      <div class="labinput">
+      <input type="checkbox" id="showDebug">
+      <label for="showDebug">Show debug</label>
+      </div>
+      <div class="labinput">
+      <input type="checkbox" id="showMini" checked>
+      <label for="showMini">Show minimap</label>
+      </div>
+    </div>
+    <br>
+    
+    <div class="navbar" id="navbar3"></div>
+    
+    <div id="rightGui"> </div>
+    <div id="leftGui">
+      Create type =
+      <select id="selectedType" , onchange="changeSelectedType()">
+        <option value=0>rectangle</option>
+        <option value=1>ellipse</option>
+        <option value=2>trapezoid</option>
+        <option value=10>selector</option>
+      </select>
+      
+      <button type="button" onclick="toggleRightGui()">Expand Right</button>
+    </div>
+    <canvas id="canvasBase" width="1800" height="900"> </canvas>
+    <canvas id="canvasMoving" width="1800" height="900"> </canvas>
+    <canvas id="canvasTensors" width="1800" height="900"> </canvas>
+    <canvas id="canvasBackground" width="1800" height="900"> </canvas>
+      
+    <input type="text" id="nameBox" maxlength="25"/>
+  </div>
+  <script src="rightmenuscripts.js"></script>
+  <script src="colorscripts.js"></script>
+  <script src="nameboxscripts.js"></script>
+  <script src="dropdownscripts.js"></script>
+  <script src="tensorscripts.js"></script>
+  <script src="selectorscripts.js"></script>
+  <script src="mouseinputs.js"></script>
+  <script src="keyboardscripts.js"></script>
+  <script src="mousescripts.js"></script>
+  <script src="miscscripts.js"></script>
+  <script src="miniscripts.js"></script>
+  <script src="drawingscripts.js"></script>
+  <script src="mainscripts.js"></script>
+</body>
+
+</html>
