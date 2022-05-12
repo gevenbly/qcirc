@@ -1,12 +1,41 @@
+#leftGui img {
+   
+  box-sizing: border-box;
+  height: 42px;
+  padding: 0px 0px;
+  border-radius: 10px;
+}
 
+#leftIconBox{
+  height: 200px;
+  padding: 10px 0px;
+}
+
+#leftGui {
+  text-align:center;
+}
+
+/* #leftGui img:hover {
+  background-color: #303030;
+} */
 
 #openrighticon {
   position: absolute;
-  margin: 0px;
-  padding: 0px;
-  border: 0px;
-  right: 5px;
-  top: 500px;
+  margin: 0;
+  padding: 0;
+  border: 0px red;
+  left: 2px;
+  top: 50%;
+  z-index: 1000;
+}
+
+#closerighticon {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  border: 0px red;
+  left: 2px;
+  top: 50%;
   z-index: 1000;
 }
 

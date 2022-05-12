@@ -30,6 +30,10 @@ function resizeCanvas() {
   canvasTensors.height = viewHeight;
   ctxT.clearRect(0, 0, viewWidth, viewHeight);
   
+  canvasHandles.width = viewWidth;
+  canvasHandles.height = viewHeight;
+  ctxH.clearRect(0, 0, viewWidth, viewHeight);
+  
   canvasBackground.width = viewWidth;
   canvasBackground.height = viewHeight;
   ctxG.clearRect(0, 0, viewWidth, viewHeight);
@@ -38,6 +42,20 @@ function resizeCanvas() {
   
   // rightMenuIcon.style.top = Math.round(viewHeight/2 + topMenuHeight) + "px";
   
+  // codeContainer.style.height = viewHeight+'px';
+  codeBox.style.height = (viewHeight-33)+'px';
+  codeBox.style.width = (rightMenuWidth-67)+'px';
+  // console.log(codeWindow.style.height)
+  
+  // codeBox.style.width = 500;
+  // console.log(codeBox.style.height)
+  // console.log(codeBox.height)
+  // console.log(codeBox)
+  // codeWindow.style.height = viewHeight-20;
+  rightMenu.style.height = viewHeight+'px';
+  
+  rightGuiHandle.style.height = viewHeight+'px';
+  
   drawGrid();
   drawTensors();
   drawMinimap();
@@ -45,6 +63,10 @@ function resizeCanvas() {
 
 function addVector(a,b){
     return a.map((e,i) => e + b[i]);
+}
+
+function addIntToVec(a,b){
+    return a.map((e,i) => e + b);
 }
 
 function allRound(a){
@@ -105,10 +127,10 @@ function updateCursorStyle() {
       canvasMoving.style.cursor = "move";
     } else if (objUnderMouse[0] == "handle") {
       canvasMoving.style.cursor = handleType;
-    } 
-    
-    if (objUnderMouse[0] == "rename") {
+    } else if (objUnderMouse[0] == "rename") {
       canvasMoving.style.cursor = "pointer";
+    } else if (objUnderMouse[0] == "anchor") {
+      canvasMoving.style.cursor = "default";
     }
     
   } else if (stateOfMouse == 'shifting') {
@@ -119,6 +141,10 @@ function updateCursorStyle() {
     canvasMoving.style.cursor = "grabbing";
   } else if (stateOfMouse == 'renaming') {
     canvasMoving.style.cursor = "text";
+  } else if (stateOfMouse == 'selecting') {
+    canvasMoving.style.cursor = "pointer";
+  } else if (stateOfMouse == 'anchoring') {
+    canvasMoving.style.cursor = "grabbing";
   }
 }
 

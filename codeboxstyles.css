@@ -1,0 +1,87 @@
+
+
+#codeContainer {
+  user-select: text;
+  position:absolute;
+  width:500px;
+/*   max-width: none !important; */
+  height:500px;
+  left: 0px;
+  top: 0px;
+  z-index: 20000;
+  overflow-y:scroll !important;
+  overflow-x:hidden !important;
+  background-color: #606d78;
+  border: 2px green solid;
+}
+
+#codeBox {
+/*   background-color: powderblue; */
+  user-select: text;
+  position:absolute;
+  width:100%;
+/*   max-width: none !important; */
+  height:100%;
+  left: 5px;
+  top: 0px;
+  z-index: 10000;
+/*   overflow-y:scroll; */
+/*   overflow-x:scroll; */
+  background-color: #;
+  border: 0px blue solid;
+}
+
+#codeWindow {
+/*   position:absolute; */
+/*   width:3000px;
+  height:3000px;
+  max-width: none !important;
+  overflow-y:hidden !important;
+  overflow-x:hidden !important;
+  border: 1px green solid;
+  white-space: no-wrap !important; */
+/*   white-space: normal ; */
+/*   word-break: break-word !important; */
+}
+
+#rightGui {
+  position:absolute;
+  width:5px;
+  height:100%;
+  right: 0px;
+  top: 68px;
+  z-index: 3;
+  overflow:hidden;
+  background-color: #474747;
+  border: 2px red;
+}
+
+/* #rightGuiBox {
+  position:absolute;
+  width:5px;
+  height:100%;
+  right: 0px;
+  top: 68px;
+  z-index: 0;
+  overflow:hidden;
+  background-color: #474747;
+  border: 2px red;
+} */
+
+/* .resizable {
+  position: absolute;
+} */
+#rightGuiResizer {
+  /* All resizers are positioned absolutely inside the element */
+  position: absolute;
+  cursor: col-resize;
+  height: 100px;
+  left: 0;
+  top: 0;
+  width: 5px;
+  background-color: #red;
+  z-index: 3000000;
+  display: none;
+/*   border: 2px red solid; */
+}
+

@@ -2,15 +2,14 @@
 Declaration of global variables, listeners and initialization scripts
 */
 
+var isHomeMenuOpen = true;
+
+
 var mainWindow = document.getElementById("mainWindow");
+// mainWindow.style.visibility = 'hidden';
 
 // naming box parameters
 var theNamebox = document.getElementById('nameBox');
-var isNameboxActive = false;
-var xcoordNamebox = 0;
-var ycoordNamebox = 0;
-var widthNamebox = 100;
-var fontsizeNamebox = 16;
 theNamebox.style.width = widthNamebox + 'px';
 theNamebox.style.fontSize = fontsizeNamebox + 'px';
 theNamebox.addEventListener('focusout', (evt) => {
@@ -21,18 +20,60 @@ theNamebox.addEventListener('focusin', (evt) => {
 });
 var renameIcon = document.getElementById("renameicon");
 var renameIconH = document.getElementById("renameiconH");
-// console.log(renameIcon.width)
-// nameInputBox = document.getElementById('text_cnv');
+var isNameboxActive = false;
+var xcoordNamebox = 0;
+var ycoordNamebox = 0;
+var widthNamebox = 100;
+var fontsizeNamebox = 16;
 
 // view window
 const topMenuHeight = 68;
 const leftMenuWidth = 100;
 
+// left hand side menu          
+var leftSelectedType = 0;
+var selectedType = 0; // remove
+var allLeftIcons = [document.getElementById("movingicon"), 
+                    document.getElementById("selecticon"), 
+                    document.getElementById("rectangleicon"), 
+                    document.getElementById("ellipseicon"), 
+                    document.getElementById("hillicon"), 
+                    document.getElementById("trapezoidicon"),
+                    document.getElementById("forwardicon"),
+                    document.getElementById("behindicon"),
+                    document.getElementById("fronticon"),
+                    document.getElementById("backicon")];   
+
 // right hand side menu 
 var rightMenu = document.getElementById("rightGui");
-var rightMenuIcon = document.getElementById("openrighticon");
-var rightMenuWidth = 20;
+// var rightMenuIcon = document.getElementById("openrighticon");
+// var rightMenuIconB = document.getElementById("closerighticon");
+var rightMenuWidthOpen = 400;
+var rightMenuWidthClosed = 5;
+var rightMenuWidthMin = 150;
 var rightGuiIsOpen = false;
+if (rightGuiIsOpen) {
+  var rightMenuWidth = rightMenuWidthOpen;
+  // rightMenuIcon.style.visibility = 'hidden';
+  // rightMenuIconB.style.visibility = 'visible';
+} else {
+  var rightMenuWidth = rightMenuWidthClosed;
+  // rightMenuIcon.style.visibility = 'visible';
+  // rightMenuIconB.style.visibility = 'hidden';
+}
+
+var codeTextNew = "x=0\n";
+codeTextNew += 'if x>1:\n '
+codeTextNew += '  nui=2\n'
+var codeText = document.getElementById("codeText");
+var codeBox = document.getElementById("codeBox");
+// var codeContainer = document.getElementById("codeContainer");
+// codeWindow.setAttribute('style', 'white-space: pre;')n
+// document.getElementById("codeWindow").innerHTML = "# The code environment\n";
+codeText.appendChild(document.createTextNode(codeTextNew));
+
+// console.log(document.getElementById("codeWindow").innerHTML)
+
 
 var viewWidth = mainWindow.clientWidth - (leftMenuWidth + rightMenuWidth); 
 var viewHeight = mainWindow.clientHeight - (topMenuHeight); 
@@ -41,8 +82,6 @@ var windowY0 = 0;
 var windowZoom = 2;
 var windowWidth = viewWidth / windowZoom;
 var windowHeight = viewHeight / windowZoom;
-// const spaceWidth = 4000 - (leftMenuWidth + rightMenuWidth);
-// const spaceHeight = 2000 - (topMenuHeight);
 const spaceWidth = 2000;
 const spaceHeight = 1000;
 
@@ -60,8 +99,11 @@ var tensor_bbox = []; // [xmin, ymin, xmax, ymax, xcent, ycent]
 var tensor_types = []; // 0:rect, 1:circ
 var tensor_order = [];
 var tensor_names = [];
+var tensor_xanchors = [];
+var tensor_yanchors = [];
 
 // canvases
+var canvasBase = document.getElementById("canvasHandles");
 var canvasBase = document.getElementById("canvasBase");
 var canvasMoving = document.getElementById("canvasMoving");
 var canvasTensors = document.getElementById("canvasTensors");
@@ -70,6 +112,7 @@ var ctxB = canvasBase.getContext("2d");
 var ctxM = canvasMoving.getContext("2d");
 var ctxT = canvasTensors.getContext("2d");
 var ctxG = canvasBackground.getContext("2d");
+var ctxH = canvasHandles.getContext("2d");
 
 // styling
 const circThick = 1; // line thickness of handles
@@ -77,6 +120,7 @@ const circRad = 5; // radius of handles
 const rectCornerRad = 8; // rounded corner radius of rectangles
 const rectBorderCol = '#969696';
 const rectBorderWidth = 2;
+const greyHover = '#303030'
 
 // input config
 const mainScrollSpeed = 50;
@@ -90,10 +134,6 @@ const miniHeight = spaceHeight / miniScale;
 // grid
 const gridSpaceX = 20;
 const gridSpaceY = 20;
-
-// left menu selectors
-var selectedTypeElement = document.getElementById("selectedType");
-var selectedType = selectedTypeElement.value;
 
 // toggles
 var gridOnElm = document.getElementById("showGrid");
@@ -119,6 +159,13 @@ showMiniElm.addEventListener('click', (event) => {
   ctxB.clearRect(0, 0, viewWidth, viewHeight);
   drawMinimap();
 });    
+var showCodeElm = document.getElementById("showCode");
+var showCode = showCodeElm.checked;
+showCodeElm.addEventListener('click', (event) => {
+  showCode = showCodeElm.checked;
+  rightGuiIsOpen = !showCode;
+  toggleRightGui();
+});    
 
 // drop menu
 var menuIsOpen = false; // keep track of drop menu state
@@ -127,12 +174,13 @@ var menuIsOpen = false; // keep track of drop menu state
 var isLeftDown = false;
 var isRightDown = false;
 var objUnderMouse = ["none", 0, 0]; // [type, index, subindex]
-const stateChoices = ['free', 'creating', 'shifting', 'scrolling', 'minishift','resizing']
+const stateChoices = ['free', 'creating', 'shifting', 'scrolling', 'minishift', 'resizing', 'selecting']
 var stateOfMouse = stateChoices[0];
 var coordGrabbed = [0, 0];
 var currGrabbed = ['none', 0, 0] // [type, index, subindex]
 var currSelected = []; // list of selected tensor indexes
 var handleType = 'none' // N,NE,E,SE,S,SW,W,NW
+var selectBoxCoords = [0, 0, 0, 0];
 
 // key listeners
 var isKeyDown = false;
@@ -150,7 +198,21 @@ canvasMoving.addEventListener("mouseout", onMouseOut);
 canvasMoving.addEventListener('contextmenu', event => event.preventDefault());
 window.addEventListener("resize", resizeCanvas, false);
 
+// anchors
+const anchorWidth = 10;
+const anchorHeight = 10;
+var numAnchorsCreated = 7;
+var allAnchorColors = ['red','orange','yellow','green','blue','indigo','violet'];
+
 // initialization
 resizeCanvas();
 drawGrid(); 
+updateLeftSelect();
+
+if (isHomeMenuOpen) {
+  document.getElementById('sublistWindow').style.display = "none";
+  document.getElementById('rightGui').style.display = "none";
+  document.getElementById('leftGui').style.display = "none";
+  document.getElementById('canvasWindow').style.display = "none";
+}
 

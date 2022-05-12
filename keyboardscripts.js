@@ -9,6 +9,28 @@ function onKeyDown(evt) {
        doNameboxOut(evt);
     }
   } else {
+    if(event.keyCode == 46) { // delete tensor
+      if (currSelected.length > 0) {
+        currSelected = new Uint32Array(currSelected);
+        currSelected.sort().reverse();
+        for (var i=0; i<currSelected.length; i++) {
+          deleteMiddleTensor(currSelected[i]);
+        }
+        currSelected = [];
+      }
+    } else if(event.keyCode == 67) { // 'c' append to code
+      // var xtemp = Prism.highlight(codeTextNew, Prism.languages.python);
+      codeText.appendChild(document.createTextNode(codeTextNew));
+      Prism.highlightAll();
+      // codeText += xtemp
+      // Prism.highlight(codeText, Prism.languages.python);
+      // var Prism = require('prismjs');
+      // codeText.innerHTML = Prism.highlight(codeTextNew, Prism.languages.python);
+      // codeText.innerHTML = codeTextNew;
+      // document.getElementById("codeWindow").innerHTML = "# The code environment\n";
+      // location.reload();
+    }
+    
     if(event.keyCode == 37) { // left arrow
       windowX0 -= mainScrollSpeed;
       if (windowX0 < 0) {

@@ -39,12 +39,24 @@ function onMouseDown(evt) {
   if (evt.button == 0) { // left mouse 
     isLeftDown = true;
     if (objUnderMouse[0] == "none") {
-      var pos = getAbsMousePos(canvasBase, evt);
-      createTensor(pos.x, pos.y, pos.x, pos.y);
-      stateOfMouse = "creating";
-      currSelected = [];
-      updateCursorStyle()
-      
+      if (leftSelectedType == 1) { // selection box
+        var pos = getAbsMousePos(canvasBase, evt);
+        stateOfMouse = "selecting";
+        selectBoxCoords = [Math.round(pos.x), Math.round(pos.y), 
+                           Math.round(pos.x), Math.round(pos.y)];
+        currSelected = [];
+        updateCursorStyle();
+        
+      } else if (leftSelectedType > 1) { // create tensor
+        var pos = getAbsMousePos(canvasBase, evt);
+        createTensor(pos.x, pos.y, pos.x, pos.y);
+        stateOfMouse = "creating";
+        currSelected = [];
+        updateCursorStyle();
+      } else if (leftSelectedType == 0) { // free coursor
+        freeMouseState();
+        currSelected = [];
+      }
     } else if (objUnderMouse[0] == "minimap") {
       stateOfMouse = "minishift";
       
@@ -60,9 +72,18 @@ function onMouseDown(evt) {
       currGrabbed[1] = ind; 
       coordGrabbed = [Math.round(pos.x - tensor_bbox[ind][4]), 
                       Math.round(pos.y - tensor_bbox[ind][5])];
-      currSelected = [ind];
+      if (!currSelected.includes(ind)) {
+        currSelected = [ind];
+      }
       
       updateCursorStyle()
+    } else if (objUnderMouse[0] == "anchor") {
+      stateOfMouse = "anchoring";
+      currGrabbed[0] = "anchor"; 
+      currGrabbed[1] = objUnderMouse[1];
+      currGrabbed[2] = objUnderMouse[2];
+      updateCursorStyle();
+      
     } else if (objUnderMouse[0] == "handle") {
       stateOfMouse = "resizing";
       currGrabbed[0] = "handle"; 
@@ -96,6 +117,7 @@ function onMouseUp(evt) {
       var yc = tensor_ycoords[num_tensors-1];
       var xspan = Math.max(...xc) - Math.min(...xc);
       var yspan = Math.max(...yc) - Math.min(...yc);
+      
       if (xspan < minWidth || yspan < minHeight) {
         deleteLastTensor()
       } else {
@@ -109,6 +131,8 @@ function onMouseUp(evt) {
       updateCursorStyle();
       isLeftDown = false;
       return;
+    } else if (stateOfMouse == "selecting") {
+      freeMouseState();
     }
     isLeftDown = false;
   } else if (evt.button == 2) { // right mouse 
@@ -142,6 +166,19 @@ function onMouseMove(evt) {
     if (emptyInit != emptyFin) {
       updateCursorStyle();
     }
+  } else if (stateOfMouse === "anchoring") {
+    var pos = getAbsMousePos(canvasBase, evt);
+    var i = currGrabbed[1];
+    var j = currGrabbed[2];
+    
+    tensor_xanchors[i][j] = pos.x - tensor_bbox[i][4];
+    tensor_yanchors[i][j] = pos.y - tensor_bbox[i][5];
+    snapAnchorInside(i,j);
+    
+  } else if (stateOfMouse === "selecting") {
+    var pos = getAbsMousePos(canvasBase, evt);
+    selectBoxCoords[2] = Math.round(pos.x);
+    selectBoxCoords[3] = Math.round(pos.y);
     
   } else if (stateOfMouse === "creating") {
     var pos = getAbsMousePos(canvasBase, evt);
@@ -196,6 +233,7 @@ function onMouseMove(evt) {
     debugStrings.push("selected: " + currSelected);
     debugStrings.push("handle: " + handleType);
     debugStrings.push("curr grabbed: (" + currGrabbed[0] + "," + currGrabbed[1] + "," + currGrabbed[2] + ")");
+    debugStrings.push("select coords: (" + selectBoxCoords[0] + ","  + selectBoxCoords[1] + "," + selectBoxCoords[2] + "," + selectBoxCoords[3] + ")");
     drawDebugBox(debugStrings);
   }
 }
