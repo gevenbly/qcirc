@@ -1,0 +1,43 @@
+#cpmenu {
+  position: fixed;
+  z-index: 9999; 
+  visibility: hidden;
+  opacity: 0;
+  padding: 0px;
+  background: #fff;
+  color: #555;
+  border: 1px solid #c4c4c4;
+}
+
+#cpmenu a {
+  display: block;
+  color: #555;
+  text-decoration: none;
+  padding: 6px 8px 6px 30px;
+  width: 70px;
+  position: relative;
+}
+
+#cpmenu a img {
+  height: 20px;
+  font-size: 17px;
+  width: 20px;
+  position: absolute;
+  left: 5px;
+  top: 2px;
+}
+
+#cpmenu a span {
+  color: #BCB1B3;
+  float: right;
+}
+
+#cpmenu a:hover {
+  color: #555;
+  background: #a5d8f2;
+}
+
+#cpmenu hr {
+  border: 1px solid #c4c4c4;
+  border-bottom: 0;
+}

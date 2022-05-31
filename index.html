@@ -6,42 +6,72 @@
 
   <title>Qcirc</title>
   <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="menustyle.css">
-  <link rel="stylesheet" href="iconstyles.css">
-  <link rel="stylesheet" href="codeboxstyles.css">
+  <link rel="stylesheet" href="topmenustyle.css">
+  <link rel="stylesheet" href="leftmenustyles.css">
+  <link rel="stylesheet" href="rightmenustyles.css">
+  <link rel="stylesheet" href="contextstyles.css">
+  <link rel="stylesheet" href="tabstyles.css">
 </head>
 
 <body>
   <!-- Javascript for Prism.js core, line number display, and python syntax highlight -->
-  <link
-    href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.19.0/themes/prism-tomorrow.css"
-    rel="stylesheet"
-  />
-  <link
-    href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.19.0/plugins/line-numbers/prism-line-numbers.min.css"
-    rel="stylesheet"
-  />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.19.0/themes/prism-tomorrow.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.19.0/plugins/line-numbers/prism-line-numbers.min.css" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.19.0/prism.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.19.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.19.0/components/prism-python.min.js"></script>
+
+  <svg class="fieldicon" id="renamesvg" viewBox="0 0 16 16" style="display: none;">
+    <path d="M 0 4 a 4 4 0 0 1 4 -4 L 12 0 a 4 4 0 0 1 4 4 L 16 12 a 4 4 0 0 1 -4 4 L 4 16 a 4 4 0 0 1 -4 -4 z " fill="black" stroke="none" />
+    <path d=" M 4 9 L 11 2 L 14 5 L 7 12 L 3 13 L 4 9 M 9 4 L 12 7 " />
+  </svg>
+
+  <svg class="fieldicon" id="anchorplussvg" viewBox="0 0 16 16" style="display: none;">
+    <path d="M 0 4 a 4 4 0 0 1 4 -4 L 12 0 a 4 4 0 0 1 4 4 L 16 12 a 4 4 0 0 1 -4 4 L 4 16 a 4 4 0 0 1 -4 -4 z " fill="black" stroke="none" />
+    <path d=" M 2 4 L 6 4   " />
+    <circle cx="10" cy="4" r="2" />
+    <path d=" M 10 6 L 10 14 M 6 12 a 2 2 0 0 0 2 2 L 12 14 a 2 2 0 0 0 2 -2 M 7 8 l 6 0 " />
+  </svg>
+
+  <svg class="fieldicon" id="anchorminussvg" viewBox="0 0 16 16" style="display: none;">
+    <path d="M 0 4 a 4 4 0 0 1 4 -4 L 12 0 a 4 4 0 0 1 4 4 L 16 12 a 4 4 0 0 1 -4 4 L 4 16 a 4 4 0 0 1 -4 -4 z " fill="black" stroke="none" />
+    <path d=" M 2 4 L 6 4 M 4 2 L 4 6  " />
+    <circle cx="10" cy="4" r="2" />
+    <path d=" M 10 6 L 10 14 M 6 12 a 2 2 0 0 0 2 2 L 12 14 a 2 2 0 0 0 2 -2 M 7 8 l 6 0 " />
+  </svg>
   
+  <svg class="fieldicon" id="plussvg" viewBox="0 0 16 16" style="display: none;">
+  <path d="M 0 4 a 4 4 0 0 1 4 -4 L 12 0 a 4 4 0 0 1 4 4 L 16 12 a 4 4 0 0 1 -4 4 L 4 16 a 4 4 0 0 1 -4 -4 z " fill="black" stroke="none"/>
+  <path d=" M 3 8 L 13 8 M 8 3 L 8 13" />
+</svg>
+
+<svg class="fieldicon" id="minussvg" viewBox="0 0 16 16" style="display: none;">
+  <path d="M 0 4 a 4 4 0 0 1 4 -4 L 12 0 a 4 4 0 0 1 4 4 L 16 12 a 4 4 0 0 1 -4 4 L 4 16 a 4 4 0 0 1 -4 -4 z " fill="black" stroke="none"/>
+  <path d=" M 3 8 L 13 8" />
+</svg>
+
   <!--   misc assets -->
-  <img src="https://assets.codepen.io/8119935/pencilbigH_1.png" id="renameicon" alt="rename" style="display: none;" />
-  <img src="https://assets.codepen.io/8119935/pencilbig_1.png" id="renameiconH" alt="rename" style="display: none;" />
+  <!--   <img src="https://assets.codepen.io/8119935/pencilbigH_1.png" id="renameicon" alt="0" style="display: none;" /> -->
+  <!--   <img src="https://assets.codepen.io/8119935/pencilbig_1.png" id="renameiconH" alt="0" style="display: none;" /> -->
+  <img src="https://assets.codepen.io/8119935/pAnkH_1.png" id="pAnkHIcon" alt="0" style="display: none;" />
+  <img src="https://assets.codepen.io/8119935/pAnk_1.png" id="pAnkIcon" alt="0" style="display: none;" />
+  <img src="https://assets.codepen.io/8119935/mAnkH_1.png" id="mAnkHIcon" alt="0" style="display: none;" />
+  <img src="https://assets.codepen.io/8119935/mAnk_1.png" id="mAnkIcon" alt="0" style="display: none;" />
 
   <div id="mainWindow">
     <div id="alwaysWindow">
       <div class="navbar" id="navbar1">
         <div class="dropdown">
-          <img src="https://assets.codepen.io/8119935/logosmall4.png" style="height:24px;" id="smalllogo" alt="smalllogo" />
+          <img src="https://github.com/gevenbly/qcirc/blob/0834e9e66552a15c33ef78f63f349151cae1810a/logosmall8.png?raw=true" style="height:24px;" id="smalllogo" alt="smalllogo" />
         </div>
-
+        
         <div class="dropdown">
           <button onclick="doDropClicks('dropFileElm')" onmouseenter="doDropOvers('dropFileElm')" class="clickdropbtn">File </button>
           <div class="clickdown-content" id="dropFileElm">
-            <a href="#">Link 1</a>
-            <a href="#">Link 2</a>
-            <a href="#">Link 3</a>
+            <a href="#" onclick="doFileNew()">New</a>
+            <a href="#" onclick="doFileOpen()">Open</a>
+            <a href="#" onclick="doFileSave()">Save</a>
+            <a href="#" onclick="doFileSaveAs()">Save As</a>
           </div>
         </div>
         <div class="dropdown">
@@ -79,135 +109,370 @@
       </div>
     </div>
 
+    <input id="loadTheFile" type="file" style="display:none;"  accept=".qc">
+    
     <div id="titleWindow">
-      <img src="https://assets.codepen.io/8119935/biglogo.png" id="biglogo" alt="biglogo" style="height:250px;" onclick="toggleTitle()" />
+      <img src="https://github.com/gevenbly/qcirc/blob/0834e9e66552a15c33ef78f63f349151cae1810a/biglogo3.png?raw=true" id="biglogo" alt="biglogo" style="height:250px;" onclick="toggleTitle(0)" />
+      <br>
+      <span class="titleOptions" class="center" onclick="toggleTitle(0)">New Project</span>
+      <span class="titleOptions" class="center" onclick="toggleTitle(1)">Open Example Project</span>
+      <label for="loadTheFile">
+      <span class="titleOptions" class="center" onclick="doFileOpen()">Load Project</span>
+        </label>
     </div>
 
-    <div id="sublistWindow">
-      <img src="https://assets.codepen.io/8119935/logo3.png" id="toplogo" style="height:68px;" alt="toplogo" />
+    <div id="sublistWindow" style="display:none;">
+      <img src="https://github.com/gevenbly/qcirc/blob/0834e9e66552a15c33ef78f63f349151cae1810a/logo3.png?raw=true" id="toplogo" style="height:62px;" alt="toplogo" />
       <div class="navbar" id="navbar2">
-        <div class="labinput">
+        <div class="labinput" title="Show Drawing Grid">
           <input type="checkbox" id="showGrid" checked>
-          <label for="showGrid">Show grid</label>
+          <label for="showGrid">Grid</label>
         </div>
-        <div class="labinput">
+        <div class="labinput" title="Snap Tensors to Grid">
           <input type="checkbox" id="snapGrid">
-          <label for="snapGrid">Snap to grid</label>
+          <label for="snapGrid">Snap</label>
         </div>
-        <div class="labinput">
+        <div class="labinput" title="Show Debug Data">
           <input type="checkbox" id="showDebug">
-          <label for="showDebug">Show debug</label>
+          <label for="showDebug">Debug</label>
         </div>
-        <div class="labinput">
+        <div class="labinput" title="Show Minimap">
           <input type="checkbox" id="showMini" checked>
-          <label for="showMini">Show minimap</label>
+          <label for="showMini">Minimap</label>
         </div>
-        <div class="labinput">
+        <div class="labinput" title="Show Codebox">
           <input type="checkbox" id="showCode">
-          <label for="showCode">Show code</label>
+          <label for="showCode">Code</label>
+        </div>
+        <div class="labinput" title="Auto-position Indices on Creation">
+          <input type="checkbox" id="autoInds" checked>
+          <label for="autoInds">Auto-inds</label>
+        </div>
+        <div class="labinput" title="Display Index Order Numerically">
+          <input type="checkbox" id="numericalInds" >
+          <label for="numericalInds">Num-inds</label>
         </div>
       </div>
       <br>
 
       <div class="navbar" id="navbar3"></div>
     </div>
-
-<!--     <div id="rightGuiBox"> -->
-<!--     <div id="rightGui" onclick="toggleRightGui()"> -->
-      <div id="rightGui">
-        
-      <div id="rightGuiResizer"></div>
-        
-<!--       <div id="codeContainer"> -->
-<!--       <div > -->
-    <pre class="line-numbers" id="codeBox"><code id="codeText" style="font-family: Monospace, Courier New; font-size:100%;"
-      class="language-python">import numpy as np
-# Some placeholder code
-dataset = 0
-if dataset == 0:
-(x_train0, y_train), (x_test, y_test) = mnist.load_data()
-elif dataset == 1:
-  (x_train0, y_train), (x_test, y_test) = fashion_mnist.load_data()
-x_train0 = x_train0.astype(float) / 255
-# load data
-dataset = 0
-if dataset == 0:
-(x_train0, y_train), (x_test, y_test) = mnist.load_data()
-elif dataset == 1:
-  (x_train0, y_train), (x_test, y_test) = fashion_mnist.load_data()
-x_train0 = x_train0.astype(float) / 255
-# load data
-dataset = 0
-if dataset == 0:
-(x_train0, y_train), (x_test, y_test) = mnist.load_data()
-elif dataset == 1:
-  (x_train0, y_train), (x_test, y_test) = fashion_mnist.load_data()
-x_train0 = x_train0.astype(float) / 255
-# load data
-dataset = 0
-if dataset == 0:
-(x_train0, y_train), (x_test, y_test) = mnist.load_data()
-elif dataset == 1:
-  (x_train0, y_train), (x_test, y_test) = fashion_mnist.load_data()
-5</code></pre>    
-<!--   </div> -->
-<!--         </div> -->
+    
+<!--     tabs -->
+    <span id="tabcontainer">
+    <span id="tabbox0" class="tabbox" onmousedown="doSwitchTab(0)" onmouseover="doHoverTab(0)" onmouseout="updateTabSelect(0)" ondblclick="openNamingBox(0)">
+<!--       <span class="taboverlay"></span> -->
+      <span class="tabtext" id="tabbox0p">Project1.qc</span>
+      <span class="tabcross">
+        <svg viewBox="0 0 13 13" onmousedown="doCloseTab(0)">
+          <path d="M 2 2 L 11 11 M 2 11 L 11 2" fill="none" stroke="#c4c4c4" stroke-width="2"/>
+        </svg>
+      </span>
+    </span>
       
-<!--       <img src="https://assets.codepen.io/8119935/openright_2.png" id="openrighticon" alt="open" /> -->
-<!--       <img src="https://assets.codepen.io/8119935/closeright_2.png" id="closerighticon" alt="close" /> -->
+      <span id="tabbox1" class="tabbox" onmousedown="doSwitchTab(1)" onmouseover="doHoverTab(1)" onmouseout="updateTabSelect(1)" ondblclick="openNamingBox(1)">
+<!--       <span class="taboverlay"></span> -->
+      <span class="tabtext" id="tabbox1p">Project2.qc</span>
+      <span class="tabcross">
+        <svg viewBox="0 0 13 13" onmousedown="doCloseTab(1)">
+          <path d="M 2 2 L 11 11 M 2 11 L 11 2" fill="none" stroke="#c4c4c4" stroke-width="2"/>
+        </svg>
+      </span>
+    </span>
+      
+      <span id="tabbox2" class="tabbox" onmousedown="doSwitchTab(2)" onmouseover="doHoverTab(2)" onmouseout="updateTabSelect(2)" ondblclick="openNamingBox(2)">
+<!--       <span class="taboverlay"></span> -->
+      <span class="tabtext" id="tabbox2p">Project3.qc</span>
+      <span class="tabcross">
+        <svg viewBox="0 0 13 13" onmousedown="doCloseTab(2)">
+          <path d="M 2 2 L 11 11 M 2 11 L 11 2" fill="none" stroke="#c4c4c4" stroke-width="2"/>
+        </svg>
+      </span>
+    </span>
+      
+      <span id="tabbox3" class="tabbox" onmousedown="doSwitchTab(3)" onmouseover="doHoverTab(3)" onmouseout="updateTabSelect(3)" ondblclick="openNamingBox(3)">
+<!--       <span class="taboverlay"></span> -->
+      <span class="tabtext" id="tabbox3p">Project4.qc</span>
+      <span class="tabcross">
+        <svg viewBox="0 0 13 13" onmousedown="doCloseTab(3)">
+          <path d="M 2 2 L 11 11 M 2 11 L 11 2" fill="none" stroke="#c4c4c4" stroke-width="2"/>
+        </svg>
+      </span>
+    </span>
+      
+      <span id="tabbox4" class="tabbox" onmousedown="doSwitchTab(4)" onmouseover="doHoverTab(4)" onmouseout="updateTabSelect(4)" ondblclick="openNamingBox(4)">
+<!--       <span class="taboverlay"></span> -->
+      <span class="tabtext" id="tabbox4p">Project5.qc</span>
+      <span class="tabcross">
+        <svg viewBox="0 0 13 13" onmousedown="doCloseTab(4)">
+          <path d="M 2 2 L 11 11 M 2 11 L 11 2" fill="none" stroke="#c4c4c4" stroke-width="2"/>
+        </svg>
+      </span>
+    </span>
+      </span>
+    
+    <!-- project name box -->
+  <div id="projectNamerBox" style="display: none;" >
+  <div id="projectNameGrabber">
+  <p class="boxHeader"> Name: </p>
+  </div>
+  <svg viewBox="0 0 13 13" id="projectNameCloser" onclick="closeNamingBox()">
+          <path d="M 2 2 L 11 11 M 2 11 L 11 2" fill="none" stroke="#c4c4c4" stroke-width="2"/>
+  </svg>
+  <div id="projectNameInput"> Name:
+  <input type="text"  id="projectNameText" class="textbox" maxlength="25"/>
+  </div>
+  <div id="projectOKBar">OK</div>
+</div>
+      
+    
+    <div id="rightGui">
+      <div id="rightGuiResizer"></div>
+      <pre class="line-numbers" id="codeBox"><code id="codeText" style="font-family: Monospace, Courier New; font-size:100%;"
+      class="language-python"># This is where the code is output
+# once a completed network is exported.
+</code></pre>
     </div>
-<!--     </div> -->
 
     <div id="leftGui" onmouseout="updateLeftSelect()">
-      <!--       Create type =
-      <select id="selectedType" onchange="changeSelectedType()">
-        <option value="0">rectangle</option>
-        <option value="1">ellipse</option>
-        <option value="2">trapezoid</option>
-        <option value="10">selector</option>
-      </select> -->
-      <div id="leftIconBox">
+      <svg viewBox="0 0 64 2" class="leftpartition">
+        <path d="M 0 1 L 64 1" />
+      </svg>
 
-        <img src="https://assets.codepen.io/8119935/movings.png" id="movingicon" alt="moving" onmousedown="doLeftSelect(0)" onmouseover="doLeftHover(0)">
-        <img src="https://assets.codepen.io/8119935/select.png" id="selecticon" alt="select" onmousedown="doLeftSelect(1)" onmouseover="doLeftHover(1)"/>
-        <img src="https://assets.codepen.io/8119935/rectangle.png" id="rectangleicon" alt="rectangleicon" onmousedown="doLeftSelect(2)" onmouseover="doLeftHover(2)"/>
-        <img src="https://assets.codepen.io/8119935/ellipse.png" id="ellipseicon" alt="ellipseicon" onmousedown="doLeftSelect(3)" onmouseover="doLeftHover(3)"/>
-        <img src="https://assets.codepen.io/8119935/hill.png" id="hillicon" alt="hillicon" onmousedown="doLeftSelect(4)" onmouseover="doLeftHover(4)"/>
-        <img src="https://assets.codepen.io/8119935/trapezoid.png" id="trapezoidicon" alt="trapezoidicon" onmousedown="doLeftSelect(5)" onmouseover="doLeftHover(5)"/>
-        
-        <img src="https://assets.codepen.io/8119935/bringforward.png" id="forwardicon" alt="forwardicon" onmouseover="doLeftHover(6)" onmousedown="doLeftForward()"/>
-        <img src="https://assets.codepen.io/8119935/bringbehind.png" id="behindicon" alt="behindicon" onmouseover="doLeftHover(7)" onmousedown="doLeftBehind()"/>
-        <img src="https://assets.codepen.io/8119935/bringfront.png" id="fronticon" alt="fronticon" onmouseover="doLeftHover(8)" onmousedown="doLeftFront()"/>
-        <img src="https://assets.codepen.io/8119935/bringback.png" id="backicon" alt="backicon" onmouseover="doLeftHover(9)" onmousedown="doLeftBack()"/>
-    </div>
-      </div>
+      <!--         pointer -->
+      <svg viewBox="0 0 16 16" class="lefticon" id="movingicon" onmousedown="doLeftSelect(0)" onmouseover="doLeftHover(0)" display="none">
+        <path d="M 2 2 L 10 11 L 7 11 L 8 14 L 6 14 L 5 11 L 2 13 z" fill="#c4c4c4" />
+        <path d="M 9 5 L 13 5" fill="none" stroke="#c4c4c4" stroke-width="1" />
+        <path d="M 11 3 L 11 7" fill="none" stroke="#c4c4c4" stroke-width="1" />
+        <path d="M 9 4 L 9 6 L 8 5 z" fill="#c4c4c4" stroke="none" />
+        <path d="M 13 4 L 14 5 L 13 6 z" fill="#c4c4c4" stroke="none" />
+        <path d="M 10 3 L 11 2 L 12 3 z" fill="#c4c4c4" stroke="none" />
+        <path d="M 10 7 L 12 7 L 11 8 z" fill="#c4c4c4" stroke="none" />
+      </svg>
 
-    <div id="canvasWindow">
-      <canvas id="canvasHandles" width="1800" height="900"> </canvas>
-      <canvas id="canvasBase" width="1800" height="900"> </canvas>
-      <canvas id="canvasMoving" width="1800" height="900"> </canvas>
-      <canvas id="canvasTensors" width="1800" height="900"> </canvas>
-      <canvas id="canvasBackground" width="1800" height="900"> </canvas>
-      <input type="text" id="nameBox" maxlength="25" />
-    </div>
+      <!--         select -->
+      <svg viewBox="0 0 16 16" class="lefticon" id="selecticon" onmousedown="doLeftSelect(1)" onmouseover="doLeftHover(1)" display="none">
+        <path d="M 2 2 L 11 2 L 11 8 L 2 8 z" fill="none" stroke-dasharray="2,2" stroke="#c4c4c4" stroke-width="0.5" stroke-linecap="butt" />
+        <path d="M 9 6 L 14 12 L 12 12 L 13 14 L 12 14 L 11 12 L 9 13 z" fill="#c4c4c4" />
+      </svg>
 
-    <script src="testscripts.js"></script>
-    <script src="anchorscripts.js"></script>
-    <script src="leftmenuscripts.js"></script>
-    <script src="rightmenuscripts.js"></script>
-    <script src="colorscripts.js"></script>
-    <script src="nameboxscripts.js"></script>
-    <script src="dropdownscripts.js"></script>
-    <script src="tensorscripts.js"></script>
-    <script src="selectorscripts.js"></script>
-    <script src="mouseinputs.js"></script>
-    <script src="keyboardscripts.js"></script>
-    <script src="mousescripts.js"></script>
-    <script src="miscscripts.js"></script>
-    <script src="miniscripts.js"></script>
-    <script src="drawingscripts.js"></script>
-    <script src="mainscripts.js"></script>
+      <!--         rect -->
+      <span title="Create Tensor: Rectangle (R)">
+        <svg viewBox="0 0 16 16" class="lefticon" id="rectangleicon" onmousedown="doLeftSelect(2)" onmouseover="doLeftHover(2)">
+          <path d="M 2 6 a 2 2 0 0 1 2 -2 L 12 4 a 2 2 0 0 1 2 2 L 14 10 a 2 2 0 0 1 -2 2 L 4 12 a 2 2 0 0 1 -2 -2 z" fill="#c4c4c4" />
+
+        </svg>
+      </span>
+
+      <!--         ellipse -->
+      <span title="Create Tensor: Ellipse (E)">
+        <svg viewBox="0 0 16 16" class="lefticon" id="ellipseicon" onmousedown="doLeftSelect(3)" onmouseover="doLeftHover(3)">
+          <path d="M 2 8 a 6 5 0 0 1 6 -5 a 6 5 0 0 1 6 5 a 6 5 0 0 1 -6 5 a 6 5 0 0 1 -6 -5 z" fill="#c4c4c4" />
+        </svg>
+      </span>
+
+      <!--         dome -->
+      <span title="Create Tensor: Dome (D)">
+        <svg viewBox="0 0 16 16" class="lefticon" id="hillicon" onmousedown="doLeftSelect(4)" onmouseover="doLeftHover(4)">
+          <path d="M 2 12 L 2 8 a 6 4 0 0 1 6 -4 L 8 4 a 6 4 0 0 1 6 4 L 14 12 z " fill="#c4c4c4" />
+        </svg>
+      </span>
+
+      <!--         trap -->
+      <span title="Create Tensor: Trapezoid (T)">
+        <svg viewBox="0 0 16 16" class="lefticon" id="trapezoidicon" onmousedown="doLeftSelect(5)" onmouseover="doLeftHover(5)">
+          <path d="M 2 12 L 5 4 L 11 4 L 14 12 z " fill="#c4c4c4" />
+        </svg>
+      </span>
+      
+      <div id="colorbox" onmouseleave="clearNonSelectedBorder()">
+        <svg viewBox="0 0 1 1" class="colicon" id="colicon0" onmousedown="doLeftColor(0)" onmouseenter="doHoverColor(0)" >
+          <path d="M 0 0 L 0 1 L 1 1 L 1 0 z " fill="#21a0a0"/>
+        </svg><!-- --><svg viewBox="0 0 1 1" class="colicon" id="colicon1" onmousedown="doLeftColor(1)" onmouseenter="doHoverColor(1)">
+          <path d="M 0 0 L 0 1 L 1 1 L 1 0 z " fill="#3454d1" />
+        </svg><!-- --></svg><!-- --><svg viewBox="0 0 1 1" class="colicon" id="colicon2" onmousedown="doLeftColor(2)" onmouseenter="doHoverColor(2)">
+          <path d="M 0 0 L 0 1 L 1 1 L 1 0 z " fill="#b4adea" />
+        </svg><!-- --></svg><!-- --><svg viewBox="0 0 1 1" class="colicon" id="colicon3" onmousedown="doLeftColor(3)" onmouseenter="doHoverColor(3)">
+          <path d="M 0 0 L 0 1 L 1 1 L 1 0 z " fill="#c33c54" />
+        </svg><!-- --></svg><!-- --><svg viewBox="0 0 1 1" class="colicon" id="colicon4" onmousedown="doLeftColor(4)" onmouseover="doHoverColor(4)">
+          <path d="M 0 0 L 0 1 L 1 1 L 1 0 z " fill="#f0943e" />
+        </svg>
+        </div>
+      
+      <svg viewBox="0 0 64 2" class="leftpartition">
+        <path d="M 0 1 L 64 1" />
+      </svg>
+
+      <!-- forward -->
+      <span title="Bring Forward">
+        <svg viewBox="0 0 16 16" class="lefticon" id="forwardicon" onmouseover="doLeftHover(6)" onmousedown="doLeftForward()">
+          <path d="M 2 2 L 10 2 L 10 10 L 2 10 z " fill="#717171" />
+          <path d="M 6 6 L 14 6 L 14 14 L 6 14 z " fill="#c4c4c4" />
+        </svg>
+      </span>
+
+      <!--         behind -->
+      <span title="Send Backward">
+        <svg viewBox="0 0 16 16" class="lefticon" id="behindicon" onmouseover="doLeftHover(7)" onmousedown="doLeftBehind()">
+          <path d="M 6 6 L 14 6 L 14 14 L 6 14 z " fill="#c4c4c4" />
+          <path d="M 2 2 L 10 2 L 10 10 L 2 10 z " fill="#717171" />
+        </svg>
+      </span>
+
+      <!--         front -->
+      <span title="Bring to Front">
+        <svg viewBox="0 0 16 16" class="lefticon" id="fronticon" onmouseover="doLeftHover(8)" onmousedown="doLeftFront()">
+          <path d="M 2 2 L 7 2 L 7 7 L 2 7 z " fill="#717171" />
+          <path d="M 9 9 L 14 9 L 14 14 L 9 14 z " fill="#717171" />
+          <path d="M 4 4 L 12 4 L 12 12 L 4 12 z " fill="#c4c4c4" />
+        </svg>
+      </span>
+
+      <!--         back -->
+      <span title="Send to Back">
+        <svg viewBox="0 0 16 16" class="lefticon" id="backicon" onmouseover="doLeftHover(9)" onmousedown="doLeftBack()">
+          <path d="M 4 4 L 12 4 L 12 12 L 4 12 z " fill="#c4c4c4" />
+          <path d="M 2 2 L 7 2 L 7 7 L 2 7 z " fill="#717171" />
+          <path d="M 9 9 L 14 9 L 14 14 L 9 14 z " fill="#717171" />
+        </svg>
+      </span>
+
+      <!--         hflip -->
+      <span title="Vertical Flip">
+        <svg viewBox="0 0 16 16" class="lefticon" id="hflipicon" onmouseover="doLeftHover(10)" onmousedown="doLeftHorz()">
+          <path d="M 2 2 L 10 7 L 2 7 z " fill="#c4c4c4" />
+          <path d="M 2 9 L 10 9 L 2 14 z " fill="#717171" />
+          <path d="M 12 4 L 12 12 " fill="none" stroke="#c4c4c4" stroke-width="1" />
+          <path d="M 10 4 L 12 2 L 14 4 z" fill="#c4c4c4" stroke="none" />
+          <path d="M 10 12 L 14 12 L 12 14 z" fill="#c4c4c4" stroke="none" />
+        </svg>
+      </span>
+
+      <!--         vflip -->
+      <span title="Horizontal Flip">
+        <svg viewBox="0 0 16 16" class="lefticon" id="vflipicon" onmouseover="doLeftHover(11)" onmousedown="doLeftVert()">
+          <path d="M 2 14 L 7 4 L 7 14 z " fill="#c4c4c4" />
+          <path d="M 9 14 L 9 4 L 14 14 z " fill="#717171" />
+          <path d="M 4 4 L 12 4 " fill="none" stroke="#c4c4c4" stroke-width="1" />
+          <path d="M 4 6 L 2 4 L 4 2 z" fill="#c4c4c4" stroke="none" />
+          <path d="M 12 6 L 12 2 L 14 4 z" fill="#c4c4c4" stroke="none" />
+        </svg>
+      </span>
+
+      <!--         clock -->
+      <span title="Rotate Clockwise">
+        <svg viewBox="0 0 16 16" class="lefticon" id="clockicon" onmouseover="doLeftHover(12)" onmousedown="doLeftClock()">
+          <path d="M 14 14 L 10 7 L 10 14 z " fill="#c4c4c4" />
+          <path d="M 9 10 L 2 14 L 9 14 z " fill="#717171" />
+          <path d="M 8 4 a 4 4 0 0 0 -4 4" fill="none" stroke="#c4c4c4" stroke-width="1" />
+          <path d="M 10 4 L 8 2 L 8 6 z" fill="#c4c4c4" stroke="none" />
+        </svg>
+      </span>
+
+      <!--         anti -->
+      <span title="Rotate Anti-Clockwise">
+        <svg viewBox="0 0 16 16" class="lefticon" id="antiicon" onmouseover="doLeftHover(13)" onmousedown="doLeftAnti()">
+          <path d="M 2 14 L 6 7 L 6 14 z " fill="#c4c4c4" />
+          <path d="M 7 10 L 14 14 L 7 14 z " fill="#717171" />
+          <path d="M 8 4 a 4 4 0 0 1 4 4" fill="none" stroke="#c4c4c4" stroke-width="1" />
+          <path d="M 6 4 L 8 2 L 8 6 z" fill="#c4c4c4" stroke="none" />
+        </svg>
+      </span>
+  
+  <!--         anchor snap -->
+  <span title="Snap Anchors to Edge">
+  <svg viewBox="0 0 16 16" class="lefticon" id="snapicon" onmouseover="doLeftHover(14)" onmousedown="doLeftSnap()">
+  <path d="M 2 5 L 11 5 L 11 14 L 2 14 z" fill="#c4c4c4"/>
+  <path d="M 11 5 L 14 2"  fill="none" stroke="#c4c4c4" stroke-width="1"/>
+  <path d="M 9 4 L 12 4 L 12 7 L 9 7 z"  fill="#717171"/>
+  <path d="M 4 12 L 7 9"  fill="none" stroke="black" stroke-width="1"/>
+  <path d="M 6 8 L 8 8 L 8 10 z"  fill="black" stroke="black" stroke-width="1"/>
+</svg>
+     </span>
+  
+  <!-- reorder open inds -->
+  <span title="Sequentialize Open Indices">
+<svg viewBox="0 0 16 16" class="lefticon" id="openicon" onmouseover="doLeftHover(15)" onmousedown="doLeftOpen()">
+  <path d="M 4 4 L 4 14" fill="none" stroke="black" stroke-width="1"/>
+  <path d="M 12 4 L 12 14" fill="none" stroke="black" stroke-width="1"/>
+  <circle cx="4" cy="4" r="2" fill="#c4c4c4"/>
+  <circle cx="12" cy="4" r="2" fill="#717171"/>
+  <path d="M 5 7 L 7 7 L 5 9 z"  fill="#c4c4c4" stroke="#c4c4c4" />
+  <path d="M 9 7 L 11 7 L 11 9 z"  fill="#c4c4c4" stroke="#c4c4c4" />
+  <path d="M 6 8 L 7 9 L 9 9 L 10 8"  fill="none" stroke="#c4c4c4" stroke-width="1"/>
+</svg>
+    </span>
+
+  <!-- copy -->
+  <span title="Copy Selection to Clipboard">
+  <svg class="lefticon" viewBox="0 0 16 16" id="copyicon" onmouseover="doLeftHover(16)" onmousedown="doLeftCopy()">
+  <path d="M 2 11 L 2 2 L 7 2 L 9 4 L 9 11 L 2 11" fill="#c4c4c4" stroke="black" />
+  <path d="M 7 2 L 7 4 L 9 4 z" fill="#717171" stroke="black" />
+  <path d="M 3 5 L 8 5 M 4 7 L 7 7 M 3 9 L 8 9" fill="none" stroke="black"  stroke-linecap="butt"/>
+  <path d="M 7 14 L 7 5 L 12 5 L 14 7 L 14 14 L 7 14" fill="#c4c4c4" stroke="black" />
+  <path d="M 12 5 L 12 7 L 14 7 z" fill="#717171" stroke="black" />
+  <path d="M 8 8 L 13 8 M 9 10 L 12 10 M 8 12 L 13 12" fill="none" stroke="black"  stroke-linecap="butt"/>
+</svg>
+    </span>
+  
+   <!-- paste -->
+    <span title="Paste Network from Clipboard">
+  <svg class="lefticon" viewBox="0 0 16 16" id="pasteicon" onmouseover="doLeftHover(17)" onmousedown="doLeftPaste()">
+  <path d="M 2 11 L 2 2 L 7 2 L 9 4 L 9 11 L 2 11" fill="none" stroke-dasharray="2,1"  stroke-linecap="butt"/>
+  <path d="M 3 5 L 8 5 M 4 7 L 7 7 M 3 9 L 8 9" fill="none"  stroke-linecap="butt"/>
+  <path d="M 7 14 L 7 5 L 12 5 L 14 7 L 14 14 L 7 14" fill="#c4c4c4" stroke="black" />
+  <path d="M 12 5 L 12 7 L 14 7 z" fill="#717171" stroke="black" />
+  <path d="M 8 8 L 13 8 M 9 10 L 12 10 M 8 12 L 13 12" fill="none" stroke="black" stroke-linecap="butt"/>
+</svg>
+      </span>
+  
+      <svg viewBox="0 0 64 2" class="leftpartition">
+        <path d="M 0 1 L 64 1" />
+      </svg>
   </div>
-</body>
 
+  <div id="canvasWindow">
+    <canvas id="canvasHandles" width="1800" height="900"> </canvas>
+    <canvas id="canvasBase" width="1800" height="900"> </canvas>
+    <canvas id="canvasMoving" width="1800" height="900"> </canvas>
+    <canvas id="canvasTensors" width="1800" height="900"> </canvas>
+    <canvas id="canvasBackground" width="1800" height="900"> </canvas>
+    <input type="text" id="nameBox" maxlength="25" />
+<!--     <div class="nametag" id="nametag0" style="display: none;">T0:</div> -->
+  </div>
+
+   <div id="cpmenu">
+    <a id="contextCopy" onmousedown="doContextMove()">Move Here</a>
+    <a id="contextCopy" onmousedown="doContextCopy()">Copy Here</a>
+    <hr />
+    <a id="contextCancel" onmousedown="doContextCancel()">Cancel</a>
+  </div>
+
+  <script src="iconscripts.js"></script>
+  <script src="nameboxscripts.js"></script>
+  <script src="filescripts.js"></script>
+  <script src="tabscripts.js"></script>
+  <script src="contextscripts.js"></script>
+  <script src="testscripts.js"></script>
+  <script src="transformscripts.js"></script>
+  <script src="indexscripts.js"></script>
+  <script src="titlemenuscripts.js"></script>
+  <script src="anchorscripts.js"></script>
+  <script src="rightmenuscripts.js"></script>
+  <script src="colorscripts.js"></script>
+  <script src="leftmenuscripts.js"></script>
+  <script src="dropdownscripts.js"></script>
+  <script src="tensorscripts.js"></script>
+  <script src="selectorscripts.js"></script>
+  <script src="mouseinputs.js"></script>
+  <script src="keyboardscripts.js"></script>
+  <script src="mousescripts.js"></script>
+  <script src="miscscripts.js"></script>
+  <script src="miniscripts.js"></script>
+  <script src="drawingscripts.js"></script>
+  <script src="mainscripts.js"></script>
+  </div>
+
+</body>
 </html>
+

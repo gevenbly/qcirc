@@ -1,167 +1,27 @@
 /*
-auxillary functions relating to mouse action and positioning
+functions that determine the elements and position that
+the mouse is over.
 */
-
+    
 function checkUnderMouse(evt) {
   if (stateOfMouse != "renaming") {
     var pos = getMousePos(canvasBase, evt);
-
-    // check if over minimap
-    var mX0 = viewWidth - (miniPad + miniWidth);
-    var mY0 = miniPad;
-    var mX1 = mX0 + miniWidth;
-    var mY1 = mY0 + miniHeight;
-    if (checkInTensor(pos, [mX0, mX1, mX1, mX0], [mY0, mY0, mY1, mY1], 0)) {
-      objUnderMouse[0] = "minimap";
-      objUnderMouse[1] = 0;
+    if (checkMinimapMouse(pos)) {
       return;
     }
-
-    // check if over handles
-    for (var i = 0; i < currSelected.length; i++) {
-      var xc = a2rXall(tensor_xcoords[currSelected[i]]);
-      var yc = a2rYall(tensor_ycoords[currSelected[i]]);
-
-      if (tensor_types[currSelected[i]] == 0) {
-        for (var j = 0; j < xc.length; j++) {
-          if (
-            Math.sqrt((xc[j] - pos.x) ** 2 + (yc[j] - pos.y) ** 2) < circRad
-          ) {
-            objUnderMouse[0] = "handle";
-            objUnderMouse[1] = currSelected[i];
-            objUnderMouse[2] = j;
-
-            // find handles
-            var ymin = Math.min(...yc);
-            var ymax = Math.max(...yc);
-            if (Math.abs(yc[j] - ymin) < Math.abs(yc[j] - ymax)) {
-              var stemp1 = "n";
-            } else {
-              var stemp1 = "s";
-            }
-            var xmin = Math.min(...xc);
-            var xmax = Math.max(...xc);
-            if (Math.abs(xc[j] - xmin) < Math.abs(xc[j] - xmax)) {
-              var stemp2 = "w";
-            } else {
-              var stemp2 = "e";
-            }
-            handleType = stemp1 + stemp2 + "-resize";
-            updateCursorStyle();
-
-            return;
-          }
-        }
-      } else if (tensor_types[currSelected[i]] == 1) {
-        var ymin = Math.min(...yc);
-        var ymax = Math.max(...yc);
-        var xmin = Math.min(...xc);
-        var xmax = Math.max(...xc);
-        var xmid = (xmin + xmax) / 2;
-        var ymid = (ymin + ymax) / 2;
-
-        if (Math.sqrt((xmin - pos.x) ** 2 + (ymid - pos.y) ** 2) < circRad) {
-          objUnderMouse[0] = "handle";
-          objUnderMouse[1] = currSelected[i];
-          objUnderMouse[2] = 0;
-          handleType = "w-resize";
-          coordGrabbed[0] = Math.max(...tensor_xcoords[currSelected[i]]);
-          updateCursorStyle();
-          return;
-        } else if (
-          Math.sqrt((xmid - pos.x) ** 2 + (ymin - pos.y) ** 2) < circRad
-        ) {
-          objUnderMouse[0] = "handle";
-          objUnderMouse[1] = currSelected[i];
-          objUnderMouse[2] = 1;
-          handleType = "n-resize";
-          coordGrabbed[1] = Math.max(...tensor_ycoords[currSelected[i]]);
-          updateCursorStyle();
-          return;
-        } else if (
-          Math.sqrt((xmax - pos.x) ** 2 + (ymid - pos.y) ** 2) < circRad
-        ) {
-          objUnderMouse[0] = "handle";
-          objUnderMouse[1] = currSelected[i];
-          objUnderMouse[2] = 2;
-          handleType = "e-resize";
-          coordGrabbed[0] = Math.min(...tensor_xcoords[currSelected[i]]);
-          updateCursorStyle();
-          return;
-        } else if (
-          Math.sqrt((xmid - pos.x) ** 2 + (ymax - pos.y) ** 2) < circRad
-        ) {
-          objUnderMouse[0] = "handle";
-          objUnderMouse[1] = currSelected[i];
-          objUnderMouse[2] = 3;
-          handleType = "s-resize";
-          coordGrabbed[1] = Math.min(...tensor_ycoords[currSelected[i]]);
-          updateCursorStyle();
-          return;
-        }
-      }
-    }
-
-    // check if over anchors
-    for (var i = tensor_order.length - 1; i >= 0; i--) {
-      var num_anchors = tensor_xanchors[i].length;
-      var xmid = tensor_bbox[i][4];
-      var ymid = tensor_bbox[i][5];
-
-      for (var j = 0; j < num_anchors; j++) {
-        var xc = a2rX(tensor_xanchors[i][j] + xmid);
-        var yc = a2rY(tensor_yanchors[i][j] + ymid);
-
-        if (
-          2 * Math.abs(xc - pos.x) < anchorWidth &&
-          2 * Math.abs(yc - pos.y) < anchorHeight
-        ) {
-          // if (((xc - pos.x)**2 + (yc - pos.y)**2) < anchorLocRadius**2) {
-          objUnderMouse[0] = "anchor";
-          objUnderMouse[1] = i;
-          objUnderMouse[2] = j;
-          updateCursorStyle();
-          return;
-        }
-      }
-    }
-
-    // check if over rename icon
-    for (var i = 0; i < currSelected.length; i++) {
-      var xmid = Math.round(a2rX(tensor_bbox[currSelected[i]][4]));
-      var ymid = Math.round(a2rY(tensor_bbox[currSelected[i]][5]));
-
-      var x0 = Math.round(xmid - renameIcon.width / 2);
-      var y0 = Math.round(ymid + renameIcon.height / 2);
-      var x1 = Math.round(xmid + renameIcon.width / 2);
-      var y1 = Math.round(ymid + (3 * renameIcon.height) / 2);
-
-      if (isInRange(pos.x, x0, x1) && isInRange(pos.y, y0, y1)) {
-        objUnderMouse[0] = "rename";
-        objUnderMouse[1] = currSelected[i];
-        updateCursorStyle();
+    for (var ind=tensors.length - 1; ind >= 0; ind--) {
+      if (checkHandlesMouse(pos,ind)) {
+        return;
+      } else if (checkAnchorsMouse(pos,ind)) {
+        return;
+      } else if (checkOpenMouse(pos,ind)) {
+        return;
+      } else if (checkRenameMouse(pos,ind)) {
+        return;
+      } else if (checkTensorMouse(pos,ind)) {
         return;
       }
     }
-
-    // check if over tensors
-    for (var i = tensor_order.length - 1; i >= 0; i--) {
-      if (
-        checkInTensor(
-          pos,
-          tensor_xcoords[i],
-          tensor_ycoords[i],
-          tensor_types[i],
-          true
-        )
-      ) {
-        objUnderMouse[0] = "tensor";
-        objUnderMouse[1] = i;
-        updateCursorStyle();
-        return;
-      }
-    }
-
     // mouse is over nothing special
     objUnderMouse[0] = "none";
     objUnderMouse[1] = 0;
@@ -171,30 +31,29 @@ function checkUnderMouse(evt) {
 
 function freeMouseState() {
   if (stateOfMouse == "creating") {
-    var num_tensors = tensor_types.length;
-    var xc = tensor_xcoords[num_tensors - 1];
-    var yc = tensor_ycoords[num_tensors - 1];
-    var xspan = Math.max(...xc) - Math.min(...xc);
-    var yspan = Math.max(...yc) - Math.min(...yc);
+    var ind = tensors.length-1;
+    var xspan = tensors[ind].bbox[2] - tensors[ind].bbox[0];
+    var yspan = tensors[ind].bbox[3] - tensors[ind].bbox[1];
     if (xspan < minWidth || yspan < minHeight) {
       deleteLastTensor();
     }
   } else if (stateOfMouse == "selecting") {
-    x0 = Math.min(selectBoxCoords[0], selectBoxCoords[2]);
-    x1 = Math.max(selectBoxCoords[0], selectBoxCoords[2]);
-    y0 = Math.min(selectBoxCoords[1], selectBoxCoords[3]);
-    y1 = Math.max(selectBoxCoords[1], selectBoxCoords[3]);
+    x0 = selectBox[0];
+    x1 = selectBox[2];
+    y0 = selectBox[1];
+    y1 = selectBox[3];
 
-    for (var i = 0; i < tensor_types.length; i++) {
+    for (var i = 0; i < tensors.length; i++) {
       var isInBox =
-        tensor_bbox[i][0] > x0 &&
-        tensor_bbox[i][2] < x1 &&
-        tensor_bbox[i][1] > y0 &&
-        tensor_bbox[i][3] < y1;
+        tensors[i].bbox[0] > x0 &&
+        tensors[i].bbox[2] < x1 &&
+        tensors[i].bbox[1] > y0 &&
+        tensors[i].bbox[3] < y1;
       if (isInBox) {
         currSelected.push(i);
       }
     }
+    updateSelectionBox();
   }
 
   isLeftDown = false;
@@ -233,4 +92,138 @@ function getRelMousePos(canvas, evt) {
     x: a2rX(evt.clientX - rect.left),
     y: a2rY(evt.clientY - rect.top)
   };
+}
+
+function checkMinimapMouse(pos) {
+  var mX0 = viewWidth - (miniPadX + miniWidth);
+  var mY0 = miniPadY;
+  
+  ctxT.beginPath();
+  ctxT.rect(mX0, mY0, miniWidth, miniHeight);
+  ctxT.closePath();
+  if (ctxT.isPointInPath(pos.x, pos.y)) {
+    objUnderMouse[0] = "minimap";
+    objUnderMouse[1] = 0;
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function checkHandlesMouse(pos,ind) {
+  if (!currSelected.includes(ind)) {
+    return false;
+  }
+  var x0 = a2rX(tensors[ind].bbox[0]);
+  var y0 = a2rY(tensors[ind].bbox[1]);
+  var xf = a2rX(tensors[ind].bbox[2]);
+  var yf = a2rY(tensors[ind].bbox[3]);
+  var xmid = 0.5*(x0 + xf);
+  var ymid = 0.5*(y0 + yf);
+  var rot = tensors[ind].rot;
+
+  var handleLocsX = [x0, xmid, xf, xf, xf, xmid, x0, x0,
+                     x0, xmid, xf, xf, xf, xmid, x0, x0];
+  var handleLocsY = [y0, y0, y0, ymid, yf, yf, yf, ymid,
+                    y0, y0, y0, ymid, yf, yf, yf, ymid];
+  var handleList = ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w',
+                   'nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w'];
+  
+  for (var j=0; j<8; j++) {
+    if (isInCircle(pos, handleLocsX[j+2*rot], handleLocsY[j+2*rot], circRad)) {
+      objUnderMouse[0] = "handle";
+      objUnderMouse[1] = ind;
+      objUnderMouse[2] = j;
+      handleType = handleList[j+2*rot] + "-resize";
+      coordGrabbed[0] = r2aX(handleLocsX[j+2*rot+4]);
+      coordGrabbed[1] = r2aY(handleLocsY[j+2*rot+4]);
+      updateCursorStyle();
+      return true;
+    }
+  }
+  
+  return false;
+}
+
+function checkOpenMouse(pos,ind) {
+  var num_anchors = tensors[ind].xanchors.length;
+  var xmid = tensors[ind].bbox[4];
+  var ymid = tensors[ind].bbox[5];
+  
+  for (var j = 0; j < num_anchors; j++) {
+    var jnd = tensors[ind].connects[j];
+    if (openIndices.indexOf(Math.abs(jnd)) >= 0) {
+      var xc = a2rX(indices[Math.abs(jnd)].end[0] + xmid);
+      var yc = a2rY(indices[Math.abs(jnd)].end[1] + ymid);
+      if (
+        Math.abs(xc - pos.x) < (openIndexRadius) &&
+        Math.abs(yc - pos.y) < (openIndexRadius)
+      ) {
+        objUnderMouse[0] = "openind";
+        objUnderMouse[1] = Math.abs(jnd);
+        objUnderMouse[2] = 0;
+        updateCursorStyle();
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+function checkAnchorsMouse(pos,ind) {
+  var num_anchors = tensors[ind].xanchors.length;
+  var xmid = tensors[ind].bbox[4];
+  var ymid = tensors[ind].bbox[5];
+
+  for (var j = 0; j < num_anchors; j++) {
+    var xc = a2rX(tensors[ind].xanchors[j] + xmid);
+    var yc = a2rY(tensors[ind].yanchors[j] + ymid);
+
+    if (
+      2 * Math.abs(xc - pos.x) < (anchorTolerance*anchorWidth) &&
+      2 * Math.abs(yc - pos.y) < (anchorTolerance*anchorHeight)
+    ) {
+      objUnderMouse[0] = "anchor";
+      objUnderMouse[1] = ind;
+      objUnderMouse[2] = j;
+      updateCursorStyle();
+      return true;
+    }
+  }
+  return false;
+}
+
+function checkRenameMouse(pos,ind) {
+  for (var j=0; j<numTensorIcons; j++) {
+    var xmid = a2rX(tensors[ind].bbox[4]) + iconPos.x[j];
+    var ymid = a2rY(tensors[ind].bbox[5]) + iconPos.y[j];
+    
+    var x0 = Math.round(xmid - fieldIconWidth / 2);
+    var y0 = Math.round(ymid - fieldIconHeight / 2);
+    var x1 = Math.round(xmid + fieldIconWidth / 2);
+    var y1 = Math.round(ymid + fieldIconHeight / 2);
+    
+    if (isInRange(pos.x, x0, x1) && isInRange(pos.y, y0, y1)) {
+      objUnderMouse[0] = "rename";
+      objUnderMouse[1] = ind;
+      objUnderMouse[2] = j;
+      updateCursorStyle();
+      return true;
+    }
+  }
+  return false;
+}
+
+function checkTensorMouse(pos,ind) {
+  if (checkInTensor(pos, ind, true)) {
+    objUnderMouse[0] = "tensor";
+    objUnderMouse[1] = ind;
+    updateCursorStyle();
+    return true;
+  }
+  return false;
+}
+
+function isInCircle(pos, x0, y0, circRad) {
+  return ((pos.x-x0)**2 + (pos.y-y0)**2 < circRad**2) 
 }

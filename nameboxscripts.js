@@ -25,30 +25,42 @@ function updateNameboxPos() {
     } else if ((xfin + widthNamebox/2) > viewWidth) {
       xfin = viewWidth - widthNamebox/2 - 8;
     }
-    theNamebox.style.top = Math.round(yfin - fontsizeNamebox/2 + topMenuHeight) + "px";
+    // theNamebox.style.top = Math.round(yfin + topMenuHeight) + "px";
+    // console.log('naming')
+    // console.log(theNamebox.offsetHeight/2);
+    theNamebox.style.top = Math.round(yfin - theNamebox.offsetHeight/2 + topMenuHeight + 2) + "px";
     theNamebox.style.left = Math.round(xfin - widthNamebox/2 + leftMenuWidth) + "px";
   }
 }
 
 function doNameboxIn(evt) {
-  xcoordNamebox = Math.round(tensor_bbox[currGrabbed[1]][4]);
-  ycoordNamebox = Math.round(tensor_bbox[currGrabbed[1]][5]);
+  xcoordNamebox = Math.round(tensors[currGrabbed[1]].bbox[4]);
+  ycoordNamebox = Math.round(tensors[currGrabbed[1]].bbox[5]);// + (4/windowPos.zoom)
   updateNameboxPos();
-  theNamebox.value = tensor_names[currGrabbed[1]];
+  theNamebox.value = tensors[currGrabbed[1]].name;
   theNamebox.focus();
   isNameboxActive = true;
   theNamebox.style.zIndex = 200;
+  theNamebox.select();
+  
+  if (!canvasBasedNames) {
+    allNameTags[currGrabbed[1]].style.display = "none";
+  }
 }
 
 function doNameboxOut(evt) {
   if (checkValidName(theNamebox.value)) {
-    tensor_names[currGrabbed[1]] = theNamebox.value;
+    tensors[currGrabbed[1]].name = theNamebox.value;
   }
   theNamebox.value = '';
   theNamebox.style.zIndex = -200;
   isNameboxActive = false;
   xcoordNamebox = 0;
   ycoordNamebox = 0;
+  if (!canvasBasedNames) {
+    allNameTags[currGrabbed[1]].style.display = "block";
+    allNameTags[currGrabbed[1]].innerHTML = "T" + currGrabbed[1] + ":" + tensors[currGrabbed[1]].name;
+  }
   
   objUnderMouse[0] = "none";
   objUnderMouse[1] = 0;
@@ -56,7 +68,5 @@ function doNameboxOut(evt) {
   updateCursorStyle();
   drawTensors();
   theNamebox.blur();
-  // mainWindow.focus();
-  // console.log(stateOfMouse)
-  // console.log(objUnderMouse)
 }
+

@@ -1,0 +1,38 @@
+
+
+#codeBox {
+  user-select: text;
+  position:absolute;
+  width:100%;
+  height:100%;
+  left: 5px;
+  top: 0px;
+  z-index: 10000;
+  background-color: #;
+  border: 0px blue solid;
+}
+
+#rightGui {
+  position:absolute;
+  width:5px;
+  height:100%;
+  right: 0px;
+  top: 67px;
+  z-index: 300;
+  overflow:hidden;
+  background-color: #474747;
+  border: 2px red;
+}
+
+#rightGuiResizer {
+  position: absolute;
+  cursor: col-resize;
+  height: 100px;
+  left: 0;
+  top: 0;
+  width: 5px;
+  background-color: #red;
+  z-index: 3000000;
+  display: none;
+}
+

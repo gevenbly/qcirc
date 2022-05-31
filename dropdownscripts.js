@@ -1,3 +1,7 @@
+/*
+functions for dropdowns on main navigation window
+*/
+
 mainWindow.onclick = function(event) {
   if (!event.target.matches('.clickdropbtn')) {
     closeTheDrops();

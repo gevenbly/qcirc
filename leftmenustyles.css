@@ -1,0 +1,89 @@
+#leftGui {
+  display: block;
+  position:absolute;
+  width:80px;
+  height:100%;
+  left: 0px;
+  top: 68px;
+  z-index: 5;
+  overflow:visible;
+  background-color: #474747;
+  text-align:center;
+  padding: 0px 0px;
+  margin: 0px 0px;
+  border: 0px 0px;
+}
+
+#leftIconBox{
+  height: 400px;
+  padding: 0px 0px;
+}
+
+.lefticon {
+  white-space: nowrap;
+  background: none;
+  stroke: black;
+  stroke-width: 0.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  box-sizing: border-box;
+/*   border: 1px red solid; */
+  
+}
+
+.colicon {
+  white-space: nowrap;
+  width: 12px;
+  height: 12px;
+  padding: 0px 0px;
+  margin: 0px 0px;
+  border: 0px 0px;
+  box-sizing: border-box;
+}
+
+/* .colicon:hover {
+  border: 1px gold solid;
+} */
+
+#colorbox {
+/*   display: block; */
+  padding: 0px 0px;
+  margin: 5px 0px;
+/*   border: 1px solid black; */
+}
+
+.leftpartition {
+/*   background: none; */
+  stroke: black;
+  stroke-width: 1px;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  width: 64px;
+  height: 2px;
+/*   border: 1px red solid; */
+  display: block;
+padding: 2px 0px 5px 0px;
+  margin-left: auto;
+  margin-right: auto;
+/*   border-radius: 0px; */
+  
+/*   border-radius: 10px;
+  box-sizing: border-box; */
+}
+
+.fieldicon {
+  stroke: black;
+  stroke-width: 4px;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  position: absolute;
+  z-index: 4;
+}
+
+
+
+
+

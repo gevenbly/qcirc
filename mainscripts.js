@@ -2,11 +2,19 @@
 Declaration of global variables, listeners and initialization scripts
 */
 
+// const para = document.createElement("p");
+// const node = document.createTextNode("This is new.");
+// para.appendChild(node);
+// const element = document.getElementById("mainWindow");
+// element.appendChild(para);
+
+
 var isHomeMenuOpen = true;
-
-
 var mainWindow = document.getElementById("mainWindow");
 // mainWindow.style.visibility = 'hidden';
+
+var isOneBased = 0;
+var canvasBasedNames = true;
 
 // naming box parameters
 var theNamebox = document.getElementById('nameBox');
@@ -18,8 +26,6 @@ theNamebox.addEventListener('focusout', (evt) => {
 theNamebox.addEventListener('focusin', (evt) => {
   doNameboxIn(evt);
 });
-var renameIcon = document.getElementById("renameicon");
-var renameIconH = document.getElementById("renameiconH");
 var isNameboxActive = false;
 var xcoordNamebox = 0;
 var ycoordNamebox = 0;
@@ -28,79 +34,49 @@ var fontsizeNamebox = 16;
 
 // view window
 const topMenuHeight = 68;
-const leftMenuWidth = 100;
+const leftMenuWidth = 80;
 
-// left hand side menu          
-var leftSelectedType = 0;
-var selectedType = 0; // remove
-var allLeftIcons = [document.getElementById("movingicon"), 
-                    document.getElementById("selecticon"), 
-                    document.getElementById("rectangleicon"), 
-                    document.getElementById("ellipseicon"), 
-                    document.getElementById("hillicon"), 
-                    document.getElementById("trapezoidicon"),
-                    document.getElementById("forwardicon"),
-                    document.getElementById("behindicon"),
-                    document.getElementById("fronticon"),
-                    document.getElementById("backicon")];   
+var viewWidth = mainWindow.clientWidth - (leftMenuWidth + rightMenuWidth); 
+var viewHeight = mainWindow.clientHeight - (topMenuHeight); 
+var windowPos = {x: 0, y: 0, zoom: 2};
+var windowWidth = viewWidth / windowPos.zoom;
+var windowHeight = viewHeight / windowPos.zoom;
+const spaceWidth = 4000;
+const spaceHeight = 2000;
 
-// right hand side menu 
-var rightMenu = document.getElementById("rightGui");
-// var rightMenuIcon = document.getElementById("openrighticon");
-// var rightMenuIconB = document.getElementById("closerighticon");
-var rightMenuWidthOpen = 400;
-var rightMenuWidthClosed = 5;
-var rightMenuWidthMin = 150;
-var rightGuiIsOpen = false;
-if (rightGuiIsOpen) {
-  var rightMenuWidth = rightMenuWidthOpen;
-  // rightMenuIcon.style.visibility = 'hidden';
-  // rightMenuIconB.style.visibility = 'visible';
-} else {
-  var rightMenuWidth = rightMenuWidthClosed;
-  // rightMenuIcon.style.visibility = 'visible';
-  // rightMenuIconB.style.visibility = 'hidden';
-}
+mainWindow.style.maxWidth = (spaceWidth + leftMenuWidth + rightMenuWidth) + "px";
+mainWindow.style.maxHeight = (spaceHeight + topMenuHeight) + "px";
 
+// text box window
 var codeTextNew = "x=0\n";
 codeTextNew += 'if x>1:\n '
 codeTextNew += '  nui=2\n'
 var codeText = document.getElementById("codeText");
 var codeBox = document.getElementById("codeBox");
-// var codeContainer = document.getElementById("codeContainer");
-// codeWindow.setAttribute('style', 'white-space: pre;')n
-// document.getElementById("codeWindow").innerHTML = "# The code environment\n";
 codeText.appendChild(document.createTextNode(codeTextNew));
-
-// console.log(document.getElementById("codeWindow").innerHTML)
-
-
-var viewWidth = mainWindow.clientWidth - (leftMenuWidth + rightMenuWidth); 
-var viewHeight = mainWindow.clientHeight - (topMenuHeight); 
-var windowX0 = 0;
-var windowY0 = 0;
-var windowZoom = 2;
-var windowWidth = viewWidth / windowZoom;
-var windowHeight = viewHeight / windowZoom;
-const spaceWidth = 2000;
-const spaceHeight = 1000;
-
-mainWindow.style.maxWidth = (spaceWidth + leftMenuWidth + rightMenuWidth) + "px";
-mainWindow.style.maxHeight = (spaceHeight + topMenuHeight) + "px";
 
 // min tensor dimensions
 const minWidth = 10;
 const minHeight = 10;
 
 // variables describing network
-var tensor_xcoords = [];
-var tensor_ycoords = [];
-var tensor_bbox = []; // [xmin, ymin, xmax, ymax, xcent, ycent]
-var tensor_types = []; // 0:rect, 1:circ
-var tensor_order = [];
-var tensor_names = [];
-var tensor_xanchors = [];
-var tensor_yanchors = [];
+var tensors = [];
+var indices = [0];  // 0th index is null by convention
+var openIndices = [];
+
+indexInProgress = {// temp storage used when creating tensor
+  connects: [0,0,0,0],
+  name: "",
+  dim: 2,
+  reversed: false,
+  end: [0,0],
+  label: 0
+};
+
+// workspace initialization
+windowPosString = [JSON.stringify(windowPos)];
+tensorString = [JSON.stringify(tensors)];
+indexString = [JSON.stringify(indices)];
 
 // canvases
 var canvasBase = document.getElementById("canvasHandles");
@@ -110,7 +86,7 @@ var canvasTensors = document.getElementById("canvasTensors");
 var canvasBackground = document.getElementById("canvasBackground");
 var ctxB = canvasBase.getContext("2d");
 var ctxM = canvasMoving.getContext("2d");
-var ctxT = canvasTensors.getContext("2d");
+var ctxT = canvasTensors.getContext("2d");//,{alpha: false}
 var ctxG = canvasBackground.getContext("2d");
 var ctxH = canvasHandles.getContext("2d");
 
@@ -121,15 +97,17 @@ const rectCornerRad = 8; // rounded corner radius of rectangles
 const rectBorderCol = '#969696';
 const rectBorderWidth = 2;
 const greyHover = '#303030'
+const trapSlope = 0.25;
 
 // input config
 const mainScrollSpeed = 50;
 
 // minimap
-const miniPad = 15;
 const miniScale = 20;
 const miniWidth = spaceWidth / miniScale;
 const miniHeight = spaceHeight / miniScale;
+var miniPadX = 15;
+var miniPadY = viewHeight - miniHeight - 15;
 
 // grid
 const gridSpaceX = 20;
@@ -166,6 +144,17 @@ showCodeElm.addEventListener('click', (event) => {
   rightGuiIsOpen = !showCode;
   toggleRightGui();
 });    
+var autoIndsElm = document.getElementById("autoInds");
+var autoInds = autoIndsElm.checked;
+autoIndsElm.addEventListener('click', (event) => {
+  autoInds = autoIndsElm.checked;
+});  
+var numericalIndsElm = document.getElementById("numericalInds");
+var numericalInds = numericalIndsElm.checked;
+numericalIndsElm.addEventListener('click', (event) => {
+  numericalInds = numericalIndsElm.checked;
+  drawTensors();
+});  
 
 // drop menu
 var menuIsOpen = false; // keep track of drop menu state
@@ -180,7 +169,9 @@ var coordGrabbed = [0, 0];
 var currGrabbed = ['none', 0, 0] // [type, index, subindex]
 var currSelected = []; // list of selected tensor indexes
 var handleType = 'none' // N,NE,E,SE,S,SW,W,NW
-var selectBoxCoords = [0, 0, 0, 0];
+var mousePos = [0,0];
+var selectBox = [0,0,0,0,0,0];
+var mapSelectNewOld = []; // used when duplicating selection
 
 // key listeners
 var isKeyDown = false;
@@ -198,11 +189,37 @@ canvasMoving.addEventListener("mouseout", onMouseOut);
 canvasMoving.addEventListener('contextmenu', event => event.preventDefault());
 window.addEventListener("resize", resizeCanvas, false);
 
+// name tags for tensors
+allNameTags = [];
+// allNameTags.push(document.getElementById("nametag0"));
+
+// allNameTags[0].insertAdjacentHTML("afterend","<div class='nametag' id='nametag1' style='display: block;'>T1:</div>");
+// allNameTags.push(document.getElementById("nametag1"));
+// console.log(allNameTags[1]);
+
+// var tempDiv = document.createElement("div");
+// tempDiv.setAttribute("id", "nametag1");
+// tempDiv.setAttribute("class", "nametag");
+// tempDiv.setAttribute("style", "display: none;");
+// var tempNode = document.createTextNode("T1:");
+// tempDiv.appendChild(tempNode);
+// document.getElementById("canvasWindow").appendChild(tempDiv);
+// allNameTags.push(document.getElementById("nametag1"));
+// console.log(allNameTags[0])
+// console.log(allNameTags[1])
+
+
 // anchors
-const anchorWidth = 10;
-const anchorHeight = 10;
-var numAnchorsCreated = 7;
-var allAnchorColors = ['red','orange','yellow','green','blue','indigo','violet'];
+const anchorWidth = 11;
+const anchorHeight = 11;
+const openIndexRadius = 6;
+var anchorTolerance = 2; // tolerance on closeness when selecting
+var numAnchorsCreated = 4;
+var allAnchorColors = ['red','darkorange','gold','seagreen','royalblue','rebeccapurple','violet'];
+for (var j=0; j<7; j++) {
+  allAnchorColors[j] = colourNameToHex(allAnchorColors[j]);
+  allAnchorColors.push(lightenColor(allAnchorColors[j],-18));
+}
 
 // initialization
 resizeCanvas();
@@ -215,4 +232,10 @@ if (isHomeMenuOpen) {
   document.getElementById('leftGui').style.display = "none";
   document.getElementById('canvasWindow').style.display = "none";
 }
+
+
+
+
+
+
 

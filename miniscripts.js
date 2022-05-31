@@ -3,25 +3,25 @@ functions for manipulating the minimap
 */
 
 function updateMinimap(posx, posy) {
-  var mX = viewWidth - (miniPad + miniWidth);
-  var mY = miniPad;
+  var mX = viewWidth - (miniPadX + miniWidth);
+  var mY = miniPadY;
   var miniWindWidth  = miniWidth * (windowWidth / spaceWidth);
   var miniWindHeight  = miniHeight * (windowHeight / spaceHeight);
 
-  windowX0 = (posx - mX - (miniWindWidth / 2)) * (spaceWidth / miniWidth);
-  windowY0 = (posy - mY - (miniWindHeight / 2)) * (spaceHeight / miniHeight);
+  windowPos.x = (posx - mX - (miniWindWidth / 2)) * (spaceWidth / miniWidth);
+  windowPos.y = (posy - mY - (miniWindHeight / 2)) * (spaceHeight / miniHeight);
 
-  if (windowX0 < 0) {
-    windowX0 = 0;
+  if (windowPos.x < 0) {
+    windowPos.x = 0;
   }
-  if (windowX0 > (spaceWidth - windowWidth)) {
-    windowX0 = spaceWidth - windowWidth;
+  if (windowPos.x > (spaceWidth - windowWidth)) {
+    windowPos.x = spaceWidth - windowWidth;
   }
-  if (windowY0 < 0) {
-    windowY0 = 0;
+  if (windowPos.y < 0) {
+    windowPos.y = 0;
   }
-  if (windowY0 > (spaceHeight - windowHeight)) {
-    windowY0 = spaceHeight - windowHeight;
+  if (windowPos.y > (spaceHeight - windowHeight)) {
+    windowPos.y = spaceHeight - windowHeight;
   }
   drawMinimap();
   drawGrid();

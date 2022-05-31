@@ -2,20 +2,43 @@
 miscellaneous functions 
 */
 
+function roundAllCoords() {
+  var numTensors = tensors.length;
+  for (var i=0; i<numTensors; i++) {
+    // bbox
+    for (var k=0; k<4; k++) {
+      tensors[i].bbox[k] = Math.round(tensors[i].bbox[k]);
+    }
+    tensors[i].bbox[4] = 0.5*(tensors[i].bbox[0] + tensors[i].bbox[2]);
+    tensors[i].bbox[5] = 0.5*(tensors[i].bbox[1] + tensors[i].bbox[3]);
+    // anchors
+    var numIndices = tensors[i].connects.length;
+    for (var k=0; k<numIndices; k++) {
+      tensors[i].xanchors[k] = Math.round(tensors[i].xanchors[k]);
+      tensors[i].yanchors[k] = Math.round(tensors[i].yanchors[k]);
+    }
+  }
+  var numIndices = indices.length;
+  for (var i=1; i<numIndices; i++) {
+    indices[i].end[0] = Math.round(indices[i].end[0]);
+    indices[i].end[1] = Math.round(indices[i].end[1]);
+  }
+}
+
 function resizeCanvas() {
   mainWindow.style.maxWidth = (spaceWidth + leftMenuWidth + rightMenuWidth) + "px";
   mainWindow.style.maxHeight = (spaceHeight + topMenuHeight) + "px";
   
   viewWidth = mainWindow.clientWidth - (leftMenuWidth + rightMenuWidth);
   viewHeight = mainWindow.clientHeight - topMenuHeight;
-  windowWidth = viewWidth / windowZoom;
-  windowHeight = viewHeight / windowZoom;
+  windowWidth = viewWidth / windowPos.zoom;
+  windowHeight = viewHeight / windowPos.zoom;
   
-  if (windowX0 > (spaceWidth - windowWidth)) {
-    windowX0 = spaceWidth - windowWidth;
+  if (windowPos.x > (spaceWidth - windowWidth)) {
+    windowPos.x = spaceWidth - windowWidth;
   }
-  if (windowY0 > (spaceHeight - windowHeight)) {
-    windowY0 = spaceHeight - windowHeight;
+  if (windowPos.y > (spaceHeight - windowHeight)) {
+    windowPos.y = spaceHeight - windowHeight;
   }
   
   canvasBase.width = viewWidth;
@@ -24,10 +47,12 @@ function resizeCanvas() {
 
   canvasMoving.width = viewWidth;
   canvasMoving.height = viewHeight;
+  ctxM = canvasMoving.getContext('2d')
   ctxM.clearRect(0, 0, viewWidth, viewHeight);
 
   canvasTensors.width = viewWidth;
   canvasTensors.height = viewHeight;
+  ctxT = canvasTensors.getContext('2d')
   ctxT.clearRect(0, 0, viewWidth, viewHeight);
   
   canvasHandles.width = viewWidth;
@@ -40,21 +65,12 @@ function resizeCanvas() {
   ctxG.fillStyle = "#808080";
   ctxG.fillRect(0, 0, viewWidth, viewHeight);
   
-  // rightMenuIcon.style.top = Math.round(viewHeight/2 + topMenuHeight) + "px";
-  
-  // codeContainer.style.height = viewHeight+'px';
+  rightMenu.style.height = viewHeight+'px';
   codeBox.style.height = (viewHeight-33)+'px';
   codeBox.style.width = (rightMenuWidth-67)+'px';
-  // console.log(codeWindow.style.height)
+  rightGuiResizer.style.height = viewHeight+'px';
   
-  // codeBox.style.width = 500;
-  // console.log(codeBox.style.height)
-  // console.log(codeBox.height)
-  // console.log(codeBox)
-  // codeWindow.style.height = viewHeight-20;
-  rightMenu.style.height = viewHeight+'px';
-  
-  rightGuiHandle.style.height = viewHeight+'px';
+  miniPadY = viewHeight - miniHeight - 15;
   
   drawGrid();
   drawTensors();
@@ -73,28 +89,20 @@ function allRound(a){
     return a.map((e) => Math.round(e));
 }
 
-function a2rXall(xcoords) {
-  return xcoords.map((e) => a2rX(e))
-}
-
-function a2rYall(ycoords) {
-  return ycoords.map((e) => a2rY(e))
-}
-
 function a2rX(xa) {
-  return windowZoom*(xa - windowX0);
+  return windowPos.zoom*(xa - windowPos.x);
 }
 
 function a2rY(ya) {
-  return windowZoom*(ya - windowY0);
+  return windowPos.zoom*(ya - windowPos.y);
 }
 
 function r2aX(xr) {
-  return windowX0 + (xr / windowZoom)
+  return windowPos.x + (xr / windowPos.zoom)
 }
 
 function r2aY(yr) {
-  return windowY0 + (yr / windowZoom)
+  return windowPos.y + (yr / windowPos.zoom)
 }
 
 function makeInRange(x,xmin,xmax) {
@@ -145,6 +153,10 @@ function updateCursorStyle() {
     canvasMoving.style.cursor = "pointer";
   } else if (stateOfMouse == 'anchoring') {
     canvasMoving.style.cursor = "grabbing";
+  } else if (stateOfMouse == 'duplicating') {
+    canvasMoving.style.cursor = "move";
+  } else {
+    canvasMoving.style.cursor = "default";
   }
 }
 
@@ -159,19 +171,11 @@ function roundHP(x) {
 }
 
 function a2mX(xa) {
-  return miniWidth*(xa / spaceWidth) + (viewWidth - (miniPad + miniWidth));
+  return miniWidth*(xa / spaceWidth) + (viewWidth - (miniPadX + miniWidth));
 }
 
 function a2mY(ya) {
-  return miniHeight*(ya / spaceHeight) + miniPad;
-}
-
-function a2mXall(xcoords) {
-  return xcoords.map((e) => a2mX(e))
-}
-
-function a2mYall(ycoords) {
-  return ycoords.map((e) => a2mY(e))
+  return miniHeight*(ya / spaceHeight) + miniPadY;
 }
 
 function snapX(x0) {
