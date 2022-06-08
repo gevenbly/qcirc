@@ -91,7 +91,7 @@ body {
 #clickable {
 /*   display: inline-box; */
   color: #c5c5c5;
-  border: 1px solid #black;
+  border: 1px solid black;
 /*   padding: 50px; */
   background-color: #505050;
 }
@@ -177,6 +177,6 @@ body {
   box-sizing: border-box;
 }
 
-.textbox:onfocus {
+/* .textbox:onfocus {
   border: 1px solid blue;
-}
+} */

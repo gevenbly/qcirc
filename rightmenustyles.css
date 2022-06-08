@@ -188,7 +188,7 @@ pre[class*="language-"] {
 /*   border: 1px red solid; */
   overflow-y: scroll;
   margin: 0 auto;
-  padding: 0 auto;
+  padding: 0;
   border: 1px solid black;
 }
 
