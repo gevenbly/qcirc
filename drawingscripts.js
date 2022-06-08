@@ -9,6 +9,7 @@ function drawTensors() {
     updateTensorTags();
     updateTextBoxTags();
   }
+  // console.log(allTextBoxTags)
   
   // drawCircle(ctxT, a2rX(selectBox[4]),a2rY(selectBox[5]), circRad, circThick);
   
@@ -266,6 +267,7 @@ function drawTextBox(i,ctx,theFillColor,theOutlineColor,opac,theSelectColor) {
     theSizingBox.innerText = "B" + i + ":" + textBoxes[i].name;
     var tagHeight = theSizingBox.offsetHeight;
     var tagWidth = theSizingBox.offsetWidth;
+    // console.log(theSizingBox)
   }
   
   var cornerRad = 10
@@ -285,7 +287,7 @@ function drawTextBox(i,ctx,theFillColor,theOutlineColor,opac,theSelectColor) {
   ctx.fill();
   
   if (stateOfMouse=="boxrenaming" && currGrabbed[1]==i) {
-    // do nothing 
+    allTextBoxTags[i].style.display = 'none';
   } else {
     if (canvasBasedNames) {
       ctx.textBaseline = "top";
@@ -294,9 +296,8 @@ function drawTextBox(i,ctx,theFillColor,theOutlineColor,opac,theSelectColor) {
       ctx.fillStyle = "black";
       ctx.fillText("B" + i + ":" + textBoxes[i].name, roundHP(x0)+4, roundHP(y0)+4);
     } else {
-      console.log(allTextBoxTags[i])
-      allTextBoxTags[i].left = Math.round(x0 + leftMenuWidth)+'px';
-      allTextBoxTags[i].top = Math.round(y0 + topMenuHeight)+'px';
+      allTextBoxTags[i].style.left = Math.round(x0 + leftMenuWidth)+'px';
+      allTextBoxTags[i].style.top = Math.round(y0 + topMenuHeight)+'px';
     }
   }
   
@@ -834,6 +835,26 @@ function drawMinimap() {
         ctxB.fill();
       }
     } 
+    
+    for (var i = 0; i < textBoxes.length; i++) {
+      var x0 = roundHP(a2mX(textBoxes[i].bbox[0]));
+      var y0 = roundHP(a2mY(textBoxes[i].bbox[1]));
+      var width = Math.round(a2mX(textBoxes[i].bbox[2]) - a2mX(textBoxes[i].bbox[0]));
+      var height = Math.round(a2mY(textBoxes[i].bbox[3]) - a2mY(textBoxes[i].bbox[1]));
+      
+      ctxB.fillStyle = "#545454";
+      ctxB.strokeStyle = "#545454";
+      ctxB.globalAlpha = 0.2;
+      // ctxB.strokeStyle = theOutlineColor;
+      ctxB.lineWidth = 1;
+      // ctx.fill();
+      // ctx.stroke();
+      ctxB.fillRect(x0, y0, width, height);
+      ctxB.globalAlpha = 1.0;
+      ctxB.strokeRect(x0, y0, width, height);
+    }
+    // roundRect(ctx, x0, y0, width, height, rectCornerRad);
+    
     // get rid excess from outside of borders
     ctxB.globalCompositeOperation = "destination-out";
     ctxB.fillRect(0, 0, mX, viewHeight);

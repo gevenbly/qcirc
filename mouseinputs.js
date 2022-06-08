@@ -19,6 +19,30 @@ function onMouseDown(evt) {
   
   checkUnderMouse(evt);
   if (evt.button == 0) { // left mouse 
+    if (stateOfMouse == "boxing") {
+      var ind = textBoxes.length - 1;
+      var xspan = textBoxes[ind].bbox[2] - textBoxes[ind].bbox[0];
+      var yspan = textBoxes[ind].bbox[3] - textBoxes[ind].bbox[1];
+      if (xspan < 2*minWidth || yspan < 2*minHeight) {
+        deleteLastBox();
+        currBoxSelected = [];
+        return;
+      }
+      leftSelectedType = 1;
+      currBoxSelected = [];
+      currBoxSelected.push(ind);
+      currSelected = [];
+      updateLeftSelect();
+      currGrabbed[0] = "box"; 
+      currGrabbed[1] = ind;
+      currGrabbed[2] = 0;
+      selectTextBox(ind);
+      stateOfMouse = "free";
+      updateCursorStyle();
+      freeMouseState();
+      return
+    }
+    
     if (stateOfMouse == "connecting") {
       if (objUnderMouse[0] == "anchor") {
         var i0 = objUnderMouse[1];
@@ -285,15 +309,18 @@ function onMouseUp(evt) {
       var xspan = textBoxes[ind].bbox[2] - textBoxes[ind].bbox[0];
       var yspan = textBoxes[ind].bbox[3] - textBoxes[ind].bbox[1];
       if (xspan < 2*minWidth || yspan < 2*minHeight) {
-        deleteLastBox()
+        deleteLastBox();
+        currBoxSelected = [];
+      } else {
+        currBoxSelected = [ind];
+        currGrabbed[0] = "box"; 
+        currGrabbed[1] = ind;
+        currGrabbed[2] = 0;
+        selectTextBox(ind,false);
       }
       leftSelectedType = 1;
-      currBoxSelected = [];
-      currBoxSelected.push(ind);
+      currSelected = [];
       updateLeftSelect();
-      currGrabbed[0] = "box"; 
-      currGrabbed[1] = ind;
-      currGrabbed[2] = 0;
       
     } else if (stateOfMouse == "boxrenaming") {
       doNameboxIn(evt);

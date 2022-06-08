@@ -5,6 +5,7 @@ function createSizingTextBox() {
   tempDiv.setAttribute("id", "sizingbox");
   tempDiv.setAttribute("class", "boxtag");
   tempDiv.setAttribute("style", "display: block;");
+  // tempDiv.setAttribute("style", "display: block;");
   var tempNode = document.createTextNode("testname");
   tempDiv.appendChild(tempNode);
   document.getElementById("canvasWindow").appendChild(tempDiv);
@@ -16,7 +17,6 @@ function createTextBox(x0, y0) {
   
   var x0r = Math.round(x0);
   var y0r = Math.round(y0); 
-  
   textBoxes.push({
     bbox: [x0r, y0r, x0r, y0r, x0r, y0r],
     name: "",
@@ -25,7 +25,10 @@ function createTextBox(x0, y0) {
     codetext: "",
     width: 10,
   })
+  collectionComment[textBoxes.length].style.display = 'inline-block';
 }
+
+
 
 function createTextBoxTag() {
   if (allTextBoxTags.length < textBoxes.length) {
@@ -43,11 +46,11 @@ function createTextBoxTag() {
 }
 
 function updateTextBoxTags() {
-  while (allTextBoxTags.length < tensors.length) {
+  while (allTextBoxTags.length < textBoxes.length) {
     createTextBoxTag() 
   };
   for (var ind=0; ind<allTextBoxTags.length; ind++) {
-    if (ind < tensors.length) {
+    if (ind < textBoxes.length) {
       allTextBoxTags[ind].style.display = "block";
       allTextBoxTags[ind].innerHTML = "B" + ind + ":" + textBoxes[ind].name;
     } else {
@@ -138,6 +141,25 @@ function updateBoxPosCenter(xpos, ypos) {
   }
 }
 
+function selectTextBox(val,snapCenter=true) {
+  for (var j=0; j<(textBoxes.length+1); j++) {
+    collectionComment[j].style.backgroundColor = '#444';
+  }
+  if (val>=0) {
+    currBoxSelected = [val];
+    if (snapCenter) {
+      snapWindowTo(textBoxes[val].bbox[4], textBoxes[val].bbox[5]); 
+    }
+    collectionComment[val+1].style.backgroundColor = '#222';
+  } else {
+    collectionComment[val+1].style.backgroundColor = '#222';
+    currBoxSelected = [];
+  }
+  drawMinimap();
+  drawGrid(); 
+  drawTensors();
+}
+
 function deleteLastBox() {
   var ind = textBoxes.length-1;
   deleteMiddleBox(ind);
@@ -150,4 +172,5 @@ function deleteMiddleBox(ind) {
   } else {
     textBoxes.splice(ind,1); 
   }
+  collectionComment[textBoxes.length+1].style.display = 'none';
 }

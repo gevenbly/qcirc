@@ -36,17 +36,17 @@ function onKeyDown(evt) {
   // console.log(document.activeElement=="codeText")
   // console.log(document.activeElement)
 
-  // if (document.activeElement==document.getElementById("codeText")) {
-  //   if(event.keyCode == 40 || event.keyCode == 39) {
-  //     var locTemp = Cursor.getCurrentCursorPosition(codeText);
-  //     var locMax = codeText.innerText.length;
-  //     if (locMax - locTemp < 2) {
-  //       evt.preventDefault();
-  //       evt.stopPropagation();
-  //     }
-  //   }
-  //   return;
-  // }
+  if (document.activeElement==document.getElementById("codeText")) {
+    if(event.keyCode == 40 || event.keyCode == 39) {
+      var locTemp = Cursor.getCurrentCursorPosition(codeText);
+      var locMax = codeText.innerText.length;
+      if (locMax - locTemp < 2) {
+        evt.preventDefault();
+        evt.stopPropagation();
+      }
+    }
+    return;
+  }
 
   //   if(event.keyCode == 13) {// enter
   //     var cloc = Cursor.getCurrentCursorPosition(codeText);

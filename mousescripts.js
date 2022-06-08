@@ -79,6 +79,24 @@ function freeMouseState() {
         currBoxSelected.push(i);
       }
     }
+  } else if(stateOfMouse == "boxing") {
+    var ind = textBoxes.length - 1;
+    var xspan = textBoxes[ind].bbox[2] - textBoxes[ind].bbox[0];
+    var yspan = textBoxes[ind].bbox[3] - textBoxes[ind].bbox[1];
+    if (xspan < 2*minWidth || yspan < 2*minHeight) {
+      deleteLastBox();
+      currBoxSelected = [];
+    } else {
+      leftSelectedType = 1;
+      currBoxSelected = [];
+      currBoxSelected.push(ind);
+      currSelected = [];
+      updateLeftSelect();
+      currGrabbed[0] = "box"; 
+      currGrabbed[1] = ind;
+      currGrabbed[2] = 0;
+      selectTextBox(ind, false);
+    }
   }
 
   isLeftDown = false;

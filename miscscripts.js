@@ -25,6 +25,27 @@ function roundAllCoords() {
   }
 }
 
+function snapWindowTo(x, y) {
+  windowPos.x = x - windowWidth/2
+  windowPos.y = y - windowHeight/2;
+  boundViewWindow();
+}
+
+function boundViewWindow() {
+  if (windowPos.x < 0) {
+    windowPos.x = 0;
+  }
+  if (windowPos.x > (spaceWidth - windowWidth)) {
+    windowPos.x = spaceWidth - windowWidth;
+  }
+  if (windowPos.y < 0) {
+    windowPos.y = 0;
+  }
+  if (windowPos.y > (spaceHeight - windowHeight)) {
+    windowPos.y = spaceHeight - windowHeight;
+  }
+}
+
 function resizeCanvas() {
   mainWindow.style.maxWidth = (spaceWidth + leftMenuWidth + rightMenuWidth) + "px";
   mainWindow.style.maxHeight = (spaceHeight + topMenuHeight) + "px";

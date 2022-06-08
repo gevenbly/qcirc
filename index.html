@@ -22,6 +22,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.19.0/prism.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.19.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.19.0/components/prism-python.min.js"></script>
+  <!-- Javascript for Mathjax latex equations -->
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
   <!-- Define field icons (displayed on canvas) -->
   <svg class="fieldicon" id="renamesvg" viewBox="0 0 16 16" style="display: none;">
@@ -42,24 +45,28 @@
     <circle cx="10" cy="4" r="2" />
     <path d=" M 10 6 L 10 14 M 6 12 a 2 2 0 0 0 2 2 L 12 14 a 2 2 0 0 0 2 -2 M 7 8 l 6 0 " />
   </svg>
-  
-  <svg class="fieldicon2" id="plussvg" viewBox="0 0 16 16" style="display: none;">
-  <path d="M 0 4 a 4 4 0 0 1 4 -4 L 12 0 a 4 4 0 0 1 4 4 L 16 12 a 4 4 0 0 1 -4 4 L 4 16 a 4 4 0 0 1 -4 -4 z " fill="black" stroke="none" stroke-width="1"/>
-  <path d=" M 3 8 L 13 8 M 8 3 L 8 13" />
-</svg>
 
-<svg class="fieldicon2" id="minussvg" viewBox="0 0 16 16" style="display: none;">
-  <path d="M 0 4 a 4 4 0 0 1 4 -4 L 12 0 a 4 4 0 0 1 4 4 L 16 12 a 4 4 0 0 1 -4 4 L 4 16 a 4 4 0 0 1 -4 -4 z " fill="black" stroke="none" stroke-width="1"/>
-  <path d=" M 3 8 L 13 8" />
-</svg>
+  <svg class="fieldicon2" id="plussvg" viewBox="0 0 16 16" style="display: none;">
+    <path d="M 0 4 a 4 4 0 0 1 4 -4 L 12 0 a 4 4 0 0 1 4 4 L 16 12 a 4 4 0 0 1 -4 4 L 4 16 a 4 4 0 0 1 -4 -4 z " fill="black" stroke="none" stroke-width="1" />
+    <path d=" M 3 8 L 13 8 M 8 3 L 8 13" />
+  </svg>
+
+  <svg class="fieldicon2" id="minussvg" viewBox="0 0 16 16" style="display: none;">
+    <path d="M 0 4 a 4 4 0 0 1 4 -4 L 12 0 a 4 4 0 0 1 4 4 L 16 12 a 4 4 0 0 1 -4 4 L 4 16 a 4 4 0 0 1 -4 -4 z " fill="black" stroke="none" stroke-width="1" />
+    <path d=" M 3 8 L 13 8" />
+  </svg>
 
   <div id="mainWindow">
     <div id="alwaysWindow">
       <div class="navbar" id="navbar1">
         <div id="smalllogo">
-            <svg class="Qlogo smallShadow" height="20" viewBox="0 0 373 372" > <g transform="translate(0,372) scale(0.1,-0.1)" fill="#518845" stroke="none"> <path d=""/> </g> </svg>
+          <svg class="Qlogo smallShadow" height="20" viewBox="0 0 373 372">
+            <g transform="translate(0,372) scale(0.1,-0.1)" fill="#518845" stroke="none">
+              <path d="" />
+            </g>
+          </svg>
         </div>
-        
+
         <div class="dropdownContainer">
           <button onclick="doDropClicks('dropFileElm')" onmouseenter="doDropOvers('dropFileElm')" class="clickdropbtn">File </button>
           <div class="clickdown-content" id="dropFileElm">
@@ -102,28 +109,44 @@
       </div>
     </div>
 
-    <input id="loadTheFile" type="file" style="display:none;"  accept=".qc">
-    
+    <input id="loadTheFile" type="file" style="display:none;" accept=".qc">
+
     <div id="titleWindow">
       <div id="titlelogo">
-        <svg class="Qlogo" style="margin: auto 0px; padding: 0px 10px;" height="250" viewBox="0 0 373 372" > <g transform="translate(0,372) scale(0.1,-0.1)" fill="#518845" stroke="none"> <path d=""/> </g> </svg>
-        <svg class="Qlogotext" style="margin: auto 0px; padding: 0px 20px;" height="250" width="300" viewBox="0 0 232.531 94.07"><g stroke-linecap="round" fill-rule="evenodd" font-size="9pt" stroke="none" stroke-width="0" fill="#cecece" style="stroke:#cecece;stroke-width:0;fill:#cecece"><path d="" vector-effect="non-scaling-stroke"/></g></svg>
-        </div>
+        <svg class="Qlogo" style="margin: auto 0px; padding: 0px 10px;" height="250" viewBox="0 0 373 372">
+          <g transform="translate(0,372) scale(0.1,-0.1)" fill="#518845" stroke="none">
+            <path d="" />
+          </g>
+        </svg>
+        <svg class="Qlogotext" style="margin: auto 0px; padding: 0px 20px;" height="250" width="300" viewBox="0 0 232.531 94.07">
+          <g stroke-linecap="round" fill-rule="evenodd" font-size="9pt" stroke="none" stroke-width="0" fill="#cecece" style="stroke:#cecece;stroke-width:0;fill:#cecece">
+            <path d="" vector-effect="non-scaling-stroke" />
+          </g>
+        </svg>
+      </div>
       <div id="titleOptionsContainer">
-      <span class="titleOptions center" onclick="toggleTitle(0)">New Project</span>
-      <span class="titleOptions center" onclick="toggleTitle(1)">Open Example Project</span>
-      <label for="loadTheFile">
-      <span class="titleOptions center" onclick="doFileOpen()">Load Project</span>
-       </label>
-        </div>
+        <span class="titleOptions center" onclick="toggleTitle(0)">New Project</span>
+        <span class="titleOptions center" onclick="toggleTitle(1)">Open Example Project</span>
+        <label for="loadTheFile">
+          <span class="titleOptions center" onclick="doFileOpen()">Load Project</span>
+        </label>
+      </div>
     </div>
 
     <div id="sublistWindow" style="display:none;">
       <div id="toplogo">
-      <svg class="Qlogo" style="margin: 0px 10px 0px 20px; padding: auto 5px;" width="40" viewBox="0 0 373 372" > <g transform="translate(0,372) scale(0.1,-0.1)" fill="#518845" stroke="none"> <path d=""/> </g> </svg>
-        <svg class="Qlogotext" style="margin: auto 0px; padding: 0px 20px 0px 0px;" width="70" viewBox="0 0 232.531 94.07"><g stroke-linecap="round" fill-rule="evenodd" font-size="9pt" stroke="none" stroke-width="0" fill="#cecece" style="stroke:#cecece;stroke-width:0;fill:#cecece"><path d="" vector-effect="non-scaling-stroke"/></g></svg>
-        </div>
-      
+        <svg class="Qlogo" style="margin: 0px 10px 0px 20px; padding: auto 5px;" width="40" viewBox="0 0 373 372">
+          <g transform="translate(0,372) scale(0.1,-0.1)" fill="#518845" stroke="none">
+            <path d="" />
+          </g>
+        </svg>
+        <svg class="Qlogotext" style="margin: auto 0px; padding: 0px 20px 0px 0px;" width="70" viewBox="0 0 232.531 94.07">
+          <g stroke-linecap="round" fill-rule="evenodd" font-size="9pt" stroke="none" stroke-width="0" fill="#cecece" style="stroke:#cecece;stroke-width:0;fill:#cecece">
+            <path d="" vector-effect="non-scaling-stroke" />
+          </g>
+        </svg>
+      </div>
+
       <div class="navbar" id="navbar2">
         <div class="labinput" title="Show Drawing Grid">
           <input type="checkbox" id="showGrid" checked>
@@ -150,97 +173,101 @@
           <label for="autoInds">Auto-inds</label>
         </div>
         <div class="labinput" title="Display Index Order Numerically">
-          <input type="checkbox" id="numericalInds" >
+          <input type="checkbox" id="numericalInds">
           <label for="numericalInds">Num-inds</label>
         </div>
       </div>
-<!--       <br> -->
+      <!--       <br> -->
 
-<!--       <div class="navbar" id="navbar3"></div> -->
+      <!--       <div class="navbar" id="navbar3"></div> -->
     </div>
-    
-<!--     tabs -->
+
+    <!--     tabs -->
     <span id="tabcontainer">
-    <span id="tabbox0" class="tabbox" onmousedown="doSwitchTab(0)" onmouseover="doHoverTab(0)" onmouseout="updateTabSelect(0)" ondblclick="openNamingBox(0)">
-<!--       <span class="taboverlay"></span> -->
-      <span class="tabtext" id="tabbox0p">Project1.qc</span>
-      <span class="tabcross">
-        <svg viewBox="0 0 13 13" onmousedown="doCloseTab(0)">
-          <path d="M 2 2 L 11 11 M 2 11 L 11 2" fill="none" stroke="#c4c4c4" stroke-width="2"/>
-        </svg>
+      <span id="tabbox0" class="tabbox" onmousedown="doSwitchTab(0)" onmouseover="doHoverTab(0)" onmouseout="updateTabSelect(0)" ondblclick="openNamingBox(0)">
+        <!--       <span class="taboverlay"></span> -->
+        <span class="tabtext" id="tabbox0p">Project1.qc</span>
+        <span class="tabcross">
+          <svg viewBox="0 0 13 13" onmousedown="doCloseTab(0)">
+            <path d="M 2 2 L 11 11 M 2 11 L 11 2" fill="none" stroke="#c4c4c4" stroke-width="2" />
+          </svg>
+        </span>
       </span>
-    </span>
-      
+
       <span id="tabbox1" class="tabbox" onmousedown="doSwitchTab(1)" onmouseover="doHoverTab(1)" onmouseout="updateTabSelect(1)" ondblclick="openNamingBox(1)">
-<!--       <span class="taboverlay"></span> -->
-      <span class="tabtext" id="tabbox1p">Project2.qc</span>
-      <span class="tabcross">
-        <svg viewBox="0 0 13 13" onmousedown="doCloseTab(1)">
-          <path d="M 2 2 L 11 11 M 2 11 L 11 2" fill="none" stroke="#c4c4c4" stroke-width="2"/>
-        </svg>
+        <!--       <span class="taboverlay"></span> -->
+        <span class="tabtext" id="tabbox1p">Project2.qc</span>
+        <span class="tabcross">
+          <svg viewBox="0 0 13 13" onmousedown="doCloseTab(1)">
+            <path d="M 2 2 L 11 11 M 2 11 L 11 2" fill="none" stroke="#c4c4c4" stroke-width="2" />
+          </svg>
+        </span>
       </span>
-    </span>
-      
+
       <span id="tabbox2" class="tabbox" onmousedown="doSwitchTab(2)" onmouseover="doHoverTab(2)" onmouseout="updateTabSelect(2)" ondblclick="openNamingBox(2)">
-<!--       <span class="taboverlay"></span> -->
-      <span class="tabtext" id="tabbox2p">Project3.qc</span>
-      <span class="tabcross">
-        <svg viewBox="0 0 13 13" onmousedown="doCloseTab(2)">
-          <path d="M 2 2 L 11 11 M 2 11 L 11 2" fill="none" stroke="#c4c4c4" stroke-width="2"/>
-        </svg>
+        <!--       <span class="taboverlay"></span> -->
+        <span class="tabtext" id="tabbox2p">Project3.qc</span>
+        <span class="tabcross">
+          <svg viewBox="0 0 13 13" onmousedown="doCloseTab(2)">
+            <path d="M 2 2 L 11 11 M 2 11 L 11 2" fill="none" stroke="#c4c4c4" stroke-width="2" />
+          </svg>
+        </span>
       </span>
-    </span>
-      
+
       <span id="tabbox3" class="tabbox" onmousedown="doSwitchTab(3)" onmouseover="doHoverTab(3)" onmouseout="updateTabSelect(3)" ondblclick="openNamingBox(3)">
-<!--       <span class="taboverlay"></span> -->
-      <span class="tabtext" id="tabbox3p">Project4.qc</span>
-      <span class="tabcross">
-        <svg viewBox="0 0 13 13" onmousedown="doCloseTab(3)">
-          <path d="M 2 2 L 11 11 M 2 11 L 11 2" fill="none" stroke="#c4c4c4" stroke-width="2"/>
-        </svg>
+        <!--       <span class="taboverlay"></span> -->
+        <span class="tabtext" id="tabbox3p">Project4.qc</span>
+        <span class="tabcross">
+          <svg viewBox="0 0 13 13" onmousedown="doCloseTab(3)">
+            <path d="M 2 2 L 11 11 M 2 11 L 11 2" fill="none" stroke="#c4c4c4" stroke-width="2" />
+          </svg>
+        </span>
       </span>
-    </span>
-      
+
       <span id="tabbox4" class="tabbox" onmousedown="doSwitchTab(4)" onmouseover="doHoverTab(4)" onmouseout="updateTabSelect(4)" ondblclick="openNamingBox(4)">
-<!--       <span class="taboverlay"></span> -->
-      <span class="tabtext" id="tabbox4p">Project5.qc</span>
-      <span class="tabcross">
-        <svg viewBox="0 0 13 13" onmousedown="doCloseTab(4)">
-          <path d="M 2 2 L 11 11 M 2 11 L 11 2" fill="none" stroke="#c4c4c4" stroke-width="2"/>
-        </svg>
+        <!--       <span class="taboverlay"></span> -->
+        <span class="tabtext" id="tabbox4p">Project5.qc</span>
+        <span class="tabcross">
+          <svg viewBox="0 0 13 13" onmousedown="doCloseTab(4)">
+            <path d="M 2 2 L 11 11 M 2 11 L 11 2" fill="none" stroke="#c4c4c4" stroke-width="2" />
+          </svg>
+        </span>
       </span>
     </span>
-      </span>
-    
+
     <!-- project name box -->
-  <div id="projectNamerBox" style="display: none;" >
-  <div id="projectNameGrabber">
-  <p class="boxHeader"> Name: </p>
-  </div>
-  <svg viewBox="0 0 13 13" id="projectNameCloser" onclick="closeNamingBox()">
-          <path d="M 2 2 L 11 11 M 2 11 L 11 2" fill="none" stroke="#c4c4c4" stroke-width="2"/>
-  </svg>
-  <div id="projectNameInput"> Name:
-  <input type="text"  id="projectNameText" class="textbox" maxlength="25"/>
-  </div>
-  <div id="projectOKBar">OK</div>
-</div>
-      
+    <div id="projectNamerBox" style="display: none;">
+      <div id="projectNameGrabber">
+        <p class="boxHeader"> Name: </p>
+      </div>
+      <svg viewBox="0 0 13 13" id="projectNameCloser" onclick="closeNamingBox()">
+        <path d="M 2 2 L 11 11 M 2 11 L 11 2" fill="none" stroke="#c4c4c4" stroke-width="2" />
+      </svg>
+      <div id="projectNameInput"> Name:
+        <input type="text" id="projectNameText" class="textbox" maxlength="25" />
+      </div>
+      <div id="projectOKBar">OK</div>
+    </div>
+
     <div id="rightGuiResizer"></div>
     <div id="rightGuiExpander" style="display: none;"></div>
     <div id="rightGui">
       <div id="containCommentTitle">
-        <div class="commentTitle">Main</div><div class="commentTitle" style="display: none;">B0</div><div class="commentTitle" style="display: none;">B1</div><div class="commentTitle" style="display: none;">B2</div><div class="commentTitle" style="display: none;">B3</div><div class="commentTitle" style="display: none;">B4</div><div class="commentTitle" style="display: none;">B5</div>
+        <div id="containCommentTabs">
+          <button class="commentTitle" onmousedown="doRightSelect(-1)">Main</button><button class="commentTitle" style="display: none;" onmousedown="doRightSelect(0)">B0</button><button class="commentTitle" style="display: none;" onmousedown="doRightSelect(1)">B1</button><button class="commentTitle" style="display: none;" onmousedown="doRightSelect(2)">B2</button><button class="commentTitle" style="display: none;" onmousedown="doRightSelect(3)">B3</button><button class="commentTitle" style="display: none;" onmousedown="doRightSelect(4)">B4</button><button class="commentTitle" style="display: none;" onmousedown="doRightSelect(5)">B5</button><button class="commentTitle" style="display: none;" onmousedown="doRightSelect(6)">B6</button><button class="commentTitle" style="display: none;" onmousedown="doRightSelect(7)">B7</button><button class="commentTitle" style="display: none;" onmousedown="doRightSelect(8)">B8</button><button class="commentTitle" style="display: none;" onmousedown="doRightSelect(9)">B9</button><button class="commentTitle" style="display: none;" onmousedown="doRightSelect(10)">B10</button><button class="commentTitle" style="display: none;" onmousedown="doRightSelect(11)">B11</button><button class="commentTitle" style="display: none;" onmousedown="doRightSelect(12)">B12</button><button class="commentTitle" style="display: none;" onmousedown="doRightSelect(13)">B13</button>
         </div>
-      
-<!--       <div class="rightContainer"> -->
+      </div>
+
+      <!--       <div class="rightContainer"> -->
       <div id="commentBox" contenteditable="true" spellcheck="false">Algorithm for <b>Hello</b> variational energy minimization of a 1D binary MERA as described in "Algorithms for Entanglement Renormalization"
         https://doi.org/10.1103/PhysRevB.79.144108</div>
-<!--         </div> -->
-      <div id="containRightGuiMidResizer"><div id="rightGuiMidResizer"></div></div>
-      
-      <div id="rightButtonContainer"> 
-<!--       <label for="Language">Language</label> -->
+      <!--         </div> -->
+      <div id="containRightGuiMidResizer">
+        <div id="rightGuiMidResizer"></div>
+      </div>
+
+      <div id="rightButtonContainer">
+        <!--       <label for="Language">Language</label> -->
         <select name="Language" id="Language" class="rightButton" title="Select code language / library">
           <option value="pythonNCON">Python (ncon)</option>
           <option value="matlabNCON">Matlab (ncon)</option>
@@ -248,35 +275,35 @@
           <option value="uni10">uni10</option>
         </select><button class="rightButton" title="Export tensors within a single box into code">Export</button><button class="rightButton" title="Export entire project into code">Export All</button><button class="rightButton" title="Import code into tensor diagrams">Import</button>
       </div>
-      
+
       <div id="codeBoxContainer">
-      <pre class="line-numbers" id="codeBox" contenteditable="false"><code id="codeText" style="font-family: Monospace, Courier New; font-size:100%;"
+        <pre class="line-numbers" id="codeBox" contenteditable="false"><code id="codeText" style="font-family: Monospace, Courier New; font-size:100%;"
       class="language-python" contenteditable="true" spellcheck="false"># This is where the code is output xxxxxxx
 # once a completed network is exported.
 </code></pre>
-        </div>
+      </div>
     </div>
 
     <div id="leftGui" onmouseout="updateLeftSelect()">
       <svg viewBox="0 0 64 2" class="leftpartition">
         <path d="M 0 1 L 64 1" />
       </svg>
-      
+
       <!-- Select box -->
       <span title="Select Tensors">
-     <svg class="lefticon" viewBox="0 0 16 16" id="selecticon" onmousedown="doLeftSelect(1)" onmouseover="doLeftHover(1)" >
-      <path d="M 3 3 L 11 3 L 11 8 L 3 8 z" fill="none" stroke-dasharray="1,1" stroke="#c4c4c4" stroke-width="0.5" stroke-linecap="butt"/> 
-      <path d="M 9 6 L 14 12 L 12 12 L 13 14 L 12 14 L 11 12 L 9 13 z" fill="#c4c4c4"/> 
-    </svg>
-        </span>
-      
+        <svg class="lefticon" viewBox="0 0 16 16" id="selecticon" onmousedown="doLeftSelect(1)" onmouseover="doLeftHover(1)">
+          <path d="M 3 3 L 11 3 L 11 8 L 3 8 z" fill="none" stroke-dasharray="1,1" stroke="#c4c4c4" stroke-width="0.5" stroke-linecap="butt" />
+          <path d="M 9 6 L 14 12 L 12 12 L 13 14 L 12 14 L 11 12 L 9 13 z" fill="#c4c4c4" />
+        </svg>
+      </span>
+
       <!-- Text box -->
-        <span title="Create Textbox">
-      <svg class="lefticon" viewBox="0 0 16 16" id="texticon" onmousedown="doLeftSelect(0)" onmouseover="doLeftHover(0)" >
-        <path d="M 2 3 L 14 3 L 14 13 L 2 13 z" fill="#c4c4c4" stroke-width="1" stroke-linecap="round" stroke="black"/>
-        <path d="M 3 5 L 7 5 M 5 5 L 5 9 M 8 5 L 13 5 M 8 7 L 13 7 M 8 9 L 13 9 M 3 11 L 13 11" stroke-width="1" fill="none" stroke="black" stroke-linecap="butt"/>
-      </svg>
-          </span>
+      <span title="Create Textbox">
+        <svg class="lefticon" viewBox="0 0 16 16" id="texticon" onmousedown="doLeftSelect(0)" onmouseover="doLeftHover(0)">
+          <path d="M 2 3 L 14 3 L 14 13 L 2 13 z" fill="#c4c4c4" stroke-width="1" stroke-linecap="round" stroke="black" />
+          <path d="M 3 5 L 7 5 M 5 5 L 5 9 M 8 5 L 13 5 M 8 7 L 13 7 M 8 9 L 13 9 M 3 11 L 13 11" stroke-width="1" fill="none" stroke="black" stroke-linecap="butt" />
+        </svg>
+      </span>
 
       <!--         rect -->
       <span title="Create Tensor: Rectangle (R)">
@@ -306,10 +333,10 @@
           <path d="M 2 12 L 5 4 L 11 4 L 14 12 z " fill="#c4c4c4" />
         </svg>
       </span>
-      
+
       <div id="colorbox" onmouseleave="clearNonSelectedBorder()">
-        <svg viewBox="0 0 1 1" class="colicon" id="colicon0" onmousedown="doLeftColor(0)" onmouseenter="doHoverColor(0)" >
-          <path d="M 0 0 L 0 1 L 1 1 L 1 0 z " fill="#21a0a0"/>
+        <svg viewBox="0 0 1 1" class="colicon" id="colicon0" onmousedown="doLeftColor(0)" onmouseenter="doHoverColor(0)">
+          <path d="M 0 0 L 0 1 L 1 1 L 1 0 z " fill="#21a0a0" />
         </svg><svg viewBox="0 0 1 1" class="colicon" id="colicon1" onmousedown="doLeftColor(1)" onmouseenter="doHoverColor(1)">
           <path d="M 0 0 L 0 1 L 1 1 L 1 0 z " fill="#3454d1" />
         </svg><svg viewBox="0 0 1 1" class="colicon" id="colicon2" onmousedown="doLeftColor(2)" onmouseenter="doHoverColor(2)">
@@ -319,8 +346,8 @@
         </svg><svg viewBox="0 0 1 1" class="colicon" id="colicon4" onmousedown="doLeftColor(4)" onmouseover="doHoverColor(4)">
           <path d="M 0 0 L 0 1 L 1 1 L 1 0 z " fill="#f0943e" />
         </svg>
-        </div>
-      
+      </div>
+
       <svg viewBox="0 0 64 2" class="leftpartition">
         <path d="M 0 1 L 64 1" />
       </svg>
@@ -400,136 +427,134 @@
           <path d="M 6 4 L 8 2 L 8 6 z" fill="#c4c4c4" stroke="none" />
         </svg>
       </span>
-  
-  <!--         anchor snap -->
-  <span title="Snap Anchors to Edge">
-  <svg viewBox="0 0 16 16" class="lefticon" id="snapicon" onmouseover="doLeftHover(14)" onmousedown="doLeftSnap()">
-  <path d="M 2 5 L 11 5 L 11 14 L 2 14 z" fill="#c4c4c4"/>
-  <path d="M 11 5 L 14 2"  fill="none" stroke="#c4c4c4" stroke-width="1"/>
-  <path d="M 9 4 L 12 4 L 12 7 L 9 7 z"  fill="#717171"/>
-  <path d="M 4 12 L 7 9"  fill="none" stroke="black" stroke-width="1"/>
-  <path d="M 6 8 L 8 8 L 8 10 z"  fill="black" stroke="black" stroke-width="1"/>
-</svg>
-     </span>
-  
-  <!-- reorder open inds -->
-  <span title="Sequentialize Open Indices">
-<svg viewBox="0 0 16 16" class="lefticon" id="openicon" onmouseover="doLeftHover(15)" onmousedown="doLeftOpen()">
-  <path d="M 4 4 L 4 14" fill="none" stroke="black" stroke-width="1"/>
-  <path d="M 12 4 L 12 14" fill="none" stroke="black" stroke-width="1"/>
-  <circle cx="4" cy="4" r="2" fill="#c4c4c4"/>
-  <circle cx="12" cy="4" r="2" fill="#717171"/>
-  <path d="M 5 7 L 7 7 L 5 9 z"  fill="#c4c4c4" stroke="#c4c4c4" />
-  <path d="M 9 7 L 11 7 L 11 9 z"  fill="#c4c4c4" stroke="#c4c4c4" />
-  <path d="M 6 8 L 7 9 L 9 9 L 10 8"  fill="none" stroke="#c4c4c4" stroke-width="1"/>
-</svg>
-    </span>
 
-  <!-- copy -->
-  <span title="Copy Selection to Clipboard">
-  <svg class="lefticon" viewBox="0 0 16 16" id="copyicon" onmouseover="doLeftHover(16)" onmousedown="doLeftCopy()">
-  <path d="M 2 11 L 2 2 L 7 2 L 9 4 L 9 11 L 2 11" fill="#c4c4c4" stroke="black" />
-  <path d="M 7 2 L 7 4 L 9 4 z" fill="#717171" stroke="black" />
-  <path d="M 3 5 L 8 5 M 4 7 L 7 7 M 3 9 L 8 9" fill="none" stroke="black"  stroke-linecap="butt"/>
-  <path d="M 7 14 L 7 5 L 12 5 L 14 7 L 14 14 L 7 14" fill="#c4c4c4" stroke="black" />
-  <path d="M 12 5 L 12 7 L 14 7 z" fill="#717171" stroke="black" />
-  <path d="M 8 8 L 13 8 M 9 10 L 12 10 M 8 12 L 13 12" fill="none" stroke="black"  stroke-linecap="butt"/>
-</svg>
-    </span>
-  
-   <!-- paste -->
-    <span title="Paste Network from Clipboard">
-  <svg class="lefticon" viewBox="0 0 16 16" id="pasteicon" onmouseover="doLeftHover(17)" onmousedown="doLeftPaste()">
-  <path d="M 2 11 L 2 2 L 7 2 L 9 4 L 9 11 L 2 11" fill="none" stroke-dasharray="2,1"  stroke-linecap="butt"/>
-  <path d="M 3 5 L 8 5 M 4 7 L 7 7 M 3 9 L 8 9" fill="none"  stroke-linecap="butt"/>
-  <path d="M 7 14 L 7 5 L 12 5 L 14 7 L 14 14 L 7 14" fill="#c4c4c4" stroke="black" />
-  <path d="M 12 5 L 12 7 L 14 7 z" fill="#717171" stroke="black" />
-  <path d="M 8 8 L 13 8 M 9 10 L 12 10 M 8 12 L 13 12" fill="none" stroke="black" stroke-linecap="butt"/>
-</svg>
-      </span>
-  
-  <span title="Undo">
-  <svg class="lefticon" viewBox="0 0 16 16" id="undoicon" onmouseover="doLeftHover(18)" onmousedown="doLeftUndo()">
-  <path d="M 9 13 a 4 4 0 0 0 0 -8 L 5 5" fill="none" stroke-width="3" stroke-linecap="butt" stroke="#c4c4c4"/>
-  <path d="M 2 5 L 5 2 L 5 8 z " width="3" fill="#c4c4c4" stroke="#c4c4c4"/>
-</svg>
-    </span>
-
-    <span title="Redo">
-<svg class="lefticon" viewBox="0 0 16 16" id="redoicon" onmouseover="doLeftHover(19)" onmousedown="doLeftRedo()">
-  <path d="M 7 13 a 4 4 0 0 1 0 -8 L 11 5" fill="none" stroke-width="3" stroke-linecap="butt" stroke="#c4c4c4"/>
-  <path d="M 14 5 L 11 2 L 11 8 z " width="3" fill="#c4c4c4" stroke="#c4c4c4"/>
-</svg>
+      <!--         anchor snap -->
+      <span title="Snap Anchors to Edge">
+        <svg viewBox="0 0 16 16" class="lefticon" id="snapicon" onmouseover="doLeftHover(14)" onmousedown="doLeftSnap()">
+          <path d="M 2 5 L 11 5 L 11 14 L 2 14 z" fill="#c4c4c4" />
+          <path d="M 11 5 L 14 2" fill="none" stroke="#c4c4c4" stroke-width="1" />
+          <path d="M 9 4 L 12 4 L 12 7 L 9 7 z" fill="#717171" />
+          <path d="M 4 12 L 7 9" fill="none" stroke="black" stroke-width="1" />
+          <path d="M 6 8 L 8 8 L 8 10 z" fill="black" stroke="black" stroke-width="1" />
+        </svg>
       </span>
 
-  
+      <!-- reorder open inds -->
+      <span title="Sequentialize Open Indices">
+        <svg viewBox="0 0 16 16" class="lefticon" id="openicon" onmouseover="doLeftHover(15)" onmousedown="doLeftOpen()">
+          <path d="M 4 4 L 4 14" fill="none" stroke="black" stroke-width="1" />
+          <path d="M 12 4 L 12 14" fill="none" stroke="black" stroke-width="1" />
+          <circle cx="4" cy="4" r="2" fill="#c4c4c4" />
+          <circle cx="12" cy="4" r="2" fill="#717171" />
+          <path d="M 5 7 L 7 7 L 5 9 z" fill="#c4c4c4" stroke="#c4c4c4" />
+          <path d="M 9 7 L 11 7 L 11 9 z" fill="#c4c4c4" stroke="#c4c4c4" />
+          <path d="M 6 8 L 7 9 L 9 9 L 10 8" fill="none" stroke="#c4c4c4" stroke-width="1" />
+        </svg>
+      </span>
+
+      <!-- copy -->
+      <span title="Copy Selection to Clipboard">
+        <svg class="lefticon" viewBox="0 0 16 16" id="copyicon" onmouseover="doLeftHover(16)" onmousedown="doLeftCopy()">
+          <path d="M 2 11 L 2 2 L 7 2 L 9 4 L 9 11 L 2 11" fill="#c4c4c4" stroke="black" />
+          <path d="M 7 2 L 7 4 L 9 4 z" fill="#717171" stroke="black" />
+          <path d="M 3 5 L 8 5 M 4 7 L 7 7 M 3 9 L 8 9" fill="none" stroke="black" stroke-linecap="butt" />
+          <path d="M 7 14 L 7 5 L 12 5 L 14 7 L 14 14 L 7 14" fill="#c4c4c4" stroke="black" />
+          <path d="M 12 5 L 12 7 L 14 7 z" fill="#717171" stroke="black" />
+          <path d="M 8 8 L 13 8 M 9 10 L 12 10 M 8 12 L 13 12" fill="none" stroke="black" stroke-linecap="butt" />
+        </svg>
+      </span>
+
+      <!-- paste -->
+      <span title="Paste Network from Clipboard">
+        <svg class="lefticon" viewBox="0 0 16 16" id="pasteicon" onmouseover="doLeftHover(17)" onmousedown="doLeftPaste()">
+          <path d="M 2 11 L 2 2 L 7 2 L 9 4 L 9 11 L 2 11" fill="none" stroke-dasharray="2,1" stroke-linecap="butt" />
+          <path d="M 3 5 L 8 5 M 4 7 L 7 7 M 3 9 L 8 9" fill="none" stroke-linecap="butt" />
+          <path d="M 7 14 L 7 5 L 12 5 L 14 7 L 14 14 L 7 14" fill="#c4c4c4" stroke="black" />
+          <path d="M 12 5 L 12 7 L 14 7 z" fill="#717171" stroke="black" />
+          <path d="M 8 8 L 13 8 M 9 10 L 12 10 M 8 12 L 13 12" fill="none" stroke="black" stroke-linecap="butt" />
+        </svg>
+      </span>
+
+      <span title="Undo">
+        <svg class="lefticon" viewBox="0 0 16 16" id="undoicon" onmouseover="doLeftHover(18)" onmousedown="doLeftUndo()">
+          <path d="M 9 13 a 4 4 0 0 0 0 -8 L 5 5" fill="none" stroke-width="3" stroke-linecap="butt" stroke="#c4c4c4" />
+          <path d="M 2 5 L 5 2 L 5 8 z " width="3" fill="#c4c4c4" stroke="#c4c4c4" />
+        </svg>
+      </span>
+
+      <span title="Redo">
+        <svg class="lefticon" viewBox="0 0 16 16" id="redoicon" onmouseover="doLeftHover(19)" onmousedown="doLeftRedo()">
+          <path d="M 7 13 a 4 4 0 0 1 0 -8 L 11 5" fill="none" stroke-width="3" stroke-linecap="butt" stroke="#c4c4c4" />
+          <path d="M 14 5 L 11 2 L 11 8 z " width="3" fill="#c4c4c4" stroke="#c4c4c4" />
+        </svg>
+      </span>
+
       <svg viewBox="0 0 64 2" class="leftpartition">
         <path d="M 0 1 L 64 1" />
       </svg>
-  </div>
+    </div>
 
-  <div id="canvasWindow">
-    <canvas id="canvasHandles" width="1800" height="900"> </canvas>
-    <canvas id="canvasBase" width="1800" height="900"> </canvas>
-    <canvas id="canvasMoving" width="1800" height="900"> </canvas>
-    <canvas id="canvasTensors" width="1800" height="900"> </canvas>
-    <canvas id="canvasBackground" width="1800" height="900"> </canvas>
-    <form autocomplete="off"><input type="text" id="nameBox" maxlength="25" /><form>
-<!--       style="display: none;" -->
-      <svg id="ancMinusCanvasIcon" class="canvasIcon" viewBox="0 0 16 16" >
+    <div id="canvasWindow">
+      <canvas id="canvasHandles" width="1800" height="900"> </canvas>
+      <canvas id="canvasBase" width="1800" height="900"> </canvas>
+      <canvas id="canvasMoving" width="1800" height="900"> </canvas>
+      <canvas id="canvasTensors" width="1800" height="900"> </canvas>
+      <canvas id="canvasBackground" width="1800" height="900"> </canvas>
+      <form autocomplete="off"><input type="text" id="nameBox" maxlength="25"></form>
+      <!--       style="display: none;" -->
+      <svg id="ancMinusCanvasIcon" class="canvasIcon" viewBox="0 0 16 16">
         <path d="M 0 4 a 4 4 0 0 1 4 -4 L 12 0 a 4 4 0 0 1 4 4 L 16 12 a 4 4 0 0 1 -4 4 L 4 16 a 4 4 0 0 1 -4 -4 z " fill="black" stroke="none" />
-    <path d=" M 2 4 L 6 4   " />
-    <circle cx="10" cy="4" r="2" />
-    <path d=" M 10 6 L 10 14 M 6 12 a 2 2 0 0 0 2 2 L 12 14 a 2 2 0 0 0 2 -2 M 7 8 l 6 0 " />
-      </svg>    
-      <svg class="canvasIcon" id="renameCanvasIcon" viewBox="0 0 16 16"=>
+        <path d=" M 2 4 L 6 4   " />
+        <circle cx="10" cy="4" r="2" />
+        <path d=" M 10 6 L 10 14 M 6 12 a 2 2 0 0 0 2 2 L 12 14 a 2 2 0 0 0 2 -2 M 7 8 l 6 0 " />
+      </svg>
+      <svg class="canvasIcon" id="renameCanvasIcon" viewBox="0 0 16 16">
         <path d="M 0 4 a 4 4 0 0 1 4 -4 L 12 0 a 4 4 0 0 1 4 4 L 16 12 a 4 4 0 0 1 -4 4 L 4 16 a 4 4 0 0 1 -4 -4 z " fill="black" stroke="none" />
         <path d=" M 4 9 L 11 2 L 14 5 L 7 12 L 3 13 L 4 9 M 9 4 L 12 7 " />
-      </svg>    
+      </svg>
       <svg class="canvasIcon" id="ancPlusCanvasIcon" viewBox="0 0 16 16">
         <path d="M 0 4 a 4 4 0 0 1 4 -4 L 12 0 a 4 4 0 0 1 4 4 L 16 12 a 4 4 0 0 1 -4 4 L 4 16 a 4 4 0 0 1 -4 -4 z " fill="black" stroke="none" />
-    <path d=" M 2 4 L 6 4 M 4 2 L 4 6  " />
-    <circle cx="10" cy="4" r="2" />
-    <path d=" M 10 6 L 10 14 M 6 12 a 2 2 0 0 0 2 2 L 12 14 a 2 2 0 0 0 2 -2 M 7 8 l 6 0 " />
-      </svg>   
-  </div>
+        <path d=" M 2 4 L 6 4 M 4 2 L 4 6  " />
+        <circle cx="10" cy="4" r="2" />
+        <path d=" M 10 6 L 10 14 M 6 12 a 2 2 0 0 0 2 2 L 12 14 a 2 2 0 0 0 2 -2 M 7 8 l 6 0 " />
+      </svg>
+    </div>
 
-   <div id="cpmenu">
-    <a id="contextMove" onmousedown="doContextMove()">Move Here</a>
-    <a id="contextCopy" onmousedown="doContextCopy()">Copy Here</a>
-    <hr />
-    <a id="contextCancel" onmousedown="doContextCancel()">Cancel</a>
-  </div>
+    <div id="cpmenu">
+      <a id="contextMove" onmousedown="doContextMove()">Move Here</a>
+      <a id="contextCopy" onmousedown="doContextCopy()">Copy Here</a>
+      <hr />
+      <a id="contextCancel" onmousedown="doContextCancel()">Cancel</a>
+    </div>
 
-  
-  <script src="caretscripts.js"></script>
-  <script src="textboxscripts.js"></script>
-  <script src="iconscripts.js"></script>
-  <script src="nameboxscripts.js"></script>
-  <script src="filescripts.js"></script>
-  <script src="tabscripts.js"></script>
-  <script src="contextscripts.js"></script>
-  <script src="testscripts.js"></script>
-  <script src="transformscripts.js"></script>
-  <script src="indexscripts.js"></script>
-  <script src="titlemenuscripts.js"></script>
-  <script src="anchorscripts.js"></script>
-  <script src="rightmenuscripts.js"></script>
-  <script src="codescripts.js"></script>
-  <script src="colorscripts.js"></script>
-  <script src="leftmenuscripts.js"></script>
-  <script src="dropdownscripts.js"></script>
-  <script src="tensorscripts.js"></script>
-  <script src="selectorscripts.js"></script>
-  <script src="mouseinputs.js"></script>
-  <script src="keyboardscripts.js"></script>
-  <script src="mousescripts.js"></script>
-  <script src="miscscripts.js"></script>
-  <script src="miniscripts.js"></script>
-  <script src="drawingscripts.js"></script>
-  <script src="mainscripts.js"></script>
+    <script src="caretscripts.js"></script>
+    <script src="textboxscripts.js"></script>
+    <script src="iconscripts.js"></script>
+    <script src="nameboxscripts.js"></script>
+    <script src="filescripts.js"></script>
+    <script src="tabscripts.js"></script>
+    <script src="contextscripts.js"></script>
+    <script src="testscripts.js"></script>
+    <script src="transformscripts.js"></script>
+    <script src="indexscripts.js"></script>
+    <script src="titlemenuscripts.js"></script>
+    <script src="anchorscripts.js"></script>
+    <script src="rightmenuscripts.js"></script>
+    <script src="codescripts.js"></script>
+    <script src="colorscripts.js"></script>
+    <script src="leftmenuscripts.js"></script>
+    <script src="dropdownscripts.js"></script>
+    <script src="tensorscripts.js"></script>
+    <script src="selectorscripts.js"></script>
+    <script src="mouseinputs.js"></script>
+    <script src="keyboardscripts.js"></script>
+    <script src="mousescripts.js"></script>
+    <script src="miscscripts.js"></script>
+    <script src="miniscripts.js"></script>
+    <script src="drawingscripts.js"></script>
+    <script src="mainscripts.js"></script>
   </div>
 
 </body>
-</html>
 
+</html>

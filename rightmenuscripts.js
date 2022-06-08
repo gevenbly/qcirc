@@ -26,8 +26,22 @@ rightCommentBox.style.setProperty('height', rightCommentHeight + "px");
 
 
 // console.log(rightCommentTitle)
+function updateCommentBoxTitles() {
+  var numTextBoxes = textBoxes.length;
+  for (var j=1; j<collectionComment.length; j++) {
+    if (j<=numTextBoxes) {
+      collectionComment[j].style.display = 'inline-block';
+    } else {
+      collectionComment[j].style.display = 'none';
+    }
+  }
+}
 
 // functions
+function doRightSelect(val) {
+  selectTextBox(val);
+}
+
 function toggleRightGui() {
   if (rightGuiIsOpen) {
     // close right menu
@@ -38,6 +52,7 @@ function toggleRightGui() {
     codeBox.style.display = "none";
     rightGuiResizer.style.display = "none";
     rightGuiExpander.style.display = "block";
+    rightCommentTitle.style.display = "none";
 
     resizeCanvas();
   } else {
@@ -50,6 +65,7 @@ function toggleRightGui() {
     rightGuiResizer.style.display = "block";
     rightGuiResizer.style.left = leftMenuWidth + viewWidth + "px";
     rightGuiExpander.style.display = "none";
+    rightCommentTitle.style.width = rightMenuWidth -100 + "px";
 
     resizeCanvas();
   }
