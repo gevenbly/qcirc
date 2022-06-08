@@ -6,6 +6,7 @@ var isHomeMenuOpen = true;
 var mainWindow = document.getElementById("mainWindow");
 
 const collectionComment = document.getElementsByClassName("commentTitle");
+collectionComment[0].style.backgroundColor = '#222';
 
 var isOneBased = 0;
 var canvasBasedNames = false;

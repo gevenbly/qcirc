@@ -98,6 +98,9 @@ function freeMouseState() {
       selectTextBox(ind, false);
     }
   }
+  if (textBoxes.length==0) {
+    collectionComment[0].style.backgroundColor = '#222';
+  }
 
   isLeftDown = false;
   isRightDown = false;

@@ -229,15 +229,15 @@ pre[class*="language-"] {
 #Language {
   top: 0px;
   background-color: #222;
-  box-sizing: border-box;
+/*   box-sizing: border-box; */
   border: 1px black solid; 
   color: #c4c4c4;
-  padding: 5px 5px;
+  padding: 5px 5px 5.1px 5px;
   text-align: left;
   text-decoration: none;
   height: 28px;
   font-size: 12px;
-  outline: 1px solid black;
+/*   outline: 1px solid black; */
 }
 
 #rightButtonContainer {

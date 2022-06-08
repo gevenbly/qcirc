@@ -23,19 +23,13 @@
 }
 
 #smalllogo {
-/*   height: 34px; */
-/*   position: relative; */
+  height: 34px;
+  position: static;
   display: block;
-  color: #c4c4c4;
   float: left;
   overflow: hidden;
-  padding: 5px 5px;
-  margin: 0px 0px;
   outline: none;
-  background-color: inherit;
-  font-family: inherit;
-  font-size: inherit; 
-/*   border: 1px red solid; */
+  filter: drop-shadow(2px 3px 2px rgb(0 0 0 / 0.4));
 }
 
 .dropdownContainer {
