@@ -6,9 +6,22 @@ the mouse is over.
 function checkUnderMouse(evt) {
   if (stateOfMouse != "renaming") {
     var pos = getMousePos(canvasBase, evt);
-    if (checkMinimapMouse(pos)) {
-      return;
+    if (showMini) {
+      if (checkMinimapMouse(pos)) {
+        return;
+      }
     }
+    for (var ind=textBoxes.length - 1; ind >= 0; ind--) {
+      theSizingBox.innerText = "B" + ind + ":" + textBoxes[ind].name;
+      if (checkBoxMouse(pos,ind)) {
+        return;
+      } else if (checkBoxHandlesMouse(pos,ind)) {
+        return;
+      } else if (checkBoxRenameMouse(pos,ind)) {
+        return;
+      }
+    }
+    
     for (var ind=tensors.length - 1; ind >= 0; ind--) {
       if (checkHandlesMouse(pos,ind)) {
         return;
@@ -38,11 +51,12 @@ function freeMouseState() {
       deleteLastTensor();
     }
   } else if (stateOfMouse == "selecting") {
-    x0 = selectBox[0];
-    x1 = selectBox[2];
-    y0 = selectBox[1];
-    y1 = selectBox[3];
+    var x0 = selectBox[0];
+    var x1 = selectBox[2];
+    var y0 = selectBox[1];
+    var y1 = selectBox[3];
 
+    currSelected = [];
     for (var i = 0; i < tensors.length; i++) {
       var isInBox =
         tensors[i].bbox[0] > x0 &&
@@ -53,12 +67,24 @@ function freeMouseState() {
         currSelected.push(i);
       }
     }
-    updateSelectionBox();
+    
+    currBoxSelected = [];
+    for (var i = 0; i < textBoxes.length; i++) {
+      var isInBox =
+        textBoxes[i].bbox[0] > x0 &&
+        textBoxes[i].bbox[2] < x1 &&
+        textBoxes[i].bbox[1] > y0 &&
+        textBoxes[i].bbox[3] < y1;
+      if (isInBox) {
+        currBoxSelected.push(i);
+      }
+    }
   }
 
   isLeftDown = false;
   isRightDown = false;
   stateOfMouse = "free";
+  // currGrabbed[0] = 'none';
   updateCursorStyle();
 }
 
@@ -110,6 +136,40 @@ function checkMinimapMouse(pos) {
   }
 }
 
+function checkBoxHandlesMouse(pos,ind) {
+  if (!currBoxSelected.includes(ind)) {
+    return false;
+  }
+  var x0 = a2rX(textBoxes[ind].bbox[0]);
+  var y0 = a2rY(textBoxes[ind].bbox[1]);
+  var xf = a2rX(textBoxes[ind].bbox[2]);
+  var yf = a2rY(textBoxes[ind].bbox[3]);
+  var xmid = 0.5*(x0 + xf);
+  var ymid = 0.5*(y0 + yf);
+
+  var handleLocsX = [x0, xmid, xf, xf, xf, xmid, x0, x0,
+                     x0, xmid, xf, xf, xf, xmid, x0, x0];
+  var handleLocsY = [y0, y0, y0, ymid, yf, yf, yf, ymid,
+                    y0, y0, y0, ymid, yf, yf, yf, ymid];
+  var handleList = ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w',
+                   'nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w'];
+  
+  for (var j=0; j<8; j++) {
+    if (isInCircle(pos, handleLocsX[j], handleLocsY[j], circRad)) {
+      objUnderMouse[0] = "boxhandle";
+      objUnderMouse[1] = ind;
+      objUnderMouse[2] = j;
+      handleType = handleList[j] + "-resize";
+      coordGrabbed[0] = r2aX(handleLocsX[j+4]);
+      coordGrabbed[1] = r2aY(handleLocsY[j+4]);
+      updateCursorStyle();
+      return true;
+    }
+  }
+  
+  return false;
+}
+
 function checkHandlesMouse(pos,ind) {
   if (!currSelected.includes(ind)) {
     return false;
@@ -145,23 +205,64 @@ function checkHandlesMouse(pos,ind) {
   return false;
 }
 
+function checkBoxMouse(pos,ind) {
+  var x0 = a2rX(textBoxes[ind].bbox[0]);
+  var y0 = a2rY(textBoxes[ind].bbox[1]);
+  var tzoom = windowPos.zoom;
+  var width = theSizingBox.offsetWidth;
+  var height = theSizingBox.offsetHeight;
+  
+  ctxT.beginPath();
+  ctxT.moveTo(x0, y0);
+  ctxT.lineTo(x0+width, y0);
+  ctxT.lineTo(x0+width, y0+height);
+  ctxT.lineTo(x0, y0+height);
+  ctxT.closePath();
+  
+  var isIn = ctxT.isPointInPath(pos.x, pos.y);
+  if (isIn) {
+    objUnderMouse[0] = "box";
+    objUnderMouse[1] = ind;
+    objUnderMouse[2] = 0;
+    coordGrabbed[0] = r2aX(pos.x - x0);
+    coordGrabbed[1] = r2aY(pos.y - y0);
+    updateCursorStyle();
+    return isIn;
+  } else {
+    return isIn;
+  }
+}
+
 function checkOpenMouse(pos,ind) {
   var num_anchors = tensors[ind].xanchors.length;
   var xmid = tensors[ind].bbox[4];
   var ymid = tensors[ind].bbox[5];
+  var tzoom = windowPos.zoom;
   
   for (var j = 0; j < num_anchors; j++) {
     var jnd = tensors[ind].connects[j];
     if (openIndices.indexOf(Math.abs(jnd)) >= 0) {
       var xc = a2rX(indices[Math.abs(jnd)].end[0] + xmid);
       var yc = a2rY(indices[Math.abs(jnd)].end[1] + ymid);
-      if (
-        Math.abs(xc - pos.x) < (openIndexRadius) &&
-        Math.abs(yc - pos.y) < (openIndexRadius)
-      ) {
+     
+      if (isInCircle(pos, xc, yc, openIndexRadius)) {
         objUnderMouse[0] = "openind";
         objUnderMouse[1] = Math.abs(jnd);
         objUnderMouse[2] = 0;
+        updateCursorStyle();
+        return true;
+      } else if (Math.abs(xc - pos.x - iconPosEnd.x[0]) < (fieldIconWidth/2) &&
+                 Math.abs(yc - pos.y - iconPosEnd.y[0]) < (fieldIconHeight/2)) {
+        objUnderMouse[0] = "openind";
+        objUnderMouse[1] = Math.abs(jnd);
+        objUnderMouse[2] = 1;
+        updateCursorStyle();
+        return true;
+      } else if (Math.abs(xc - pos.x - iconPosEnd.x[1]) < (fieldIconWidth/2) &&
+                 Math.abs(yc - pos.y - iconPosEnd.y[1]) < (fieldIconHeight/2)) {
+        objUnderMouse[0] = "openind";
+        objUnderMouse[1] = Math.abs(jnd);
+        objUnderMouse[2] = 2;
         updateCursorStyle();
         return true;
       }
@@ -189,6 +290,20 @@ function checkAnchorsMouse(pos,ind) {
       updateCursorStyle();
       return true;
     }
+  }
+  return false;
+}
+
+function checkBoxRenameMouse(pos,ind) {
+  var xmid = a2rX(textBoxes[ind].bbox[0]) + theSizingBox.offsetWidth;
+  var ymid = a2rY(textBoxes[ind].bbox[1]) + theSizingBox.offsetHeight/2;
+
+  if (isInRange(pos.x, xmid, xmid+fieldIconWidth) && isInRange(pos.y, ymid, ymid+fieldIconWidth)) {
+    objUnderMouse[0] = "boxrename";
+    objUnderMouse[1] = ind;
+    objUnderMouse[2] = 0;
+    updateCursorStyle();
+    return true;
   }
   return false;
 }
@@ -224,6 +339,4 @@ function checkTensorMouse(pos,ind) {
   return false;
 }
 
-function isInCircle(pos, x0, y0, circRad) {
-  return ((pos.x-x0)**2 + (pos.y-y0)**2 < circRad**2) 
-}
+

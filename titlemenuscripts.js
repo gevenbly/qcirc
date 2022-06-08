@@ -9,6 +9,7 @@ function toggleTitle(typ) {
     document.getElementById('leftGui').style.display = "block";
     document.getElementById('canvasWindow').style.display = "block";
     document.getElementById('titleWindow').style.display = "none";
+    document.getElementById('rightGuiResizer').style.display = "block";
   }
   
   if (typ == 1) {isLoadExample = true};
@@ -20,9 +21,8 @@ function toggleTitle(typ) {
     indices = JSON.parse(indexString);
     findOpenIndices();
     
-    updateTensorTags();
-    
     drawTensors();
+    drawMinimap();
   }
 }
 

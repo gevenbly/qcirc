@@ -65,12 +65,33 @@ function resizeCanvas() {
   ctxG.fillStyle = "#808080";
   ctxG.fillRect(0, 0, viewWidth, viewHeight);
   
-  rightMenu.style.height = viewHeight+'px';
-  codeBox.style.height = (viewHeight-33)+'px';
-  codeBox.style.width = (rightMenuWidth-67)+'px';
+  // rightMenu.style.height = viewHeight+'px';
+  // codeBox.style.height = (viewHeight-33)+'px';
+  // codeBox.style.width = (rightMenuWidth-67)+'px';
   rightGuiResizer.style.height = viewHeight+'px';
+  rightGuiExpander.style.height = viewHeight+'px';
   
   miniPadY = viewHeight - miniHeight - 15;
+  rightGuiResizer.style.left = leftMenuWidth + viewWidth + "px";
+  
+  var newCodeHeight = viewHeight - (rightButtonContainer.getBoundingClientRect().top) + 10;
+  if (newCodeHeight < 0) {
+    rightCommentHeight += newCodeHeight;
+    rightCommentBox.style.setProperty('height', rightCommentHeight + "px");
+  }
+  rightCodeBox.style.setProperty('height', viewHeight - (rightButtonContainer.getBoundingClientRect().top) + 10 + "px");
+  
+  var newLeftWidth = mainWindow.clientWidth - rightMenuWidthOpen - leftMenuWidth;
+  if (newLeftWidth < 0) {
+    rightMenuWidthOpen += newLeftWidth;
+    rightMenuWidth = rightMenuWidthOpen;
+    rightMenu.style.width = rightMenuWidth + "px";
+  }
+  
+  // rightCommentBox.style.width = rightMenuWidth - 10;
+  // rightCommentTitle.style.width = rightMenuWidth - 10;
+ 
+  
   
   drawGrid();
   drawTensors();
@@ -123,6 +144,18 @@ function isInRange(x,xmin,xmax) {
   }
 }
 
+// function isInCircle(x0,y0,rad) {
+//   if ((x0*x0 + y0*y0) < (rad*rad)) {
+//     return true;
+//   } else {
+//     return false;
+//   }
+// }
+
+function isInCircle(pos, x0, y0, circRad) {
+  return ((pos.x-x0)**2 + (pos.y-y0)**2 < circRad**2) 
+}
+
 function makeAllInRange(xvec,xmin,xmax) {
   return xvec.map((e) =>  makeInRange(e,xmin,xmax));
 }
@@ -135,16 +168,24 @@ function updateCursorStyle() {
       canvasMoving.style.cursor = "move";
     } else if (objUnderMouse[0] == "handle") {
       canvasMoving.style.cursor = handleType;
+    } else if (objUnderMouse[0] == "boxhandle") {
+      canvasMoving.style.cursor = handleType;
     } else if (objUnderMouse[0] == "rename") {
+      canvasMoving.style.cursor = "pointer";
+    } else if (objUnderMouse[0] == "boxrename") {
       canvasMoving.style.cursor = "pointer";
     } else if (objUnderMouse[0] == "anchor") {
       canvasMoving.style.cursor = "default";
+    } else if (objUnderMouse[0] == "box") {
+      canvasMoving.style.cursor = "move";
     }
     
   } else if (stateOfMouse == 'shifting') {
     canvasMoving.style.cursor = "move";
+  } else if (stateOfMouse == 'boxshifting') {
+    canvasMoving.style.cursor = "move";
   } else if (stateOfMouse == 'creating') {
-    canvasMoving.style.cursor = "pointer";
+    canvasMoving.style.cursor = "crosshair";
   } else if (stateOfMouse == 'scrolling') {
     canvasMoving.style.cursor = "grabbing";
   } else if (stateOfMouse == 'renaming') {
@@ -155,6 +196,8 @@ function updateCursorStyle() {
     canvasMoving.style.cursor = "grabbing";
   } else if (stateOfMouse == 'duplicating') {
     canvasMoving.style.cursor = "move";
+  } else if (stateOfMouse == 'boxing') {
+    canvasMoving.style.cursor = "crosshair";
   } else {
     canvasMoving.style.cursor = "default";
   }

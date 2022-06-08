@@ -9,7 +9,7 @@ var projectClicked = 0;
 projectNameGrabber.addEventListener("mousedown", startProjectDrag);
 projectNameGrabber.addEventListener("mouseup", stopProjectDrag); 
 const mousePosProj = {x: 0, y: 0};
-projectNamerBox.addEventListener('focusout', (evt) => {closeNamingBox();});
+// projectNamerBox.addEventListener('focusout', (evt) => {closeNamingBox();});
 var projectOKBar = document.getElementById("projectOKBar");
 projectOKBar.addEventListener("mousedown", updateNamingBox, true);
 
@@ -65,6 +65,7 @@ function initializeWorkspace() {
   windowPosString.push(JSON.stringify({x: 0, y: 0, zoom: 2}));
   tensorString.push(JSON.stringify([]));
   indexString.push(JSON.stringify([0]));
+  textBoxesString.push(JSON.stringify([]));
   
   allProjectNames.push("project" + (totalProjectsOpen+1));
   totalProjectsOpen += 1;
@@ -81,9 +82,11 @@ function initializeWorkspace() {
 function loadWorkspace(val) {
   stateOfMouse = "free";
   currSelected = [];
+  currBoxSelected = [];
   windowPos = JSON.parse(windowPosString[val]);
   tensors = JSON.parse(tensorString[val]);
   indices = JSON.parse(indexString[val]);
+  textBoxes = JSON.parse(textBoxesString[val]);
   
   windowWidth = viewWidth / windowPos.zoom;
   windowHeight = viewHeight / windowPos.zoom;
@@ -104,6 +107,7 @@ function saveWorkspace(val) {
   windowPosString[val] = JSON.stringify(windowPos);
   tensorString[val] = JSON.stringify(tensors);
   indexString[val] = JSON.stringify(indices);
+  textBoxesString[val] = JSON.stringify(textBoxes);
 }
 
 function closeWorkspace(val) {
@@ -113,6 +117,7 @@ function closeWorkspace(val) {
     windowPosString.splice(val,1);
     tensorString.splice(val,1);
     indexString.splice(val,1);
+    textBoxesString.splice(val,1);
     allProjectNames.splice(val,1);
     
     allProjectTabs[numProjectsOpen-1].style.display = "none";
@@ -150,6 +155,7 @@ function closeNamingBox() {
   projectNameText.focus();
   projectNameText.blur();
   isProjectBoxActive = false;
+  window.removeEventListener("mousemove", doProjectDrag);
 }
 
 function updateNamingBox() {

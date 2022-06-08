@@ -12,7 +12,12 @@ function onMouseDown(evt) {
     closeNamingBox();
     return;
   }
+  if (isNameboxActive) {
+    doNameboxOut(evt);
+    return;
+  }
   
+  checkUnderMouse(evt);
   if (evt.button == 0) { // left mouse 
     if (stateOfMouse == "connecting") {
       if (objUnderMouse[0] == "anchor") {
@@ -60,6 +65,21 @@ function onMouseDown(evt) {
         currSelected = [];
         updateCursorStyle();
         
+      } else if (leftSelectedType == 0) { // text box
+        var pos = getAbsMousePos(canvasBase, evt);
+        createTextBox(pos.x, pos.y);
+        stateOfMouse = "boxing";
+        if (gridSnap) {
+          coordGrabbed[0] = snapX(pos.x);
+          coordGrabbed[1] = snapY(pos.y);
+        } else {
+          coordGrabbed[0] = pos.x;
+          coordGrabbed[1] = pos.y;
+        }
+        currSelected = [];
+        currBoxSelected = [];
+        updateCursorStyle();
+        
       } else if (leftSelectedType > 1) { // create tensor
         var pos = getAbsMousePos(canvasBase, evt);
         createTensor(pos.x, pos.y);
@@ -82,6 +102,21 @@ function onMouseDown(evt) {
       
       var pos = getMousePos(canvasBase, evt);
       updateMinimap(pos.x, pos.y);
+      
+    } else if (objUnderMouse[0] == "box") {
+      stateOfMouse = "boxshifting";
+      
+      var pos = getAbsMousePos(canvasBase, evt);
+      var ind = objUnderMouse[1];
+      currGrabbed[0] = "box"; 
+      currGrabbed[1] = ind; 
+      coordGrabbed = [Math.round(pos.x - textBoxes[ind].bbox[0]), 
+                      Math.round(pos.y - textBoxes[ind].bbox[1])];
+      if (!currBoxSelected.includes(ind)) {
+        currBoxSelected = [ind];
+      }
+      updateCursorStyle();
+      updateSelectionBox();
       
     } else if (objUnderMouse[0] == "tensor") {
       stateOfMouse = "shifting";
@@ -109,22 +144,50 @@ function onMouseDown(evt) {
       currSelected = [];
       
     } else if (objUnderMouse[0] == "openind") {
-      var pos = getAbsMousePos(canvasBase, evt);
-      stateOfMouse = "connecting";
       var jnd = objUnderMouse[1];
-      if (indices[jnd].connects[0] < 0) {
-        var tempI = indices[jnd].connects[2];
-        var tempJ = indices[jnd].connects[3];
-      } else {
-        var tempI = indices[jnd].connects[0];
-        var tempJ = indices[jnd].connects[1];
+      var knd = objUnderMouse[2];
+      if (knd==0) {// grab the free end
+        var pos = getAbsMousePos(canvasBase, evt);
+        stateOfMouse = "connecting";
+        if (indices[jnd].connects[0] < 0) {
+          var tempI = indices[jnd].connects[2];
+          var tempJ = indices[jnd].connects[3];
+        } else {
+          var tempI = indices[jnd].connects[0];
+          var tempJ = indices[jnd].connects[1];
+        }
+        currGrabbed[0] = "anchor"; 
+        currGrabbed[1] = tempI;
+        currGrabbed[2] = tempJ;
+        deleteIndex(jnd);
+        currSelected = [];
+        objUnderMouse[1] = -1;
+     
+        // position needed for drawing function
+        if (gridSnap) {
+          mousePos[0] = a2rX(snapX(pos.x));
+          mousePos[1] = a2rY(snapY(pos.y));
+        } else {
+          mousePos[0] = a2rX(pos.x); 
+          mousePos[1] = a2rY(pos.y);
+        }
+        drawTensors();
+        return;
+        
+      } else if (knd==1) {//increment index label
+        incrementIndexLabel(jnd);
+      } else if (knd==2) {//decrement index label
+        decrementIndexLabel(jnd);
       }
-      currGrabbed[0] = "anchor"; 
-      currGrabbed[1] = tempI;
-      currGrabbed[2] = tempJ;
-      deleteIndex(jnd);
-      currSelected = [];
+      drawTensors();
       return;
+      
+    } else if (objUnderMouse[0] == "boxhandle") {
+      var pos = getAbsMousePos(canvasBase, evt);
+      stateOfMouse = "boxresizing";
+      currGrabbed[0] = "boxhandle"; 
+      currGrabbed[1] = objUnderMouse[1];
+      currGrabbed[2] = objUnderMouse[2];
       
     } else if (objUnderMouse[0] == "handle") {
       var pos = getAbsMousePos(canvasBase, evt);
@@ -142,6 +205,14 @@ function onMouseDown(evt) {
         currGrabbed[1] = objUnderMouse[1];
       } else if (objUnderMouse[2] == 2) {// plus anchor
         createAnchor(objUnderMouse[1]); 
+      }
+    } else if (objUnderMouse[0] == "boxrename") {
+      if (objUnderMouse[2] == 0) {// rename
+        stateOfMouse = "boxrenaming";
+        currGrabbed[0] = objUnderMouse[0];
+        currGrabbed[1] = objUnderMouse[1];
+      } else if (objUnderMouse[2] == 1) {// show code
+        
       }
     } else {
       freeMouseState();
@@ -184,6 +255,14 @@ function onMouseUp(evt) {
   if (stateOfMouse == "connecting") {
     return;
   }
+  // if (stateOfMouse == "free") {
+  //   currSelected = [];
+  //   currBoxSelected = [];
+  //   updateSelectionBox();
+  //   updateCursorStyle();
+  //   drawTensors();
+  //   return;
+  // }
   
   if (evt.button == 0) { // left mouse 
     isLeftDown = false;
@@ -201,6 +280,30 @@ function onMouseUp(evt) {
       leftSelectedType = 1;
       updateLeftSelect();
       
+    } else if (stateOfMouse == "boxing") {
+      var ind = textBoxes.length - 1;
+      var xspan = textBoxes[ind].bbox[2] - textBoxes[ind].bbox[0];
+      var yspan = textBoxes[ind].bbox[3] - textBoxes[ind].bbox[1];
+      if (xspan < 2*minWidth || yspan < 2*minHeight) {
+        deleteLastBox()
+      }
+      leftSelectedType = 1;
+      currBoxSelected = [];
+      currBoxSelected.push(ind);
+      updateLeftSelect();
+      currGrabbed[0] = "box"; 
+      currGrabbed[1] = ind;
+      currGrabbed[2] = 0;
+      
+    } else if (stateOfMouse == "boxrenaming") {
+      doNameboxIn(evt);
+      updateNameboxPos();
+      drawTensors();
+      drawMinimap();
+      updateCursorStyle();
+      isLeftDown = false;
+      return;
+      
     } else if (stateOfMouse == "renaming") {
       doNameboxIn(evt);
       updateNameboxPos();
@@ -209,6 +312,7 @@ function onMouseUp(evt) {
       updateCursorStyle();
       isLeftDown = false;
       return;
+      
     } else if (stateOfMouse == "selecting") {
       freeMouseState();
     } else if (stateOfMouse == "startanchor") {
@@ -261,40 +365,69 @@ function onMouseUp(evt) {
   
   stateOfMouse = "free";
   updateCursorStyle();
+  doNameboxOut(evt);
   drawTensors();
 }
 
 function onMouseEnter(evt) {
-  if (stateOfMouse != "renaming") {
+  if (stateOfMouse == "renaming" || stateOfMouse == "boxrenaming") {
+    return;
+  } else {
     freeMouseState();
     updateCursorStyle();
+    drawTensors();
   }
 }
 
 function onMouseOut(evt) {
-  if (stateOfMouse != "renaming") {
+  if (stateOfMouse == "renaming" || stateOfMouse == "boxrenaming") {
+    return;
+  } else {
     freeMouseState();
     updateCursorStyle();
+    drawTensors();
   }
 }
 
 function onMouseMove(evt) {
+  // code for debugging
+  if (showDebug) {
+    var pos = getAbsMousePos(canvasBase, evt);
+    var debugStrings = [];
+    debugStrings.push(
+      "held (" + Math.floor(pos.x) + "," + Math.floor(pos.y) + ")"
+    );
+    debugStrings.push("mouse: " + isLeftDown);
+    debugStrings.push("over (" + objUnderMouse[0] + "," + objUnderMouse[1] + "," + objUnderMouse[2] + ")");
+    debugStrings.push("state: " + stateOfMouse);
+    debugStrings.push("coord grabbed: (" + Math.round(coordGrabbed[0]) + "," + Math.round(coordGrabbed[1]) + ")");
+    debugStrings.push("selected: " + currSelected);
+    debugStrings.push("handle: " + handleType);
+    debugStrings.push("curr grabbed: (" + currGrabbed[0] + "," + currGrabbed[1] + "," + currGrabbed[2] + ")");
+    debugStrings.push("select coords: (" + Math.round(selectBox[0]) + ","  + Math.round(selectBox[1]) + "," + Math.round(selectBox[2]) + "," + Math.round(selectBox[3]) + ")");
+    debugStrings.push("num indices: (" + (indices.length-1) + ")");
+    drawDebugBox(debugStrings);
+    console.log('debug')
+  }
+  
   if (contextIsUp) {
     return;
   }
   
   if (stateOfMouse === "free") {
-    var emptyInit = (objUnderMouse[0] == "none");
+    // var emptyInit = (objUnderMouse[0] == "none");
     checkUnderMouse(evt);
-    var emptyFin = (objUnderMouse[0] == "none");
-    if (emptyInit != emptyFin) {
-      updateCursorStyle();
-    }
+    // var emptyFin = (objUnderMouse[0] == "none");
+    // if (emptyInit != emptyFin) {
+    //   updateCursorStyle();
+    // } else {
+    //   return;
+    // }
+    
   } else if (stateOfMouse === "anchoring") {
     var pos = getAbsMousePos(canvasBase, evt);
     var i = currGrabbed[1];
     var j = currGrabbed[2];
-    
     tensors[i].xanchors[j] = pos.x - tensors[i].bbox[4];
     tensors[i].yanchors[j] = pos.y - tensors[i].bbox[5];
     snapAnchorInside(i,j);
@@ -312,13 +445,27 @@ function onMouseMove(evt) {
     var pos = getAbsMousePos(canvasBase, evt);
     updateTensor(ind, 0, coordGrabbed[0], coordGrabbed[1], pos.x, pos.y);
     
+  } else if (stateOfMouse === "boxing") {
+    var ind = textBoxes.length - 1;
+    var pos = getAbsMousePos(canvasBase, evt);
+    updateTextBox(ind, coordGrabbed[0], coordGrabbed[1], pos.x, pos.y);
+    
   } else if (stateOfMouse === "resizing") {
     var pos = getAbsMousePos(canvasBase, evt);
     resizeTensor(currGrabbed[1], currGrabbed[2], coordGrabbed[0], coordGrabbed[1], pos.x, pos.y);
     
+  } else if (stateOfMouse === "boxresizing") {
+    var pos = getAbsMousePos(canvasBase, evt);
+    resizeTextBox(currGrabbed[1], currGrabbed[2], coordGrabbed[0], coordGrabbed[1], pos.x, pos.y);
+    
   } else if (stateOfMouse === "shifting") {
     var pos = getAbsMousePos(canvasBase, evt);
     updatePosCenter(pos.x, pos.y);
+    updateSelectionBox();
+    
+  } else if (stateOfMouse === "boxshifting") {
+    var pos = getAbsMousePos(canvasBase, evt);
+    updateBoxPosCenter(pos.x, pos.y);
     updateSelectionBox();
     
   } else if (stateOfMouse === "minishift") {
@@ -336,7 +483,7 @@ function onMouseMove(evt) {
     coordGrabbed = [pos.x, pos.y];
     drawGrid();
   } else if (stateOfMouse === "renaming") {
-   // console.log('miso') 
+    return;
   } else if (stateOfMouse === "startanchor") {
     var tolDist = 5;
     var pos = getMousePos(canvasBase, evt);
@@ -391,25 +538,6 @@ function onMouseMove(evt) {
   drawMinimap();
   drawTensors();
   updateNameboxPos();
-  
-  // code for debugging
-  if (showDebug) {
-    var pos = getAbsMousePos(canvasBase, evt);
-    var debugStrings = [];
-    debugStrings.push(
-      "held (" + Math.floor(pos.x) + "," + Math.floor(pos.y) + ")"
-    );
-    debugStrings.push("mouse: " + isLeftDown);
-    debugStrings.push("over (" + objUnderMouse[0] + "," + objUnderMouse[1] + "," + objUnderMouse[2] + ")");
-    debugStrings.push("state: " + stateOfMouse);
-    debugStrings.push("coord grabbed: (" + Math.round(coordGrabbed[0]) + "," + Math.round(coordGrabbed[1]) + ")");
-    debugStrings.push("selected: " + currSelected);
-    debugStrings.push("handle: " + handleType);
-    debugStrings.push("curr grabbed: (" + currGrabbed[0] + "," + currGrabbed[1] + "," + currGrabbed[2] + ")");
-    debugStrings.push("select coords: (" + Math.round(selectBox[0]) + ","  + Math.round(selectBox[1]) + "," + Math.round(selectBox[2]) + "," + Math.round(selectBox[3]) + ")");
-    debugStrings.push("num indices: (" + (indices.length-1) + ")");
-    drawDebugBox(debugStrings);
-  }
 }
 
 function applyZoom(evt) {

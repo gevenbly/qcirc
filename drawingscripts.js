@@ -3,9 +3,11 @@ functions for drawing to canvas
 */
 
 function drawTensors() {
+ 
   
   if (!canvasBasedNames) {
     updateTensorTags();
+    updateTextBoxTags();
   }
   
   // drawCircle(ctxT, a2rX(selectBox[4]),a2rY(selectBox[5]), circRad, circThick);
@@ -16,10 +18,38 @@ function drawTensors() {
   ctxT.setLineDash([]);
   
   
+  for (var i = 0; i < textBoxes.length; i++) {
+    var currFill = leftColorTypes[textBoxes[i].color];
+    var currFillDark = leftColorTypes[textBoxes[i].color + numColors];
+    var currFillLight = leftColorTypes[textBoxes[i].color + 2*numColors];
+    
+    // draw the main shape
+    var opac = 0.1;
+    drawTextBox(i,ctxT,currFill,currFillDark,opac,currFillLight);
+    if (currBoxSelected.indexOf(i) >= 0) {
+      drawTextBoxHandles(i,ctxT);
+    }
+    if (objUnderMouse[1]==i) {
+      drawTextBoxIcons(i,ctxT);
+    }
+  }
+  
+  
   var isOverObject = (objUnderMouse[0] === "tensor" || 
                       objUnderMouse[0] === "rename" || 
                       objUnderMouse[0] === "anchor" || 
                       objUnderMouse[0] === "handle");
+  
+  for (var j=0; j<3; j++) {
+    if (isOverObject) {
+      tensorIcons[j].setAttribute("display", "block");
+    } else {
+      tensorIcons[j].setAttribute("display", "none");
+    }
+  }
+  if (objUnderMouse[0] === "box" || objUnderMouse[0] === "boxrename") {
+    tensorIcons[1].setAttribute("display", "block");
+  }
   
   for (var i = 0; i < tensors.length; i++) {
     var currFill = leftColorTypes[tensors[i].color];
@@ -40,7 +70,6 @@ function drawTensors() {
       var opac = 0.8;
       var isDup = false;
     }
-    
     
     // draw the main shape
     if (tensors[i].type == 0) {
@@ -67,8 +96,8 @@ function drawTensors() {
     var xtemp = a2rX(tensors[ind].bbox[4] + tensors[ind].xanchors[jnd]);
     var ytemp = a2rY(tensors[ind].bbox[5] + tensors[ind].yanchors[jnd]);
     
-    ctxT.lineWidth = 3;
-    ctxT.strokeStyle = '#848484';
+    ctxT.lineWidth = 2;
+    ctxT.strokeStyle = '#c4c4c4';
     ctxT.beginPath();
     ctxT.moveTo(xtemp, ytemp);
     ctxT.lineTo(mousePos[0], mousePos[1]);
@@ -103,6 +132,8 @@ function drawTensors() {
     ctxT.rect(x0, y0, x1 - x0, y1 - y0);
     ctxT.stroke();
   }
+  
+  
 }
 
 function drawTensorTrap(i,ctx,theFillColor,theOutlineColor,opac) {
@@ -209,6 +240,74 @@ function drawTensorDome(i,ctx,theFillColor,theOutlineColor,opac) {
   ctx.stroke();
 }
 
+function drawTextBox(i,ctx,theFillColor,theOutlineColor,opac,theSelectColor) {
+  // set path
+  var x0 = roundHP(a2rX(textBoxes[i].bbox[0]));
+  var y0 = roundHP(a2rY(textBoxes[i].bbox[1]));
+  var width = Math.round(a2rX(textBoxes[i].bbox[2]) - a2rX(textBoxes[i].bbox[0]));
+  var height = Math.round(a2rY(textBoxes[i].bbox[3]) - a2rY(textBoxes[i].bbox[1]));
+  // roundRect(ctx, x0, y0, width, height, rectCornerRad);
+
+  ctx.fillStyle = theFillColor;
+  ctx.globalAlpha = opac;
+  ctx.strokeStyle = theOutlineColor;
+  ctx.lineWidth = 1;
+  // ctx.fill();
+  // ctx.stroke();
+  ctx.fillRect(x0, y0, width, height);
+  ctx.globalAlpha = 1.0;
+  ctx.strokeRect(x0, y0, width, height);
+  
+  if (stateOfMouse=="boxrenaming" && currGrabbed[1]==i) {
+    theSizingBox.innerText = "B" + i + ":" + theNamebox.value;
+    var tagHeight = theSizingBox.offsetHeight;
+    var tagWidth = theSizingBox.offsetWidth;
+  } else {
+    theSizingBox.innerText = "B" + i + ":" + textBoxes[i].name;
+    var tagHeight = theSizingBox.offsetHeight;
+    var tagWidth = theSizingBox.offsetWidth;
+  }
+  
+  var cornerRad = 10
+  ctx.beginPath();
+  ctx.moveTo(x0, y0+tagHeight);
+  ctx.lineTo(x0, y0);
+  ctx.lineTo(x0+tagWidth, y0);
+  ctx.lineTo(x0+tagWidth, y0+tagHeight-cornerRad);
+  ctx.quadraticCurveTo(x0+tagWidth, y0+tagHeight, x0+tagWidth-cornerRad, y0+tagHeight);
+  ctx.closePath();
+  if (objUnderMouse[0]=='box' && objUnderMouse[1]==i) {
+    ctx.fillStyle = theSelectColor;
+  } else {
+    ctx.fillStyle = theFillColor;
+  }
+  ctx.globalAlpha = 1;
+  ctx.fill();
+  
+  if (stateOfMouse=="boxrenaming" && currGrabbed[1]==i) {
+    // do nothing 
+  } else {
+    if (canvasBasedNames) {
+      ctx.textBaseline = "top";
+      ctx.font = "12px Verdana";
+      ctx.textAlign = "left";
+      ctx.fillStyle = "black";
+      ctx.fillText("B" + i + ":" + textBoxes[i].name, roundHP(x0)+4, roundHP(y0)+4);
+    } else {
+      console.log(allTextBoxTags[i])
+      allTextBoxTags[i].left = Math.round(x0 + leftMenuWidth)+'px';
+      allTextBoxTags[i].top = Math.round(y0 + topMenuHeight)+'px';
+    }
+  }
+  
+  
+  // if (objUnderMouse[0]=='box' && objUnderMouse[1]==i) {
+  //   textBoxes[i].tag.style.backgroundColor = theSelectColor;
+  // } else {
+  //   textBoxes[i].tag.style.backgroundColor = theFillColor;
+  // }
+}
+
 function drawTensorRectangle(i,ctx,theFillColor,theOutlineColor,opac) {
   // set path
   var x0 = a2rX(tensors[i].bbox[0]);
@@ -263,10 +362,13 @@ function drawTensorName(i,ctx) {
   var ymid = a2rY(tensors[i].bbox[5]);
   
   if (canvasBasedNames) {
-    ctx.font = "12px Verdana";
-    ctx.textAlign = "center";
-    ctx.fillStyle = "black";
-    ctx.fillText("T" + i + ":" + tensors[i].name, roundHP(xmid), roundHP(ymid) + 5); 
+    if (!(stateOfMouse == "renaming" && currGrabbed[1] == i)) {
+      ctx.textBaseline = "middle";
+      ctx.font = "12px Verdana";
+      ctx.textAlign = "center";
+      ctx.fillStyle = "black";
+      ctx.fillText("T" + i + ":" + tensors[i].name, Math.round(xmid), Math.round(ymid)); 
+    }
   } else {
     if (stateOfMouse == "renaming" && currGrabbed[1] == i) {
       allNameTags[i].style.display = "none";
@@ -283,10 +385,10 @@ function drawIndices() {
     if (indices[ind].connects[0]<0 || indices[ind].connects[2]<0) { //open index
       var i0 = Math.max(indices[ind].connects[0], indices[ind].connects[2]);
       var j0 = Math.max(indices[ind].connects[1], indices[ind].connects[3]);
-      var x0 = a2rX(tensors[i0].bbox[4] + tensors[i0].xanchors[j0]);
-      var y0 = a2rY(tensors[i0].bbox[5] + tensors[i0].yanchors[j0]);
-      var x1 = a2rX(tensors[i0].bbox[4] + indices[ind].end[0]);
-      var y1 = a2rY(tensors[i0].bbox[5] + indices[ind].end[1]);
+      var x0 = Math.round(a2rX(tensors[i0].bbox[4] + tensors[i0].xanchors[j0]));
+      var y0 = Math.round(a2rY(tensors[i0].bbox[5] + tensors[i0].yanchors[j0]));
+      var x1 = Math.round(a2rX(tensors[i0].bbox[4] + indices[ind].end[0]));
+      var y1 = Math.round(a2rY(tensors[i0].bbox[5] + indices[ind].end[1]));
       wasOpen = true;
       
       
@@ -295,15 +397,15 @@ function drawIndices() {
       var j0 = indices[ind].connects[1];
       var i1 = indices[ind].connects[2];
       var j1 = indices[ind].connects[3];
-      var x0 = a2rX(tensors[i0].bbox[4] + tensors[i0].xanchors[j0]);
-      var y0 = a2rY(tensors[i0].bbox[5] + tensors[i0].yanchors[j0]);
-      var x1 = a2rX(tensors[i1].bbox[4] + tensors[i1].xanchors[j1]);
-      var y1 = a2rY(tensors[i1].bbox[5] + tensors[i1].yanchors[j1]);
+      var x0 = Math.round(a2rX(tensors[i0].bbox[4] + tensors[i0].xanchors[j0]));
+      var y0 = Math.round(a2rY(tensors[i0].bbox[5] + tensors[i0].yanchors[j0]));
+      var x1 = Math.round(a2rX(tensors[i1].bbox[4] + tensors[i1].xanchors[j1]));
+      var y1 = Math.round(a2rY(tensors[i1].bbox[5] + tensors[i1].yanchors[j1]));
     }
 
     // draw index
     ctxT.lineWidth = 2;
-    ctxT.strokeStyle = '#848484';
+    ctxT.strokeStyle = '#c4c4c4';
     ctxT.beginPath();
     ctxT.moveTo(x0, y0);
     ctxT.lineTo(x1, y1);
@@ -318,21 +420,47 @@ function drawIndices() {
       ctxT.fill();
       ctxT.lineWidth = 1;
       if (objUnderMouse[0] == "openind" && objUnderMouse[1] == ind) {
-        ctxT.strokeStyle = "white";
-      } else {
         ctxT.strokeStyle = rectBorderCol;
+        if (objUnderMouse[2] == 0) {
+          ctxT.strokeStyle = "white";
+          ctxT.drawImage(endIcons[0],
+                         Math.round(x1 + iconPosEnd.x[0] - fieldIconWidth / 2),
+                         Math.round(y1 + iconPosEnd.y[0] - fieldIconHeight / 2))
+          ctxT.drawImage(endIcons[1],
+                         Math.round(x1 + iconPosEnd.x[1] - fieldIconWidth / 2),
+                         Math.round(y1 + iconPosEnd.y[1] - fieldIconHeight / 2))
+        } else if (objUnderMouse[2] == 1) {
+          ctxT.drawImage(endIcons[0],
+                         Math.round(x1 + iconPosEnd.x[0] - fieldIconWidth / 2),
+                         Math.round(y1 + iconPosEnd.y[0] - fieldIconHeight / 2))
+          ctxT.drawImage(endIcons[3],
+                         Math.round(x1 + iconPosEnd.x[1] - fieldIconWidth / 2),
+                         Math.round(y1 + iconPosEnd.y[1] - fieldIconHeight / 2))
+        } else if (objUnderMouse[2] == 2) {
+          ctxT.drawImage(endIcons[2],
+                         Math.round(x1 + iconPosEnd.x[0] - fieldIconWidth / 2),
+                         Math.round(y1 + iconPosEnd.y[0] - fieldIconHeight / 2))
+          ctxT.drawImage(endIcons[1],
+                         Math.round(x1 + iconPosEnd.x[1] - fieldIconWidth / 2),
+                         Math.round(y1 + iconPosEnd.y[1] - fieldIconHeight / 2))
+        }
       }
       ctxT.stroke();
       
+      // draw endpoint icons
+      
+    
+      // draw index numbers
       if (numericalInds) {
         ctxT.textAlign = "center";
         ctxT.fillStyle = "black";
+        ctxT.textBaseline = "middle";
         if ((tempLab+isOneBased)<10) {
           ctxT.font = "bold 10px Verdana";
-          ctxT.fillText(tempLab+isOneBased, x1, y1+4);
+          ctxT.fillText(tempLab+isOneBased, x1, y1);
         } else {
           ctxT.font = "bold 8px Verdana";
-          ctxT.fillText(tempLab+isOneBased, x1, y1+2);
+          ctxT.fillText(tempLab+isOneBased, x1, y1);
         }
       }
     }
@@ -347,7 +475,6 @@ function drawIndices() {
 }
 
 function drawIndexHandles(xc, yc, dx, dy) {
- 
   if (Math.abs(dx) < 1e-5 && Math.abs(dy) < 1e-5) {
     dx += 1e-5;
     dy += 1e-5;
@@ -356,25 +483,10 @@ function drawIndexHandles(xc, yc, dx, dy) {
   var indRad = 5;
   var tempRot = Math.atan2(dx, dy);
   ctxT.beginPath();
-  ctxT.fillStyle = '#848484';
+  ctxT.fillStyle = '#c4c4c4';
   ctxT.ellipse(xc-indRad*dx/cn, yc-indRad*dy/cn, indRad, 2*indRad, -tempRot+Math.PI, Math.PI, 2*Math.PI)
   ctxT.closePath();
   ctxT.fill();
-  
-//   ctxT.beginPath();
-//   ctxT.fillStyle = '#848484';
-//   ctxT.moveTo(xc+indRad*(-dx+dy), yc+indRad*(-dy-dx));
-//   ctxT.lineTo(xc+indRad*dy, yc-indRad*dx);
-//   ctxT.lineTo(xc-indRad*dy, yc+indRad*dx);
-//   ctxT.lineTo(xc+indRad*(-dx-dy), yc+indRad*(-dy+dx));
-//   ctxT.closePath();
-//   ctxT.fill();
-
-//   ctxT.beginPath();
-//   ctxT.fillStyle = '#848484';
-//   ctxT.arc(xc, yc, indRad*cn, 0, 2 * Math.PI, false);
-//   ctxT.closePath();
-//   ctxT.fill();
 }
 
 function drawAnchors(i,ctx) {
@@ -396,8 +508,8 @@ function drawAnchors(i,ctx) {
     if (j>=7) {anchorRoundness = 6}
     
     ctx.fillStyle = colTemp;
-    var xd = tensors[i].xanchors[j] * windowPos.zoom + xmid;
-    var yd = tensors[i].yanchors[j] * windowPos.zoom + ymid;
+    var xd = Math.round(tensors[i].xanchors[j] * windowPos.zoom + xmid);
+    var yd = Math.round(tensors[i].yanchors[j] * windowPos.zoom + ymid);
     roundRect(ctx, xd - anchorWidth/2, yd - anchorHeight/2,
               anchorWidth, anchorHeight, anchorRoundness);
     ctx.fill();
@@ -406,45 +518,83 @@ function drawAnchors(i,ctx) {
     if (numericalInds) {
       ctx.textAlign = "center";
       ctx.fillStyle = "black";
+      ctx.textBaseline = "middle";
       if ((j+isOneBased) < 10) {
         ctx.font = "bold 10px Verdana";
-        ctx.fillText(j+isOneBased, xd, yd+anchorHeight/2-2);
+        ctx.fillText(j+isOneBased, xd, yd);
       } else {
         ctx.font = "bold 8px Verdana";
-        ctx.fillText(j+isOneBased, xd, yd+anchorHeight/2-3);
+        ctx.fillText(j+isOneBased, xd, yd);
       }
     }
   }
 }
 
+function drawTextBoxIcons(i,ctx) {
+  
+  var xmid = Math.round(a2rX(textBoxes[i].bbox[0]));
+  var ymid = Math.round(a2rY(textBoxes[i].bbox[1]));
+  tensorIcons[1].style.left = xmid + leftMenuWidth + theSizingBox.offsetWidth + 'px';
+  tensorIcons[1].style.top = ymid + topMenuHeight + theSizingBox.offsetHeight/2  + 'px';
+  
+  if ((objUnderMouse[0] == "boxrename" || objUnderMouse[0] == "box") && objUnderMouse[1] == i) {
+    if (objUnderMouse[0] == "boxrename" && objUnderMouse[1] == i) {
+      tensorIcons[1].setAttribute("stroke", "white");
+    } else {
+      tensorIcons[1].setAttribute("stroke", "#c4c4c4");
+    }      
+  }
+}
+
 function drawTensorIcons(i,ctx) {
-  // if (currSelected.includes(i)) {
-    for (var j=0; j<numTensorIcons; j++) {
-      var xmid = Math.round(a2rX(tensors[i].bbox[4]));
-      var ymid = Math.round(a2rY(tensors[i].bbox[5]));
-      
-      if (objUnderMouse[0] == "rename" && objUnderMouse[1] == i && objUnderMouse[2] == j) {
-        ctx.drawImage(
-          tensorIcons[j+3],
-          Math.round(xmid + iconPos.x[j] - fieldIconWidth / 2),
-          Math.round(ymid + iconPos.y[j] - fieldIconHeight / 2)
-        );
-      } else {
-        ctx.drawImage(
-          tensorIcons[j],
-          Math.round(xmid + iconPos.x[j] - fieldIconWidth / 2),
-          Math.round(ymid + iconPos.y[j] - fieldIconHeight / 2)
-        );
-      }
+  for (var j=0; j<numTensorIcons; j++) {
+    var xmid = Math.round(a2rX(tensors[i].bbox[4]));
+    var ymid = Math.round(a2rY(tensors[i].bbox[5]));
+    var xpos = xmid + iconPos.x[j] - fieldIconWidth/2 + leftMenuWidth;
+    var ypos = ymid + iconPos.y[j] - fieldIconHeight/2 + topMenuHeight;
+    tensorIcons[j].style.left = xpos+'px';
+    tensorIcons[j].style.top = ypos+'px';
+    
+    if (objUnderMouse[0] == "rename" && objUnderMouse[1] == i && objUnderMouse[2] == j) {
+      tensorIcons[j].setAttribute("stroke", "white");
+    } else {
+      tensorIcons[j].setAttribute("stroke", "#c4c4c4");
     }
-  // }
+  }
+}
+
+function drawTextBoxHandles(i,ctx) {
+  ctx.lineWidth = 1;
+  ctx.fillStyle = "#eee";
+  ctx.strokeStyle = "#eee";
+  
+  var x0 = roundHP(a2rX(textBoxes[i].bbox[0]));
+  var y0 = roundHP(a2rY(textBoxes[i].bbox[1]));
+  var xf = roundHP(a2rX(textBoxes[i].bbox[2]));
+  var yf = roundHP(a2rY(textBoxes[i].bbox[3]));
+  var xmid = 0.5*(x0 + xf);
+  var ymid = 0.5*(y0 + yf);
+  var handleLocsX = [x0, xmid, xf, xf, xf, xmid, x0, x0,
+                     x0, xmid, xf, xf, xf, xmid, x0, x0];
+  var handleLocsY = [y0, y0, y0, ymid, yf, yf, yf, ymid,
+                     y0, y0, y0, ymid, yf, yf, yf, ymid];
+
+  for (var j=0; j<8; j++) {
+    ctx.beginPath();
+    ctx.arc(handleLocsX[j], handleLocsY[j], circRad, 0, 2 * Math.PI, false);
+    ctx.closePath();
+    ctx.fill();
+  }
+  ctx.beginPath();
+  ctx.rect(x0, y0, xf-x0, yf-y0);
+  ctx.stroke();
 }
 
 function drawTensorHandles(i,ctx) {
-  
   ctx.lineWidth = 1;
-  ctx.fillStyle = "#dddddd";
-  ctx.strokeStyle = "#505050";
+  ctx.strokeStyle = "#eee";
+  ctx.fillStyle = "#eee";
+  
   if (currSelected.includes(i)) {
     var x0 = roundHP(a2rX(tensors[i].bbox[0]));
     var y0 = roundHP(a2rY(tensors[i].bbox[1]));
@@ -459,11 +609,13 @@ function drawTensorHandles(i,ctx) {
     var handleLocsY = [y0, y0, y0, ymid, yf, yf, yf, ymid,
                        y0, y0, y0, ymid, yf, yf, yf, ymid];
     
-    for (var j=0; j<8; j++) {
-      drawCircle(ctx, handleLocsX[j+2*rot], handleLocsY[j+2*rot], circRad, circThick);
+    for (var j=0; j<8; j++) { 
+      ctx.beginPath();
+      ctx.arc(handleLocsX[j+2*rot], handleLocsY[j+2*rot], circRad, 0, 2 * Math.PI, false);
+      ctx.closePath();
+      ctx.fill();
     }
     
-    ctx.strokeStyle = "#c4c4c4";
     ctx.beginPath();
     ctx.lineWidth = 1;
     ctx.rect(x0, y0, xf-x0, yf-y0);
@@ -471,12 +623,12 @@ function drawTensorHandles(i,ctx) {
   }
 }
 
-function drawCircle(context, cX, cY, radius, thick) {
+function drawCircle(context, cX, cY, radius, ) {
   context.beginPath();
   context.arc(cX, cY, radius, 0, 2 * Math.PI, false);
   context.fill();
-  context.lineWidth = thick;
-  context.strokeStyle = "#003300";
+  // context.lineWidth = thick;
+  // context.strokeStyle = "#003300";
   context.stroke();
 }
 
@@ -500,14 +652,15 @@ function roundRect(ctx, x, y, width, height, radius) {
 function drawDebugBox(debugStrings) {
   const boxHeight = 20 + debugStrings.length * 30;
   const boxWidth = 300;
+  ctxM.clearRect(0, 0, canvasTensors.width, canvasTensors.height);
 
-  ctxB.fillStyle = "black";
-  ctxB.fillRect(10, 10, boxWidth, boxHeight);
-  ctxB.fillStyle = "red";
-  ctxB.font = "20px Arial";
-  ctxB.textAlign = "left";
+  ctxM.fillStyle = "black";
+  ctxM.fillRect(10, 10, boxWidth, boxHeight);
+  ctxM.fillStyle = "red";
+  ctxM.font = "20px Verdana";
+  ctxM.textAlign = "left";
   for (var i = 0; i < debugStrings.length; i++) {
-    ctxB.fillText(debugStrings[i], 10, 40 + 30 * i);
+    ctxM.fillText(debugStrings[i], 10, 40 + 30 * i);
   }
 }
 

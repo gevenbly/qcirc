@@ -1,3 +1,22 @@
+// naming box parameters
+var isNameboxActive = false;
+var xcoordNamebox = 0;
+var ycoordNamebox = 0;
+var widthNamebox = 400;
+var fontsizeNamebox = 12;
+
+// initialize the naming box
+var theNamebox = document.getElementById('nameBox');
+theNamebox.style.width = widthNamebox + 'px';
+theNamebox.style.fontSize = fontsizeNamebox + 'px';
+theNamebox.addEventListener('focusout', (evt) => {
+  doNameboxOut(evt);
+});
+theNamebox.addEventListener('focusin', (evt) => {
+  doNameboxIn(evt);
+});
+
+
 function checkValidName(inputtxt) { 
   var validLetters = /^[_0-9a-zA-Z]+$/;
   if (validLetters.test(inputtxt)) { 
@@ -10,63 +29,87 @@ function checkValidName(inputtxt) {
 }
 
 function updateNameboxPos() {
-  // reposition the name box
-  if (isNameboxActive) {
-    // do not allow name box to go out of bounds
-    var yfin = a2rY(ycoordNamebox) - 3;
-    if (yfin < fontsizeNamebox/2) {
-      yfin = fontsizeNamebox/2 + 1;
-    } else if ((yfin + fontsizeNamebox/2) > viewHeight) {
-      yfin = viewHeight - fontsizeNamebox/2 - 1;
+  if (stateOfMouse == 'renaming') {
+    // re-position the name box
+    if (isNameboxActive) {
+      var yfin = a2rY(ycoordNamebox);
+      var xfin = a2rX(xcoordNamebox);
+      theNamebox.style.top = Math.round(yfin - theNamebox.offsetHeight/2 + topMenuHeight) + "px";
+      theNamebox.style.left = Math.round(xfin - widthNamebox/2 + leftMenuWidth) + "px";
     }
-    var xfin = a2rX(xcoordNamebox) - 2;
-    if (xfin < widthNamebox/2) {
-      xfin = widthNamebox/2 + 1;
-    } else if ((xfin + widthNamebox/2) > viewWidth) {
-      xfin = viewWidth - widthNamebox/2 - 8;
-    }
-    // theNamebox.style.top = Math.round(yfin + topMenuHeight) + "px";
-    // console.log('naming')
-    // console.log(theNamebox.offsetHeight/2);
-    theNamebox.style.top = Math.round(yfin - theNamebox.offsetHeight/2 + topMenuHeight + 2) + "px";
-    theNamebox.style.left = Math.round(xfin - widthNamebox/2 + leftMenuWidth) + "px";
+  } else if (stateOfMouse == 'boxrenaming') {
+    var yfin = a2rY(ycoordNamebox);
+    var xfin = a2rX(xcoordNamebox);
+    theNamebox.style.top = Math.round(yfin + topMenuHeight) + 4 + "px";
+    theNamebox.style.left = Math.round(xfin + leftMenuWidth) + 4 + "px";
   }
 }
 
 function doNameboxIn(evt) {
-  xcoordNamebox = Math.round(tensors[currGrabbed[1]].bbox[4]);
-  ycoordNamebox = Math.round(tensors[currGrabbed[1]].bbox[5]);// + (4/windowPos.zoom)
-  updateNameboxPos();
-  theNamebox.value = tensors[currGrabbed[1]].name;
-  theNamebox.focus();
-  isNameboxActive = true;
-  theNamebox.style.zIndex = 200;
-  theNamebox.select();
-  
-  if (!canvasBasedNames) {
-    allNameTags[currGrabbed[1]].style.display = "none";
+  if (stateOfMouse == 'renaming') {
+    theNamebox.style.textAlign = "center";
+    xcoordNamebox = Math.round(tensors[currGrabbed[1]].bbox[4]);
+    ycoordNamebox = Math.round(tensors[currGrabbed[1]].bbox[5]);
+    updateNameboxPos();
+    theNamebox.value = tensors[currGrabbed[1]].name;
+    theNamebox.focus();
+    isNameboxActive = true;
+    theNamebox.style.zIndex = 200;
+    theNamebox.select();
+    if (!canvasBasedNames) {
+      allNameTags[currGrabbed[1]].style.display = "none";
+    }
+  } else if (stateOfMouse == 'boxrenaming') {
+    theNamebox.style.textAlign = "left";
+    xcoordNamebox = Math.round(textBoxes[currGrabbed[1]].bbox[0]);
+    ycoordNamebox = Math.round(textBoxes[currGrabbed[1]].bbox[1]);
+    updateNameboxPos();
+    theNamebox.value = textBoxes[currGrabbed[1]].name;
+    theNamebox.focus();
+    isNameboxActive = true;
+    theNamebox.style.zIndex = 200;
+    theNamebox.select();
   }
 }
 
 function doNameboxOut(evt) {
-  if (checkValidName(theNamebox.value)) {
-    tensors[currGrabbed[1]].name = theNamebox.value;
+  if (stateOfMouse == 'renaming') {
+    if (checkValidName(theNamebox.value)) {
+      tensors[currGrabbed[1]].name = theNamebox.value;
+    }
+    theNamebox.value = '';
+    theNamebox.style.zIndex = -200;
+    isNameboxActive = false;
+    xcoordNamebox = 0;
+    ycoordNamebox = 0;
+    if (!canvasBasedNames) {
+      allNameTags[currGrabbed[1]].style.display = "block";
+      allNameTags[currGrabbed[1]].innerHTML = "T" + currGrabbed[1] + ":" + tensors[currGrabbed[1]].name;
+    }
+
+    objUnderMouse[0] = "none";
+    objUnderMouse[1] = 0;
+    freeMouseState();
+    updateCursorStyle();
+    drawTensors();
+    theNamebox.blur();
+    
+  } else if (stateOfMouse == 'boxrenaming') {
+    if (checkValidName(theNamebox.value)) {
+      textBoxes[currGrabbed[1]].name = theNamebox.value;
+    }
+    theNamebox.value = '';
+    theNamebox.style.zIndex = -200;
+    isNameboxActive = false;
+    xcoordNamebox = 0;
+    ycoordNamebox = 0;
+
+    objUnderMouse[0] = "none";
+    objUnderMouse[1] = 0;
+    freeMouseState();
+    updateCursorStyle();
+    drawTensors();
+    theNamebox.blur();
   }
-  theNamebox.value = '';
-  theNamebox.style.zIndex = -200;
-  isNameboxActive = false;
-  xcoordNamebox = 0;
-  ycoordNamebox = 0;
-  if (!canvasBasedNames) {
-    allNameTags[currGrabbed[1]].style.display = "block";
-    allNameTags[currGrabbed[1]].innerHTML = "T" + currGrabbed[1] + ":" + tensors[currGrabbed[1]].name;
-  }
-  
-  objUnderMouse[0] = "none";
-  objUnderMouse[1] = 0;
-  freeMouseState();
-  updateCursorStyle();
-  drawTensors();
-  theNamebox.blur();
 }
 

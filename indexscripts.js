@@ -46,6 +46,42 @@ function createIndex(evt,i0,j0,i1,j1) {
   indices.push(tempIndex);
 }
 
+function incrementIndexLabel(j0) {
+  var i0 = Math.max(indices[j0].connects[0], indices[j0].connects[2]);
+  var tempgrp = makeLocalGroups(i0);
+  var tempAllOpen = [];
+  for (var jnd=0; jnd<tempgrp.olabs.length; jnd++) {
+    tempAllOpen.push(indices[tempgrp.olabs[jnd]].label);
+  }
+  var startLabel = indices[j0].label;
+  var tempPos = tempAllOpen.indexOf(startLabel+1);
+  if (tempPos>=0) {
+    indices[tempgrp.olabs[tempPos]].label = startLabel;
+    indices[j0].label = startLabel+1;
+  } else {
+    indices[j0].label = startLabel+1;
+  }
+}
+
+function decrementIndexLabel(j0) {
+  var i0 = Math.max(indices[j0].connects[0], indices[j0].connects[2]);
+  var tempgrp = makeLocalGroups(i0);
+  var tempAllOpen = [];
+  for (var jnd=0; jnd<tempgrp.olabs.length; jnd++) {
+    tempAllOpen.push(indices[tempgrp.olabs[jnd]].label);
+  }
+  var startLabel = indices[j0].label;
+  var tempPos = tempAllOpen.indexOf(startLabel-1);
+  if (tempPos>=0) {
+    indices[tempgrp.olabs[tempPos]].label = startLabel;
+    indices[j0].label = startLabel-1;
+  } else {
+    if (startLabel>0) {
+      indices[j0].label = startLabel-1;
+    }
+  }
+}
+
 function createFreeIndex(evt,i0,j0) {
   var pos = getAbsMousePos(canvasBase,evt); 
   var currIndex = indices.length;

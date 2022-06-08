@@ -72,8 +72,6 @@ function createYAnchors(anchorLocRadius) {
 
 function updateTensor(ind, subind, xfix, yfix, xnew, ynew) {
   // called when creating tensors 
-  
-  var num_tensors = tensors.length;
   if (gridSnap) {
     xnew = snapX(xnew);
     ynew = snapY(ynew);
@@ -212,6 +210,10 @@ function updatePosCenter(xpos, ypos) {
   for (var i=0; i<currSelected.length; i++) {
     var ind = currSelected[i];
     tensors[ind].bbox = addVector(tensors[ind].bbox, [xdiff, ydiff, xdiff, ydiff, xdiff, ydiff]);
+  }
+  for (var i=0; i<currBoxSelected.length; i++) {
+    var ind = currBoxSelected[i];
+    textBoxes[ind].bbox = addVector(textBoxes[ind].bbox, [xdiff, ydiff, xdiff, ydiff, xdiff, ydiff]);
   }
 }
 

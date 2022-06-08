@@ -2,39 +2,19 @@
 Declaration of global variables, listeners and initialization scripts
 */
 
-// const para = document.createElement("p");
-// const node = document.createTextNode("This is new.");
-// para.appendChild(node);
-// const element = document.getElementById("mainWindow");
-// element.appendChild(para);
-
-
 var isHomeMenuOpen = true;
 var mainWindow = document.getElementById("mainWindow");
-// mainWindow.style.visibility = 'hidden';
+
+const collectionComment = document.getElementsByClassName("commentTitle");
 
 var isOneBased = 0;
-var canvasBasedNames = true;
-
-// naming box parameters
-var theNamebox = document.getElementById('nameBox');
-theNamebox.style.width = widthNamebox + 'px';
-theNamebox.style.fontSize = fontsizeNamebox + 'px';
-theNamebox.addEventListener('focusout', (evt) => {
-  doNameboxOut(evt);
-});
-theNamebox.addEventListener('focusin', (evt) => {
-  doNameboxIn(evt);
-});
-var isNameboxActive = false;
-var xcoordNamebox = 0;
-var ycoordNamebox = 0;
-var widthNamebox = 100;
-var fontsizeNamebox = 16;
+var canvasBasedNames = false;
 
 // view window
-const topMenuHeight = 68;
 const leftMenuWidth = 80;
+const topMenuSingle = 34;
+const topMenuHeight = 2*topMenuSingle;
+
 
 var viewWidth = mainWindow.clientWidth - (leftMenuWidth + rightMenuWidth); 
 var viewHeight = mainWindow.clientHeight - (topMenuHeight); 
@@ -49,11 +29,29 @@ mainWindow.style.maxHeight = (spaceHeight + topMenuHeight) + "px";
 
 // text box window
 var codeTextNew = "x=0\n";
-codeTextNew += 'if x>1:\n '
-codeTextNew += '  nui=2\n'
+codeTextNew += '\uD83D\uDC04\n';
+codeTextNew += 'if x>1:\n ';
+codeTextNew += '  nui=2 \n';
+codeTextNew += '\u2386 \n';
+// codeTextNew += '\r';
+// codeTextNew += '\r';
+// "\u00a0
 var codeText = document.getElementById("codeText");
 var codeBox = document.getElementById("codeBox");
 codeText.appendChild(document.createTextNode(codeTextNew));
+
+rightCommentBox.appendChild(document.createTextNode("<b>hello</b>"));
+
+var parser = new DOMParser();
+var htmlDoc = parser.parseFromString("<b>hello</b>", 'text/html');
+
+// testDiv.appendChild(document.createTextNode(htmlDoc));
+// rightCommentBox.innerHTML += '<b>Glen</b>';
+
+// var el = document.createElement( 'html' );
+// el.innerHTML = "<html><head><title>titleTest</title></head><body><a href='test0'>test01</a><a href='test1'>test02</a><a href='test2'>test03</a></body></html>";
+
+// el.getElementsByTagName( 'a' ); // Live NodeList of your anchor elements
 
 // min tensor dimensions
 const minWidth = 10;
@@ -62,6 +60,7 @@ const minHeight = 10;
 // variables describing network
 var tensors = [];
 var indices = [0];  // 0th index is null by convention
+var textBoxes = [];
 var openIndices = [];
 
 indexInProgress = {// temp storage used when creating tensor
@@ -77,6 +76,7 @@ indexInProgress = {// temp storage used when creating tensor
 windowPosString = [JSON.stringify(windowPos)];
 tensorString = [JSON.stringify(tensors)];
 indexString = [JSON.stringify(indices)];
+textBoxesString = [JSON.stringify(textBoxes)];
 
 // canvases
 var canvasBase = document.getElementById("canvasHandles");
@@ -91,8 +91,7 @@ var ctxG = canvasBackground.getContext("2d");
 var ctxH = canvasHandles.getContext("2d");
 
 // styling
-const circThick = 1; // line thickness of handles
-const circRad = 5; // radius of handles
+const circRad = 5; // radius of resizing handles
 const rectCornerRad = 8; // rounded corner radius of rectangles
 const rectBorderCol = '#969696';
 const rectBorderWidth = 2;
@@ -139,6 +138,13 @@ showMiniElm.addEventListener('click', (event) => {
 });    
 var showCodeElm = document.getElementById("showCode");
 var showCode = showCodeElm.checked;
+if (showCode) {
+  rightGuiIsOpen = true;
+  rightMenuWidth = rightMenuWidthOpen;
+  rightMenu.style.width = rightMenuWidth + "px";
+  codeBox.style.display = "block";
+  rightGuiResizer.style.display = "block";
+}
 showCodeElm.addEventListener('click', (event) => {
   showCode = showCodeElm.checked;
   rightGuiIsOpen = !showCode;
@@ -168,6 +174,7 @@ var stateOfMouse = stateChoices[0];
 var coordGrabbed = [0, 0];
 var currGrabbed = ['none', 0, 0] // [type, index, subindex]
 var currSelected = []; // list of selected tensor indexes
+var currBoxSelected = []; // list of selected tensor indexes
 var handleType = 'none' // N,NE,E,SE,S,SW,W,NW
 var mousePos = [0,0];
 var selectBox = [0,0,0,0,0,0];
@@ -191,6 +198,7 @@ window.addEventListener("resize", resizeCanvas, false);
 
 // name tags for tensors
 allNameTags = [];
+allTextBoxTags = [];
 // allNameTags.push(document.getElementById("nametag0"));
 
 // allNameTags[0].insertAdjacentHTML("afterend","<div class='nametag' id='nametag1' style='display: block;'>T1:</div>");
@@ -231,6 +239,7 @@ if (isHomeMenuOpen) {
   document.getElementById('rightGui').style.display = "none";
   document.getElementById('leftGui').style.display = "none";
   document.getElementById('canvasWindow').style.display = "none";
+  document.getElementById('rightGuiResizer').style.display = "none";
 }
 
 

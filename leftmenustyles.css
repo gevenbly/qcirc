@@ -4,7 +4,7 @@
   width:80px;
   height:100%;
   left: 0px;
-  top: 68px;
+  top: 66px;
   z-index: 5;
   overflow:visible;
   background-color: #474747;
@@ -76,6 +76,15 @@ padding: 2px 0px 5px 0px;
 
 .fieldicon {
   stroke: black;
+  stroke-width: 4px;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  position: absolute;
+  z-index: 4;
+}
+
+.fieldicon2 {
+/*   stroke: black; */
   stroke-width: 4px;
   stroke-linejoin: round;
   stroke-linecap: round;

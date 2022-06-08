@@ -9,8 +9,8 @@ for (var j=0; j<5; j++) {
 }
 
 // html elements and listeners
-const allLeftIcons = [document.getElementById("selecticon"),
-                      document.getElementById("movingicon"),
+const allLeftIcons = [document.getElementById("texticon"),
+                      document.getElementById("selecticon"),
                       document.getElementById("rectangleicon"), 
                       document.getElementById("ellipseicon"), 
                       document.getElementById("hillicon"), 
@@ -26,7 +26,9 @@ const allLeftIcons = [document.getElementById("selecticon"),
                       document.getElementById("snapicon"),
                       document.getElementById("openicon"),
                       document.getElementById("copyicon"),
-                      document.getElementById("pasteicon")];   
+                      document.getElementById("pasteicon"),
+                      document.getElementById("undoicon"),
+                      document.getElementById("redoicon")];   
 
 // create darker and lighter tone palette
 for (var j=0; j<numColors; j++) {
@@ -43,6 +45,9 @@ function doLeftColor(selected) {
   clearColorBorder();
   for (var j=0; j<currSelected.length; j++) {
     tensors[currSelected[j]].color = leftColorSelected;
+  }
+  for (var j=0; j<currBoxSelected.length; j++) {
+    textBoxes[currBoxSelected[j]].color = leftColorSelected;
   }
   doLeftSelectedBorder();
   drawTensors();
@@ -105,7 +110,7 @@ function doLeftSelect(selected) {
 }
 
 function clearLeftShading() {
-  for (var i=2; i<allLeftIcons.length; i++) {
+  for (var i=0; i<allLeftIcons.length; i++) {
     allLeftIcons[i].style.backgroundColor = 'transparent'; 
     allLeftIcons[i].style.borderStyle = "none";
   }
@@ -113,7 +118,7 @@ function clearLeftShading() {
 
 function updateLeftSelect() {
   clearLeftShading();
-  if (leftSelectedType > 1) {
+  if (leftSelectedType > -1) {
     allLeftIcons[leftSelectedType].style.backgroundColor = greyHover;
     allLeftIcons[leftSelectedType].style.border = "1px solid #000000";
   }
@@ -165,9 +170,20 @@ function doLeftSnap() {
 }
 
 function doLeftOpen() {
-  reassignGroupIndices();
-  drawTensors();
+  if (tensors.length>0) {
+    reassignGroupIndices();
+    drawTensors();
+  }
 }
+
+function doLeftUndo() {
+  //todo
+}
+
+function doLeftRedo() {
+  //todo
+}
+
 
 function doLeftCopy() {
   navigator.clipboard.writeText(bufferSelection());

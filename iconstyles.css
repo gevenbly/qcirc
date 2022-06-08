@@ -1,41 +1,14 @@
-#leftGui img {
-   
-  box-sizing: border-box;
-  height: 42px;
-  padding: 0px 0px;
-  border-radius: 10px;
-}
 
-#leftIconBox{
-  height: 200px;
-  padding: 10px 0px;
-}
-
-#leftGui {
-  text-align:center;
-}
-
-/* #leftGui img:hover {
-  background-color: #303030;
-} */
-
-#openrighticon {
+.canvasIcon {
   position: absolute;
-  margin: 0;
-  padding: 0;
-  border: 0px red;
-  left: 2px;
-  top: 50%;
-  z-index: 1000;
+  z-index: 4;
+/*   top: 68px; */
+/*   left: 80px; */
+  stroke-width: 2px;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+/*   stroke: #c4c4c4; */
+/*   border: 1px red solid; */
+  width: 16px;
+  height: 16px;
 }
-
-#closerighticon {
-  position: absolute;
-  margin: 0;
-  padding: 0;
-  border: 0px red;
-  left: 2px;
-  top: 50%;
-  z-index: 1000;
-}
-

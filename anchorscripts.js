@@ -60,8 +60,8 @@ function createAnchor(ind) {
       var anchorLocRadiusX = 0.4*Math.abs(tensors[ind].bbox[2] - tensors[ind].bbox[0]);
       var anchorLocRadiusY = 0.4*(1-slope)*Math.abs(tensors[ind].bbox[3] - tensors[ind].bbox[1]); 
     }
-    tensors[ind].xanchors.push(-anchorLocRadiusX * Math.cos((rot*Math.PI/2) + (numAnchors+1)*2*Math.PI / (7.3)));
-    tensors[ind].yanchors.push(-anchorLocRadiusY * Math.sin((rot*Math.PI/2) + (numAnchors+1)*2*Math.PI / (7.3)));
+    tensors[ind].xanchors.push(Math.round(-anchorLocRadiusX * Math.cos((rot*Math.PI/2) + (numAnchors+1)*2*Math.PI / (7.3))));
+    tensors[ind].yanchors.push(Math.round(-anchorLocRadiusY * Math.sin((rot*Math.PI/2) + (numAnchors+1)*2*Math.PI / (7.3))));
     tensors[ind].connects.push(0);
   }
 }
@@ -91,8 +91,8 @@ function snapAnchorInside(i,j) {
     if (tensors[i].type == 0) {//rectangle
       var xdim = (tensors[i].bbox[2] - tensors[i].bbox[0]) / 2;
       var ydim = (tensors[i].bbox[3] - tensors[i].bbox[1]) / 2;
-      tensors[i].xanchors[j] = makeInRange(tensors[i].xanchors[j],-xdim,xdim);
-      tensors[i].yanchors[j] = makeInRange(tensors[i].yanchors[j],-ydim,ydim);
+      tensors[i].xanchors[j] = Math.round(makeInRange(tensors[i].xanchors[j],-xdim,xdim));
+      tensors[i].yanchors[j] = Math.round(makeInRange(tensors[i].yanchors[j],-ydim,ydim));
       
     } else if (tensors[i].type == 1) {//ellipse
       var adim = (tensors[i].bbox[2] - tensors[i].bbox[0]) / 2;
@@ -111,8 +111,8 @@ function snapAnchorInside(i,j) {
           loctemp = p;
         }
       }
-      tensors[i].xanchors[j] = adim*Math.cos(loctemp*2*Math.PI / tsteps);
-      tensors[i].yanchors[j] = bdim*Math.sin(loctemp*2*Math.PI / tsteps);
+      tensors[i].xanchors[j] = Math.round(adim*Math.cos(loctemp*2*Math.PI / tsteps));
+      tensors[i].yanchors[j] = Math.round(bdim*Math.sin(loctemp*2*Math.PI / tsteps));
       
     } else if (tensors[i].type == 2) {//dome
       var rot = tensors[i].rot
@@ -135,11 +135,11 @@ function snapAnchorInside(i,j) {
                 loctemp = p;
               }
             }
-            tensors[i].xanchors[j] = adim*Math.cos(loctemp*Math.PI / tsteps);
-            tensors[i].yanchors[j] = -bdim*Math.sin(loctemp*Math.PI / tsteps);
+            tensors[i].xanchors[j] = Math.round(adim*Math.cos(loctemp*Math.PI / tsteps));
+            tensors[i].yanchors[j] = Math.round(-bdim*Math.sin(loctemp*Math.PI / tsteps));
           } else {
-            tensors[i].xanchors[j] = makeInRange(tensors[i].xanchors[j],-adim,adim);
-            tensors[i].yanchors[j] = makeInRange(tensors[i].yanchors[j],-bdim,bdim);
+            tensors[i].xanchors[j] = Math.round(makeInRange(tensors[i].xanchors[j],-adim,adim));
+            tensors[i].yanchors[j] = Math.round(makeInRange(tensors[i].yanchors[j],-bdim,bdim));
           }
           break;
           
@@ -156,11 +156,11 @@ function snapAnchorInside(i,j) {
                 loctemp = p;
               }
             }
-            tensors[i].xanchors[j] = adim*Math.cos((loctemp*Math.PI / tsteps) - Math.PI/2);
-            tensors[i].yanchors[j] = -bdim*Math.sin((loctemp*Math.PI / tsteps) - Math.PI/2);
+            tensors[i].xanchors[j] = Math.round(adim*Math.cos((loctemp*Math.PI / tsteps) - Math.PI/2));
+            tensors[i].yanchors[j] = Math.round(-bdim*Math.sin((loctemp*Math.PI / tsteps) - Math.PI/2));
           } else {
-            tensors[i].xanchors[j] = makeInRange(tensors[i].xanchors[j],-adim,adim);
-            tensors[i].yanchors[j] = makeInRange(tensors[i].yanchors[j],-bdim,bdim);
+            tensors[i].xanchors[j] = Math.round(makeInRange(tensors[i].xanchors[j],-adim,adim));
+            tensors[i].yanchors[j] = Math.round(makeInRange(tensors[i].yanchors[j],-bdim,bdim));
           }
           break;
           
@@ -177,11 +177,11 @@ function snapAnchorInside(i,j) {
                 loctemp = p;
               }
             }
-            tensors[i].xanchors[j] = adim*Math.cos((loctemp*Math.PI / tsteps) - Math.PI);
-            tensors[i].yanchors[j] = -bdim*Math.sin((loctemp*Math.PI / tsteps) - Math.PI);
+            tensors[i].xanchors[j] = Math.round(adim*Math.cos((loctemp*Math.PI / tsteps) - Math.PI));
+            tensors[i].yanchors[j] = Math.round(-bdim*Math.sin((loctemp*Math.PI / tsteps) - Math.PI));
           } else {
-            tensors[i].xanchors[j] = makeInRange(tensors[i].xanchors[j],-adim,adim);
-            tensors[i].yanchors[j] = makeInRange(tensors[i].yanchors[j],-bdim,bdim);
+            tensors[i].xanchors[j] = Math.round(makeInRange(tensors[i].xanchors[j],-adim,adim));
+            tensors[i].yanchors[j] = Math.round(makeInRange(tensors[i].yanchors[j],-bdim,bdim));
           }
           break;
           
@@ -198,11 +198,11 @@ function snapAnchorInside(i,j) {
                 loctemp = p;
               }
             }
-            tensors[i].xanchors[j] = adim*Math.cos((loctemp*Math.PI / tsteps) - (3*Math.PI/2));
-            tensors[i].yanchors[j] = -bdim*Math.sin((loctemp*Math.PI / tsteps) - (3*Math.PI/2));
+            tensors[i].xanchors[j] = Math.round(adim*Math.cos((loctemp*Math.PI / tsteps) - (3*Math.PI/2)));
+            tensors[i].yanchors[j] = Math.round(-bdim*Math.sin((loctemp*Math.PI / tsteps) - (3*Math.PI/2)));
           } else {
-            tensors[i].xanchors[j] = makeInRange(tensors[i].xanchors[j],-adim,adim);
-            tensors[i].yanchors[j] = makeInRange(tensors[i].yanchors[j],-bdim,bdim);
+            tensors[i].xanchors[j] = Math.round(makeInRange(tensors[i].xanchors[j],-adim,adim));
+            tensors[i].yanchors[j] = Math.round(makeInRange(tensors[i].yanchors[j],-bdim,bdim));
           }
           break;
       }
@@ -219,68 +219,68 @@ function snapAnchorInside(i,j) {
           if (yc<ydim) {
             if (xc < -xdim+slope*xdim) {
               var pos = findLinePoint({x:-xdim, y:ydim}, {x:-xdim+slope*xdim, y:-ydim}, {x:xc, y:yc});
-              tensors[i].xanchors[j] = pos.x;
-              tensors[i].yanchors[j] = pos.y;
+              tensors[i].xanchors[j] = Math.round(pos.x);
+              tensors[i].yanchors[j] = Math.round(pos.y);
             } else if (xc > xdim-slope*xdim) {
               var pos = findLinePoint({x:xdim, y:ydim}, {x:xdim-slope*xdim, y:-ydim}, {x:xc, y:yc});
-              tensors[i].xanchors[j] = pos.x;
-              tensors[i].yanchors[j] = pos.y;
+              tensors[i].xanchors[j] = Math.round(pos.x);
+              tensors[i].yanchors[j] = Math.round(pos.y);
             } else
-              tensors[i].yanchors[j] = makeInRange(tensors[i].yanchors[j],-ydim,ydim);
+              tensors[i].yanchors[j] = Math.round(makeInRange(tensors[i].yanchors[j],-ydim,ydim));
           } else {
-            tensors[i].xanchors[j] = makeInRange(tensors[i].xanchors[j],-xdim,xdim);
-            tensors[i].yanchors[j] = makeInRange(tensors[i].yanchors[j],-ydim,ydim);
+            tensors[i].xanchors[j] = Math.round(makeInRange(tensors[i].xanchors[j],-xdim,xdim));
+            tensors[i].yanchors[j] = Math.round(makeInRange(tensors[i].yanchors[j],-ydim,ydim));
           }
           break;
         case 1:
           if (xc>(-xdim)) {
             if (yc < (-ydim+slope*ydim)) {
               var pos = findLinePoint({x:-xdim, y:-ydim}, {x:xdim, y:-ydim+slope*ydim}, {x:xc, y:yc});
-              tensors[i].xanchors[j] = pos.x;
-              tensors[i].yanchors[j] = pos.y;
+              tensors[i].xanchors[j] = Math.round(pos.x);
+              tensors[i].yanchors[j] = Math.round(pos.y);
             } else if (yc > (ydim-slope*ydim)) {
               var pos = findLinePoint({x:-xdim, y:ydim}, {x:xdim, y:ydim-slope*ydim}, {x:xc, y:yc});
-              tensors[i].xanchors[j] = pos.x;
-              tensors[i].yanchors[j] = pos.y;
+              tensors[i].xanchors[j] = Math.round(pos.x);
+              tensors[i].yanchors[j] = Math.round(pos.y);
             } else
-              tensors[i].xanchors[j] = makeInRange(tensors[i].xanchors[j],-xdim,xdim);
+              tensors[i].xanchors[j] = Math.round(makeInRange(tensors[i].xanchors[j],-xdim,xdim));
           } else {
-            tensors[i].xanchors[j] = makeInRange(tensors[i].xanchors[j],-xdim,xdim);
-            tensors[i].yanchors[j] = makeInRange(tensors[i].yanchors[j],-ydim,ydim);
+            tensors[i].xanchors[j] = Math.round(makeInRange(tensors[i].xanchors[j],-xdim,xdim));
+            tensors[i].yanchors[j] = Math.round(makeInRange(tensors[i].yanchors[j],-ydim,ydim));
           }
           break;
         case 2:
           if (yc>(-ydim)) {
             if (xc < -xdim+slope*xdim) {
               var pos = findLinePoint({x:-xdim+slope*xdim, y:ydim}, {x:-xdim, y:-ydim}, {x:xc, y:yc});
-              tensors[i].xanchors[j] = pos.x;
-              tensors[i].yanchors[j] = pos.y;
+              tensors[i].xanchors[j] = Math.round(pos.x);
+              tensors[i].yanchors[j] = Math.round(pos.y);
             } else if (xc > xdim-slope*xdim) {
               var pos = findLinePoint({x:xdim, y:-ydim}, {x:xdim-slope*xdim, y:ydim}, {x:xc, y:yc});
-              tensors[i].xanchors[j] = pos.x;
-              tensors[i].yanchors[j] = pos.y;
+              tensors[i].xanchors[j] = Math.round(pos.x);
+              tensors[i].yanchors[j] = Math.round(pos.y);
             } else
-              tensors[i].yanchors[j] = makeInRange(tensors[i].yanchors[j],-ydim,ydim);
+              tensors[i].yanchors[j] = Math.round(makeInRange(tensors[i].yanchors[j],-ydim,ydim));
           } else {
-            tensors[i].xanchors[j] = makeInRange(tensors[i].xanchors[j],-xdim,xdim);
-            tensors[i].yanchors[j] = makeInRange(tensors[i].yanchors[j],-ydim,ydim);
+            tensors[i].xanchors[j] = Math.round(makeInRange(tensors[i].xanchors[j],-xdim,xdim));
+            tensors[i].yanchors[j] = Math.round(makeInRange(tensors[i].yanchors[j],-ydim,ydim));
           }
           break;
         case 3:
           if (xc<xdim) {
             if (yc < (-ydim+slope*ydim)) {
               var pos = findLinePoint({x:-xdim, y:-ydim+slope*ydim}, {x:xdim, y:-ydim}, {x:xc, y:yc});
-              tensors[i].xanchors[j] = pos.x;
-              tensors[i].yanchors[j] = pos.y;
+              tensors[i].xanchors[j] = Math.round(pos.x);
+              tensors[i].yanchors[j] = Math.round(pos.y);
             } else if (yc > (ydim-slope*ydim)) {
               var pos = findLinePoint({x:-xdim, y:ydim-slope*ydim}, {x:xdim, y:ydim}, {x:xc, y:yc});
-              tensors[i].xanchors[j] = pos.x;
-              tensors[i].yanchors[j] = pos.y;
+              tensors[i].xanchors[j] = Math.round(pos.x);
+              tensors[i].yanchors[j] = Math.round(pos.y);
             } else
-              tensors[i].xanchors[j] = makeInRange(tensors[i].xanchors[j],-xdim,xdim);
+              tensors[i].xanchors[j] = Math.round(makeInRange(tensors[i].xanchors[j],-xdim,xdim));
           } else {
-            tensors[i].xanchors[j] = makeInRange(tensors[i].xanchors[j],-xdim,xdim);
-            tensors[i].yanchors[j] = makeInRange(tensors[i].yanchors[j],-ydim,ydim);
+            tensors[i].xanchors[j] = Math.round(makeInRange(tensors[i].xanchors[j],-xdim,xdim));
+            tensors[i].yanchors[j] = Math.round(makeInRange(tensors[i].yanchors[j],-ydim,ydim));
           }
           break;
       }
