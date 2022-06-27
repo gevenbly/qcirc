@@ -28,6 +28,35 @@ function findOpenIndices() {
   }
 }
 
+function updateIndexCenter(jnd) {
+  var i0 = indices[jnd].connects[0];
+  var j0 = indices[jnd].connects[1];
+  var i1 = indices[jnd].connects[2];
+  var j1 = indices[jnd].connects[3];
+  
+  if (indices[jnd].connects[0]<0) {// index origin is open
+    var x0 = tensors[i1].bbox[4] + indices[jnd].end[0];
+    var y0 = tensors[i1].bbox[5] + indices[jnd].end[1];
+    var x1 = tensors[i1].bbox[4] + tensors[i1].xanchors[j1];
+    var y1 = tensors[i1].bbox[5] + tensors[i1].yanchors[j1];
+    indices[jnd].center = [0.5*(x0+x1), 0.5*(y0+y1)];
+    
+  } else if (indices[jnd].connects[2]<0) {// index destination is open
+    var x0 = tensors[i0].bbox[4] + tensors[i0].xanchors[j0];
+    var y0 = tensors[i0].bbox[5] + tensors[i0].yanchors[j0];
+    var x1 = tensors[i0].bbox[4] + indices[jnd].end[0];
+    var y1 = tensors[i0].bbox[5] + indices[jnd].end[1];
+    indices[jnd].center = [0.5*(x0+x1), 0.5*(y0+y1)];
+    
+  } else {// index is closed
+    var x0 = tensors[i0].bbox[4] + tensors[i0].xanchors[j0];
+    var y0 = tensors[i0].bbox[5] + tensors[i0].yanchors[j0];
+    var x1 = tensors[i1].bbox[4] + tensors[i1].xanchors[j1];
+    var y1 = tensors[i1].bbox[5] + tensors[i1].yanchors[j1];
+    indices[jnd].center = [0.5*(x0+x1), 0.5*(y0+y1)];
+  }
+}
+
 function createIndex(evt,i0,j0,i1,j1) {
   var currIndex = indices.length;
   var numOpen = openIndices.length;
@@ -41,9 +70,12 @@ function createIndex(evt,i0,j0,i1,j1) {
     end: [0,0],
     center: [0,0],
     label: numOpen,
-    curved: false
+    curved: false,
+    type: currIndTypeSelected
     }
   indices.push(tempIndex);
+  var jnd = indices.length;
+  // updateIndexCenter(jnd-1);
 }
 
 function incrementIndexLabel(j0) {
@@ -115,10 +147,30 @@ function createFreeIndex(evt,i0,j0) {
     end: [x0-tensors[i0].bbox[4], y0-tensors[i0].bbox[5]],
     center: [0,0],
     label: openLab,
-    curved: false
+    curved: false,
+    type: currIndTypeSelected
     }
   indices.push(tempIndex);
   openIndices.push(currIndex);
+  var jnd = indices.length;
+  // updateIndexCenter(jnd-1);
+}
+
+function reverseIndexArrow(ind) {
+  var i0 = indices[ind].connects[0];
+  var j0 = indices[ind].connects[1];
+  var i1 = indices[ind].connects[2];
+  var j1 = indices[ind].connects[3];
+  if (i0 >= 0) {
+    tensors[i0].connects[j0] = -tensors[i0].connects[j0];
+  }
+  if (i1 >= 0) {
+    tensors[i1].connects[j1] = -tensors[i1].connects[j1];
+  }
+  indices[ind].connects[0] = i1;
+  indices[ind].connects[1] = j1;
+  indices[ind].connects[2] = i0; 
+  indices[ind].connects[3] = j0; 
 }
 
 function deleteIndex(ind) {

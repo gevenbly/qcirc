@@ -84,7 +84,11 @@ function doNameboxOut(evt) {
     ycoordNamebox = 0;
     if (!canvasBasedNames) {
       allNameTags[currGrabbed[1]].style.display = "block";
-      allNameTags[currGrabbed[1]].innerHTML = "T" + currGrabbed[1] + ":" + tensors[currGrabbed[1]].name;
+      if (tensors[currGrabbed[1]].conj) {
+        allNameTags[currGrabbed[1]].innerHTML = "T" + currGrabbed[1] + ":" + tensors[currGrabbed[1]].name + '*';
+      } else {
+        allNameTags[currGrabbed[1]].innerHTML = "T" + currGrabbed[1] + ":" + tensors[currGrabbed[1]].name;
+      }
     }
 
     objUnderMouse[0] = "none";
@@ -95,9 +99,9 @@ function doNameboxOut(evt) {
     theNamebox.blur();
     
   } else if (stateOfMouse == 'boxrenaming') {
-    if (checkValidName(theNamebox.value)) {
-      textBoxes[currGrabbed[1]].name = theNamebox.value;
-    }
+    // if (checkValidName(theNamebox.value)) {
+    textBoxes[currGrabbed[1]].name = theNamebox.value;
+    // }
     theNamebox.value = '';
     theNamebox.style.zIndex = -200;
     isNameboxActive = false;

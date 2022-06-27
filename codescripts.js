@@ -10,8 +10,11 @@ rightCommentBox.addEventListener('focusin', function(e) {
 
 rightCommentBox.addEventListener('focusout', function(e) {
   rightCommentBox.innerHTML = rightCommentBox.innerText;
-  MathJax.typeset();
 });
+
+
+
+
 
 codeText.addEventListener("paste", function(e) {
   e.preventDefault();

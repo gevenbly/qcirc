@@ -100,7 +100,14 @@ function resizeCanvas() {
     rightCommentHeight += newCodeHeight;
     rightCommentBox.style.setProperty('height', rightCommentHeight + "px");
   }
-  rightCodeBox.style.setProperty('height', viewHeight - (rightButtonContainer.getBoundingClientRect().top) + 10 + "px");
+  
+  rightCodeBox.style.setProperty('height', viewHeight - (rightGuiMidResizer.getBoundingClientRect().bottom) + 10 + "px");
+  // rightCodeBox.style.setProperty('height', viewHeight - (rightButtonContainer.getBoundingClientRect().top) + 10 + "px");
+  // rightCodeBox.style.maxHeight = viewHeight - (rightButtonContainer.getBoundingClientRect().top) + 10 + "px";
+  // console.log('hello')
+  // console.log(viewHeight)
+  // console.log(rightButtonContainer.getBoundingClientRect().top)
+  // console.log(viewHeight - (rightButtonContainer.getBoundingClientRect().top) + 10)
   
   var newLeftWidth = mainWindow.clientWidth - rightMenuWidthOpen - leftMenuWidth;
   if (newLeftWidth < 0) {
@@ -112,7 +119,7 @@ function resizeCanvas() {
   // rightCommentBox.style.width = rightMenuWidth - 10;
   // rightCommentTitle.style.width = rightMenuWidth - 10;
  
-  
+  rightCommentTitle.style.width = rightMenuWidth -13 + "px";
   
   drawGrid();
   drawTensors();

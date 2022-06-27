@@ -15,7 +15,9 @@ function showContextMenu(evt) {
     setTimeout(function() {
       contextMenu.visibility = "hidden";
       contextIsUp = false;
+       drawTensors();
     }, 10);
+   
   }, false);
 }
 
@@ -24,7 +26,7 @@ function doContextCancel() {
   for (var j=0; j<numSelected; j++) {
     deleteLastTensor();
   }
-  drawTensors();
+  // drawTensors();
 }
 
 function doContextMove() {
@@ -39,11 +41,12 @@ function doContextMove() {
   currSelected = mapSelectNewOld.splice(numTensors-numSelected,numSelected);
   updatePosCenter(mousePos[0], mousePos[1]);
   updateSelectionBox();
-  drawTensors();
+  // drawTensors();
 }
 
 function doContextCopy() {
-  drawTensors();
+  // drawTensors();
+  updateTensorTags();
 }
 
 

@@ -4,42 +4,66 @@ the mouse is over.
 */
     
 function checkUnderMouse(evt) {
-  if (stateOfMouse != "renaming") {
-    var pos = getMousePos(canvasBase, evt);
-    if (showMini) {
-      if (checkMinimapMouse(pos)) {
-        return;
-      }
+  var pos = getMousePos(canvasBase, evt);
+  if (showMini) {
+    if (checkMinimapMouse(pos)) {
+      return;
     }
-    for (var ind=textBoxes.length - 1; ind >= 0; ind--) {
-      theSizingBox.innerText = "B" + ind + ":" + textBoxes[ind].name;
-      if (checkBoxMouse(pos,ind)) {
-        return;
-      } else if (checkBoxHandlesMouse(pos,ind)) {
-        return;
-      } else if (checkBoxRenameMouse(pos,ind)) {
-        return;
-      }
+  }
+  
+  if (stateOfMouse == "renaming") {
+    return;
+  }
+ 
+  if (stateOfMouse == "connecting") {
+    for (var ind=tensors.length - 1; ind >= 0; ind--) {
+      if (checkAnchorsMouse(pos,ind)) {return};
     }
     
-    for (var ind=tensors.length - 1; ind >= 0; ind--) {
-      if (checkHandlesMouse(pos,ind)) {
-        return;
-      } else if (checkAnchorsMouse(pos,ind)) {
-        return;
-      } else if (checkOpenMouse(pos,ind)) {
-        return;
-      } else if (checkRenameMouse(pos,ind)) {
-        return;
-      } else if (checkTensorMouse(pos,ind)) {
-        return;
-      }
-    }
     // mouse is over nothing special
     objUnderMouse[0] = "none";
     objUnderMouse[1] = 0;
     return;
   }
+  
+ 
+  for (var ind=textBoxes.length - 1; ind >= 0; ind--) {
+    theSizingBox.innerText = "B" + ind + ":" + textBoxes[ind].name;
+    if (checkBoxMouse(pos,ind)) {
+      return;
+    } else if (checkBoxHandlesMouse(pos,ind)) {
+      return;
+    } else if (checkBoxRenameMouse(pos,ind)) {
+      return;
+    }
+  }
+
+  for (var ind=tensors.length - 1; ind >= 0; ind--) {
+    if (checkHandlesMouse(pos,ind)) {
+      return;
+    } else if (checkAnchorsMouse(pos,ind)) {
+      return;
+    } else if (checkOpenMouse(pos,ind)) {
+      return;
+    } else if (checkRenameMouse(pos,ind)) {
+      return;
+    }
+  }
+
+  if (checkIndexMouse(pos)) {
+    return;
+  }
+
+  for (var ind=tensors.length - 1; ind >= 0; ind--) {
+    if (checkTensorMouse(pos,ind)) {
+      return;
+    }
+  }
+  // mouse is over nothing special
+  objUnderMouse[0] = "none";
+  objUnderMouse[1] = 0;
+  return;
+  
 }
 
 function freeMouseState() {
@@ -88,8 +112,8 @@ function freeMouseState() {
       currBoxSelected = [];
     } else {
       leftSelectedType = 1;
-      currBoxSelected = [];
-      currBoxSelected.push(ind);
+      currBoxSelected = [ind];
+      rightHighlight = ind;
       currSelected = [];
       updateLeftSelect();
       currGrabbed[0] = "box"; 
@@ -255,6 +279,12 @@ function checkBoxMouse(pos,ind) {
 }
 
 function checkOpenMouse(pos,ind) {
+  if ((stateOfMouse == "connecting") && (currGrabbed[1] == ind)) {
+    var jcon = currGrabbed[2]; 
+  } else {
+    var jcon = -1;
+  }
+  
   var num_anchors = tensors[ind].xanchors.length;
   var xmid = tensors[ind].bbox[4];
   var ymid = tensors[ind].bbox[5];
@@ -262,7 +292,7 @@ function checkOpenMouse(pos,ind) {
   
   for (var j = 0; j < num_anchors; j++) {
     var jnd = tensors[ind].connects[j];
-    if (openIndices.indexOf(Math.abs(jnd)) >= 0) {
+    if ((openIndices.indexOf(Math.abs(jnd)) >= 0) && (j!=jcon)) {
       var xc = a2rX(indices[Math.abs(jnd)].end[0] + xmid);
       var yc = a2rY(indices[Math.abs(jnd)].end[1] + ymid);
      
@@ -272,20 +302,53 @@ function checkOpenMouse(pos,ind) {
         objUnderMouse[2] = 0;
         updateCursorStyle();
         return true;
-      } else if (Math.abs(xc - pos.x - iconPosEnd.x[0]) < (fieldIconWidth/2) &&
-                 Math.abs(yc - pos.y - iconPosEnd.y[0]) < (fieldIconHeight/2)) {
+      } else if (Math.abs(xc - pos.x - openIconPos.x[0]) < (fieldIconWidth/2) &&
+                 Math.abs(yc - pos.y - openIconPos.y[0]) < (fieldIconHeight/2)) {
         objUnderMouse[0] = "openind";
         objUnderMouse[1] = Math.abs(jnd);
         objUnderMouse[2] = 1;
         updateCursorStyle();
         return true;
-      } else if (Math.abs(xc - pos.x - iconPosEnd.x[1]) < (fieldIconWidth/2) &&
-                 Math.abs(yc - pos.y - iconPosEnd.y[1]) < (fieldIconHeight/2)) {
+      } else if (Math.abs(xc - pos.x - openIconPos.x[1]) < (fieldIconWidth/2) &&
+                 Math.abs(yc - pos.y - openIconPos.y[1]) < (fieldIconHeight/2)) {
         objUnderMouse[0] = "openind";
         objUnderMouse[1] = Math.abs(jnd);
         objUnderMouse[2] = 2;
         updateCursorStyle();
         return true;
+      }
+    }
+  }
+  return false;
+}
+
+function checkIndexMouse(pos) {
+  if (stateOfMouse == "connecting") {
+    return false;
+  }
+  var indHandleRad = 8;
+  indHandleRad *= 1.5;
+  for (var jnd = 1; jnd < indices.length; jnd++) {
+    updateIndexCenter(jnd);
+    var xc = a2rX(indices[jnd].center[0]);
+    var yc = a2rY(indices[jnd].center[1]);
+    if (isInCircle(pos, xc, yc, indHandleRad)) {
+      objUnderMouse[0] = "indexhandle";
+      objUnderMouse[1] = jnd;
+      objUnderMouse[2] = 0;
+      return true;
+    } else {
+      for (var k=0; k<indexIconPos.x.length; k++) {
+        // console.log(Math.abs(xc - pos.x + indexIconPos.x[k]))
+        // console.log(Math.abs(yc - pos.y + indexIconPos.y[k]))
+        if (Math.abs(xc - pos.x + indexIconPos.x[k]) < (fieldIconWidth/2) &&
+            Math.abs(yc - pos.y + indexIconPos.y[k]) < (fieldIconHeight/2)) {
+          objUnderMouse[0] = "indexhandle";
+          objUnderMouse[1] = jnd;
+          objUnderMouse[2] = k+1;
+          updateCursorStyle();
+          return true;
+        }
       }
     }
   }
@@ -330,7 +393,7 @@ function checkBoxRenameMouse(pos,ind) {
 }
 
 function checkRenameMouse(pos,ind) {
-  for (var j=0; j<numTensorIcons; j++) {
+  for (var j=0; j<iconPos.x.length; j++) {
     var xmid = a2rX(tensors[ind].bbox[4]) + iconPos.x[j];
     var ymid = a2rY(tensors[ind].bbox[5]) + iconPos.y[j];
     

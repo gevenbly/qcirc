@@ -4,41 +4,27 @@ functions that resolve keyboard events
 
 function onKeyDown(evt) {
   var pos = getAbsMousePos(canvasBase, evt);
-
-//   console.log(commentBox.innerText);
-
-//   var doc = new DOMParser().parseFromString(
-//       commentBox.innerText,
-//       "text/html"
-//     );
-//     var text = doc.body.textContent;
-    // console.log(text);
   
-//   let nextText = text
-//       // carriage returns, tabs, and newlines at the beginning
-//       .replace(/^[\r\t\n]+/, "")
-
-//       // carriage returns, tabs, and newlines at the end
-//       .replace(/[\r\t\n]+$/, "")
-
-//       // condense sequential carriage returns and newlines anywhere
-//       .replace(/([\r\n]\s?){2,}/g, "\n\n")
-
-//       // sequential spaces including unicode nbsp
-//       .replace(/[\u00A0 ]+/g, " ")
-
-//       // replace bullet-like characters with actual bullet
-//       .replace(/[\u2219|\u00B7]/g, "\u2022")
-
-//       // standalone newlines between words should be spaces
-//       .replace(/([^\n])\n(?=\w)/g, "$1 ");
-//   console.log(nextText);
-  // console.log(document.activeElement=="codeText")
-  // console.log(document.activeElement)
+  if (isInfoBoxActive) {
+    if (event.keyCode == 13) {// enter
+      if (document.activeElement.className == "indNamerBox") {
+        // prevent creating newline
+        evt.preventDefault();
+        evt.stopPropagation();
+        document.activeElement.blur();
+      } else if (document.activeElement.className == "indNumberBox") {
+        document.activeElement.blur();
+      }
+    }
+    return;
+  }
+  
+  // commentBox
 
   if (document.activeElement==document.getElementById("codeText")) {
+    // prevent scrolling out of codebox
     if(event.keyCode == 40 || event.keyCode == 39) {
-      var locTemp = Cursor.getCurrentCursorPosition(codeText);
+      var locTemp = Cursor.getPositionStart(codeText);
       var locMax = codeText.innerText.length;
       if (locMax - locTemp < 2) {
         evt.preventDefault();
@@ -47,22 +33,6 @@ function onKeyDown(evt) {
     }
     return;
   }
-
-  //   if(event.keyCode == 13) {// enter
-  //     var cloc = Cursor.getCurrentCursorPosition(codeText);
-  //     Prism.highlightAll();
-  //     Cursor.setCurrentCursorPosition(cloc, codeText);
-  //   }
-
-  //   if(event.keyCode == 8) {// backspace
-  //     var cloc = Cursor.getCurrentCursorPosition(codeText);
-  //     Prism.highlightAll();
-  //     Cursor.setCurrentCursorPosition(cloc, codeText);
-  //   }
-
-  // console.log(Cursor.getCurrentCursorPosition(codeText))
-  // console.log(codeText.innerText)
-  // console.log(codeText.innerText.length - Cursor.getCurrentCursorPosition(codeText))
 
   if (isProjectBoxActive) {
     if (event.keyCode == 27) {
@@ -93,11 +63,7 @@ function onKeyDown(evt) {
     return;
   }
 
-  if (event.keyCode == 9) {
-    //tab key
-    evt.preventDefault();
-    evt.stopPropagation();
-  }
+  
 
   if (event.keyCode == 46) {
     // delete tensor
@@ -118,30 +84,78 @@ function onKeyDown(evt) {
       currSelected = [];
     }
   } else if (event.keyCode == 67) {
-    // 'c' append to code
-    // var xtemp = Prism.highlight(codeTextNew, Prism.languages.python);
-    // codeText.appendChild(document.createTextNode(codeTextNew));
-    // Prism.highlightAll();
-    // codeText += xtemp
-    // Prism.highlight(codeText, Prism.languages.python);
-    // var Prism = require('prismjs');
-    // codeText.innerHTML = Prism.highlight(codeTextNew, Prism.languages.python);
-    // codeText.innerHTML = codeTextNew;
-    // document.getElementById("codeWindow").innerHTML = "# The code environment\n";
-    // location.reload();
+    // conjugation 'c'
+    for (var j=0; j<currSelected.length; j++){
+      tensors[currSelected[j]].conj = !tensors[currSelected[j]].conj;
+    }
+    updateTensorTags();
   }
+  
+  if (event.keyCode == 192) {// `
+    mainBoxData.commentjax = "";
+    mainBoxData.codeprism = "";
+    for (var j=0; j<textBoxes.length; j++) {
+      textBoxes[j].commentjax = "";
+      textBoxes[j].codeprism = "";
+    }
+    var clipData = {tensors: tensors, 
+                    indices: indices,
+                    textBoxes: textBoxes,
+                    mainBoxData: mainBoxData,
+                    indexConfigs: indexConfigs,
+                    numUniqueInds: numUniqueInds,
+                    windowPos: windowPos
+                   };
+    allTheData = JSON.stringify(clipData);
+    console.log(JSON.stringify(allTheData)); 
+  }
+  
+  if (event.keyCode == 33) {// pageup
+    stateOfMouse = "free";
+    currSelected = [];
+    currBoxSelected = [];
+    
+    var clipData = JSON.parse(allTheData);
+    tensors = clipData.tensors;
+    indices = clipData.indices;
+    textBoxes = clipData.textBoxes;
+    mainBoxData = clipData.mainBoxData;
+    indexConfigs = clipData.indexConfigs;
+    numUniqueInds = clipData.numUniqueInds;
+    windowPos = clipData.windowPos;
 
+    windowWidth = viewWidth / windowPos.zoom;
+    windowHeight = viewHeight / windowPos.zoom;
+    if ((windowPos.x + windowWidth) > spaceWidth) {
+      windowPos.x = spaceWidth - windowWidth;
+    }
+    if ((windowPos.y + windowHeight) > spaceHeight) {
+      windowPos.y = spaceHeight - windowHeight;
+    }
+    
+    for (var j=1; j<14; j++) {
+      if (j <= textBoxes.length) {
+        collectionComment[j].style.display = 'inline-block';
+      } else {
+        collectionComment[j].style.display = 'none';
+      }
+    }
+    
+
+    updateTensorTags();
+    updateTextBoxTags();
+    findOpenIndices();
+    drawGrid();
+    drawMinimap();
+    drawTensors();
+  }
+  
   if (event.keyCode == 37) {
     // left arrow
     windowPos.x -= mainScrollSpeed;
     if (windowPos.x < 0) {
       windowPos.x = 0;
     }
-
-    // const ke = new KeyboardEvent('keydown', {
-    //   bubbles: true, cancelable: true, keyCode: 13
-    // });
-    // document.body.dispatchEvent(ke);
   } else if (event.keyCode == 39) {
     // right arrow
     windowPos.x += mainScrollSpeed;
@@ -160,106 +174,61 @@ function onKeyDown(evt) {
     if (windowPos.y > spaceHeight - windowHeight) {
       windowPos.y = spaceHeight - windowHeight;
     }
-  } else if (event.keyCode == 82) {
-    // r key
-    // theNamebox.focus(evt);
-  } else if (event.keyCode == 70) {
-    // f key
+  } else if (event.keyCode == 80) {
+    // p key
     console.log(tensors);
     console.log(indices);
     console.log(openIndices);
-    // console.log(tensorGroups);
-  } else if (event.keyCode == 71) {
-    // g key
-    // copySelection();
-    // makeTensorGroups();
-    reassignAllGroupIndices();
-  } else if (event.keyCode == 72) {
-    // h key
-    roundAllCoords();
-    var x = JSON.stringify(tensors);
-    console.log(x);
-    var y = JSON.stringify(indices);
-    console.log(y);
-    // var y = JSON.parse(x);
-    // console.log(y);
-  } else if (event.keyCode == 74) {
-    // j
-    snapAllAnchors();
-  } else if (event.keyCode == 78) {
-    // n
-    doSwitchTab(currProjectOpen + 1);
-    currProjectOpen = numProjectsOpen;
-    numProjectsOpen += 1;
-    allProjectTabs[currProjectOpen].style.display = "block";
-    updateTabSelect();
-    // allProjectTabs[0].style.backgroundColor = "black";
-    // allProjectTabs[currProjectOpen].style.backgroundColor = "#474747";
-  } else if (event.keyCode == 66) {
-    // b
-    var clipData = bufferSelection();
-
-    download(clipData, allProjectNames[currProjectOpen], "qc");
-
-    //       console.log(clipData)
-
-    //       unpackBufferSelection(clipData);
-    //       shiftSelectBoxWindow();
-    // } else if (event.keyCode == 77) {//m
-    //   doFileOpen();
-  } else if (event.keyCode == 83) {
-    localStorage["data"] = JSON.stringify(tensors);
-  } else if (event.keyCode == 76) {
-    //l
-    console.log(tensors);
-    tensors = JSON.parse(localStorage["data"]);
-  } else if (event.keyCode == 220) {
-    // \
-
-    var doc = new DOMParser().parseFromString(
-      commentBox.innerText,
-      "text/html"
-    );
-    var text = doc.body.textContent;
-    console.log(text);
-
-    let nextText = text
-      // carriage returns, tabs, and newlines at the beginning
-      .replace(/^[\r\t\n]+/, "")
-
-      // carriage returns, tabs, and newlines at the end
-      .replace(/[\r\t\n]+$/, "")
-
-      // condense sequential carriage returns and newlines anywhere
-      .replace(/([\r\n]\s?){2,}/g, "\n\n")
-
-      // sequential spaces including unicode nbsp
-      .replace(/[\u00A0 ]+/g, " ")
-
-      // replace bullet-like characters with actual bullet
-      .replace(/[\u2219|\u00B7]/g, "\u2022")
-
-      // standalone newlines between words should be spaces
-      .replace(/([^\n])\n(?=\w)/g, "$1 ");
-
-    // console.log(nextText, JSON.stringify(nextText))
-    document.execCommand("insertText", false, nextText);
-    // var infoWindow=window.open('');
-    // infoWindow.document.write("<div id='hello'>hey<div>");
-  } else if (event.keyCode == 191) {
+  } else if (event.keyCode == 191) {//?
     canvasBasedNames = !canvasBasedNames;
-    for (var jnd = 0; jnd < allNameTags.length; jnd++) {
-      allNameTags[jnd].remove();
+    if (canvasBasedNames) { 
+      for (var jnd = 0; jnd < allNameTags.length; jnd++) {
+        allNameTags[jnd].remove();
+      }
+      allNameTags = [];
+    } else {
+      updateTensorTags();
     }
-    allNameTags = [];
   }
 
-  // console.log(event.keyCode)
   drawMinimap();
   drawGrid();
   drawTensors();
-
   console.log(event.keyCode);
+  
+//   if (event.keyCode == 9) {//tab key
+//     // prevent tab from switching window focus
+//     evt.preventDefault();
+//     evt.stopPropagation();
+    
+//     // insert two space in correct place
+//     var doc = codeText.ownerDocument.defaultView;
+//     var sel = doc.getSelection();
+//     var range = sel.getRangeAt(0);
+//     var tabNode = document.createTextNode("\u00a0\u00a0");
+//     range.insertNode(tabNode);
+
+//     range.setStartAfter(tabNode);
+//     range.setEndAfter(tabNode); 
+//     sel.removeAllRanges();
+//     sel.addRange(range);
+    
+//     console.log(document.activeElement)
+//   }
+  
+  
 }
 
-function onKeyUp(evt) {}
+function onKeyUp(evt) {
+//   if(event.keyCode == 13) {// enter
+//     var cloc = Cursor.getCurrentCursorPosition(codeText);
+//     Prism.highlightAll();
+//     Cursor.setCurrentCursorPosition(cloc, codeText);
+//   }
+  
+//   if(event.keyCode == 8) {// backspace
+//     var cloc = Cursor.getCurrentCursorPosition(codeText);
+//     Prism.highlightAll();
+//     Cursor.setCurrentCursorPosition(cloc, codeText);
+//   }
+}

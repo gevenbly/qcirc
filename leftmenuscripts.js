@@ -37,6 +37,9 @@ for (var j=0; j<numColors; j++) {
 for (var j=0; j<numColors; j++) {
   leftColorTypes.push(lightenColor(leftColorTypes[j], +5))
 }
+for (var j=0; j<numColors; j++) {
+  leftColorTypes.push(lightenColor(leftColorTypes[j], -15))
+}
 allLeftCols[leftColorSelected].style.border = "1px solid black";
 
 // functions
@@ -49,21 +52,19 @@ function doLeftColor(selected) {
   for (var j=0; j<currBoxSelected.length; j++) {
     textBoxes[currBoxSelected[j]].color = leftColorSelected;
   }
+  doRightUnselect();
   doLeftSelectedBorder();
   drawTensors();
 }
 
 function doLeftSelectedBorder() {
   if (currSelected.length == 0) {
-    // allLeftCols[leftColorSelected].style.border = "2px solid black";
     allLeftCols[leftColorSelected].style.border = "1px solid black";
   } else if (currSelected.length == 1) {
     var tempcolor = tensors[currSelected[0]].color;
-    // allLeftCols[currSelected[0]].style.border = "2px solid black";
     allLeftCols[tempcolor].style.border = "1px solid black";
   } else {
     if (checkIfMonotone()) {
-      // allLeftCols[currSelected[0]].style.border = "2px solid black";
       var tempcolor = tensors[currSelected[0]].color;
       allLeftCols[tempcolor].style.border = "1px solid black";
     }

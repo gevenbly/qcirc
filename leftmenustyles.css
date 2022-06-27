@@ -30,8 +30,6 @@
   height: 32px;
   border-radius: 10px;
   box-sizing: border-box;
-/*   border: 1px red solid; */
-  
 }
 
 .colicon {
@@ -44,34 +42,22 @@
   box-sizing: border-box;
 }
 
-/* .colicon:hover {
-  border: 1px gold solid;
-} */
-
 #colorbox {
-/*   display: block; */
   padding: 0px 0px;
   margin: 5px 0px;
-/*   border: 1px solid black; */
 }
 
 .leftpartition {
-/*   background: none; */
   stroke: black;
   stroke-width: 1px;
   stroke-linejoin: round;
   stroke-linecap: round;
   width: 64px;
   height: 2px;
-/*   border: 1px red solid; */
   display: block;
-padding: 2px 0px 5px 0px;
+  padding: 2px 0px 5px 0px;
   margin-left: auto;
   margin-right: auto;
-/*   border-radius: 0px; */
-  
-/*   border-radius: 10px;
-  box-sizing: border-box; */
 }
 
 .fieldicon {
@@ -84,12 +70,41 @@ padding: 2px 0px 5px 0px;
 }
 
 .fieldicon2 {
-/*   stroke: black; */
   stroke-width: 4px;
   stroke-linejoin: round;
   stroke-linecap: round;
   position: absolute;
   z-index: 4;
+}
+
+.indexSelectContainer {
+/*   height: 25px; */
+  text-align: left;
+  margin: 2px;
+  padding: 2px;
+  border: 1px solid red; 
+  border-radius: 5px;
+  background-color: #393939;
+  overflow: hidden;
+}
+
+.previewind {
+  background-color: #202020;
+  border-radius: 5px;
+  width: 25px;
+  height: 25px;
+  padding: 0px;
+  margin: 0px;
+  border: 1px solid black;
+}
+
+.indLeftCenter {
+  float: left;
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 25px;
+  margin: 0;
+  padding: 0px 4px 0px 16px;
 }
 
 

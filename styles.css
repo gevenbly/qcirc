@@ -15,6 +15,19 @@ body {
    -ms-user-select: none; 
 }
 
+a:link {
+  color: deepskyblue;
+  background-color: transparent;
+  text-decoration: none;
+}
+
+a:visited {
+  color: deepskyblue;
+  background-color: transparent;
+  text-decoration: none;
+}
+
+
 #testDiv {
   color: white;
   position: absolute;

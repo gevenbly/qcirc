@@ -2,11 +2,15 @@
 Declaration of global variables, listeners and initialization scripts
 */
 
+// var allTheData = "";
+
+var isDrawIndNames = true;
+var isDrawTensorNums = true;
+
 var isHomeMenuOpen = true;
 var mainWindow = document.getElementById("mainWindow");
 
-const collectionComment = document.getElementsByClassName("commentTitle");
-collectionComment[0].style.backgroundColor = '#222';
+var indHandleRad = 8; //radius of index arrows 
 
 var isOneBased = 0;
 var canvasBasedNames = false;
@@ -19,7 +23,7 @@ const topMenuHeight = 2*topMenuSingle;
 
 var viewWidth = mainWindow.clientWidth - (leftMenuWidth + rightMenuWidth); 
 var viewHeight = mainWindow.clientHeight - (topMenuHeight); 
-var windowPos = {x: 0, y: 0, zoom: 2};
+var windowPos = {x: 100, y: 100, zoom: 2};
 var windowWidth = viewWidth / windowPos.zoom;
 var windowHeight = viewHeight / windowPos.zoom;
 const spaceWidth = 4000;
@@ -27,32 +31,6 @@ const spaceHeight = 2000;
 
 mainWindow.style.maxWidth = (spaceWidth + leftMenuWidth + rightMenuWidth) + "px";
 mainWindow.style.maxHeight = (spaceHeight + topMenuHeight) + "px";
-
-// text box window
-var codeTextNew = "x=0\n";
-codeTextNew += '\uD83D\uDC04\n';
-codeTextNew += 'if x>1:\n ';
-codeTextNew += '  nui=2 \n';
-codeTextNew += '\u2386 \n';
-// codeTextNew += '\r';
-// codeTextNew += '\r';
-// "\u00a0
-var codeText = document.getElementById("codeText");
-var codeBox = document.getElementById("codeBox");
-codeText.appendChild(document.createTextNode(codeTextNew));
-
-rightCommentBox.appendChild(document.createTextNode("<b>hello</b>"));
-
-var parser = new DOMParser();
-var htmlDoc = parser.parseFromString("<b>hello</b>", 'text/html');
-
-// testDiv.appendChild(document.createTextNode(htmlDoc));
-// rightCommentBox.innerHTML += '<b>Glen</b>';
-
-// var el = document.createElement( 'html' );
-// el.innerHTML = "<html><head><title>titleTest</title></head><body><a href='test0'>test01</a><a href='test1'>test02</a><a href='test2'>test03</a></body></html>";
-
-// el.getElementsByTagName( 'a' ); // Live NodeList of your anchor elements
 
 // min tensor dimensions
 const minWidth = 10;
@@ -63,15 +41,6 @@ var tensors = [];
 var indices = [0];  // 0th index is null by convention
 var textBoxes = [];
 var openIndices = [];
-
-indexInProgress = {// temp storage used when creating tensor
-  connects: [0,0,0,0],
-  name: "",
-  dim: 2,
-  reversed: false,
-  end: [0,0],
-  label: 0
-};
 
 // workspace initialization
 windowPosString = [JSON.stringify(windowPos)];
@@ -129,6 +98,9 @@ var showDebugElm = document.getElementById("showDebug");
 var showDebug = showDebugElm.checked;
 showDebugElm.addEventListener('click', (event) => {
   showDebug = showDebugElm.checked;
+  if (!showDebug) {
+    ctxM.clearRect(0, 0, canvasTensors.width, canvasTensors.height);
+  }
 });    
 var showMiniElm = document.getElementById("showMini");
 var showMini = showMiniElm.checked;
@@ -160,6 +132,12 @@ var numericalIndsElm = document.getElementById("numericalInds");
 var numericalInds = numericalIndsElm.checked;
 numericalIndsElm.addEventListener('click', (event) => {
   numericalInds = numericalIndsElm.checked;
+  drawTensors();
+});  
+var showIndNamesElm = document.getElementById("showIndNames");
+var showIndNames = showIndNamesElm.checked;
+showIndNamesElm.addEventListener('click', (event) => {
+  showIndNames = showIndNamesElm.checked;
   drawTensors();
 });  
 
@@ -231,9 +209,12 @@ for (var j=0; j<7; j++) {
 }
 
 // initialization
-resizeCanvas();
+
 drawGrid(); 
 updateLeftSelect();
+resizeCanvas();
+// setTimeout(resizeCanvas(), 100);
+// setTimeout(resizeCanvas, 100);
 
 if (isHomeMenuOpen) {
   document.getElementById('sublistWindow').style.display = "none";
@@ -242,6 +223,9 @@ if (isHomeMenuOpen) {
   document.getElementById('canvasWindow').style.display = "none";
   document.getElementById('rightGuiResizer').style.display = "none";
 }
+
+// MathJax.typeset();
+// mainBoxData.commentjax = commentBox.innerHTML;
 
 
 

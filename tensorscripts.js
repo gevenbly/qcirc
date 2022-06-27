@@ -17,7 +17,8 @@ function createTensor(x0, y0) {
     slope: tempSlope,
     xanchors: new Array(numAnchorsCreated).fill(0),
     yanchors: new Array(numAnchorsCreated).fill(0),
-    connects: new Array(numAnchorsCreated).fill(0)
+    connects: new Array(numAnchorsCreated).fill(0),
+    conj: false
   })
   if (!canvasBasedNames) {
     createTensorTag();
@@ -31,7 +32,11 @@ function createTensorTag() {
     tempDiv.setAttribute("id", "nametag"+ind);
     tempDiv.setAttribute("class", "nametag");
     tempDiv.setAttribute("style", "display: block;");
-    var tempNode = document.createTextNode("T"+ind+":");
+    if (tensors[tensors.length-1].conj) {
+      var tempNode = document.createTextNode("T"+ind+":*");
+    } else {
+      var tempNode = document.createTextNode("T"+ind+":");
+    }
     tempDiv.appendChild(tempNode);
     document.getElementById("canvasWindow").appendChild(tempDiv);
     allNameTags.push(document.getElementById("nametag"+ind));
@@ -39,13 +44,20 @@ function createTensorTag() {
 }
 
 function updateTensorTags() {
+  if (canvasBasedNames) {
+    return;
+  }
   while (allNameTags.length < tensors.length) {
     createTensorTag() 
   };
   for (var ind=0; ind<allNameTags.length; ind++) {
     if (ind < tensors.length) {
       allNameTags[ind].style.display = "block";
-      allNameTags[ind].innerHTML = "T" + ind + ":" + tensors[ind].name;
+      if (tensors[ind].conj) {
+        allNameTags[ind].innerHTML = "T" + ind + ":" + tensors[ind].name + '*';
+      } else {
+        allNameTags[ind].innerHTML = "T" + ind + ":" + tensors[ind].name;
+      }
     } else {
       allNameTags[ind].style.display = "none";
     }
@@ -349,6 +361,10 @@ function deleteMiddleTensor(ind) {
       indices[j].connects[2] -= 1;
     }
   }
+  updateTensorTags();
+  objUnderMouse[0] = "none";
+  objUnderMouse[1] = 0;
+  drawTensors();
 }
 
 function bringTensorBack() {
@@ -362,6 +378,7 @@ function bringTensorBack() {
   tensors = [...tensortemp, ...tensors];
   updateIndexConnects();
   currSelected = [...Array(numSelected).keys()];
+  updateTensorTags();
   drawTensors();
 }
 
@@ -378,6 +395,7 @@ function bringTensorFront() {
   updateIndexConnects();
   
   currSelected = addIntToVec([...Array(numSelected).keys()], numTensors-numSelected);
+  updateTensorTags();
   drawTensors();
 }
 
@@ -398,6 +416,7 @@ function bringTensorFoward() {
       wasShifted = false;
     }
   }
+  updateTensorTags();
   drawTensors();
 }
 
@@ -418,6 +437,7 @@ function bringTensorBehind() {
       wasShifted = false;
     }
   }
+  updateTensorTags();
   drawTensors();
 }
 
@@ -425,6 +445,7 @@ function swapTwoTensors(i,j) {
   var tensortemp = tensors[i];
   tensors[i] = tensors[j];
   tensors[j] = tensortemp;
+  updateTensorTags();
   updateIndexConnects();
 }
 

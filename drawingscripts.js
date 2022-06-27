@@ -6,7 +6,7 @@ function drawTensors() {
  
   
   if (!canvasBasedNames) {
-    updateTensorTags();
+    // updateTensorTags();
     updateTextBoxTags();
   }
   // console.log(allTextBoxTags)
@@ -35,17 +35,23 @@ function drawTensors() {
     }
   }
   
-  
   var isOverObject = (objUnderMouse[0] === "tensor" || 
                       objUnderMouse[0] === "rename" || 
                       objUnderMouse[0] === "anchor" || 
                       objUnderMouse[0] === "handle");
   
   for (var j=0; j<3; j++) {
-    if (isOverObject) {
-      tensorIcons[j].setAttribute("display", "block");
+    if (stateOfMouse == "duplicating" || contextIsUp || stateOfMouse == "connecting") {
+      // tensorIcons[j].setAttribute("display", "none");
+      tensorIcons[j].style.visibility = 'hidden';
     } else {
-      tensorIcons[j].setAttribute("display", "none");
+      if (isOverObject) {
+        // tensorIcons[j].setAttribute("display", "block");
+        tensorIcons[j].style.visibility = 'visible';
+      } else {
+        // tensorIcons[j].setAttribute("display", "none");
+        tensorIcons[j].style.visibility = 'hidden';
+      }
     }
   }
   if (objUnderMouse[0] === "box" || objUnderMouse[0] === "boxrename") {
@@ -64,7 +70,7 @@ function drawTensors() {
       var tempColor = currFill;
     }
     
-    if (stateOfMouse == "duplicating" && currSelected.indexOf(i)>=0) {
+    if ((stateOfMouse == "duplicating" || contextIsUp) && currSelected.indexOf(i)>=0) {
       var opac = 0.5;
       var isDup = true;
     } else {
@@ -82,9 +88,16 @@ function drawTensors() {
     } else if (tensors[i].type == 3) {
       drawTensorTrap(i,ctxT,tempColor,currFillDark,opac);
     }
-    if (!isDup) {
+    if (isDup) {
+      if (!canvasBasedNames) {
+        allNameTags[i].style.display = "none";
+      }
+    } else {
       drawTensorName(i,ctxT);
-      if (isOverCurrTensor) {drawTensorIcons(i,ctxT)};
+      
+      if (isOverCurrTensor)  {
+        drawTensorIcons(i,ctxT);
+      }
     }
   }
   
@@ -92,23 +105,36 @@ function drawTensors() {
   drawIndices() ;
   if (stateOfMouse == "connecting") {
     
-    var ind = currGrabbed[1];
-    var jnd = currGrabbed[2];
-    var xtemp = a2rX(tensors[ind].bbox[4] + tensors[ind].xanchors[jnd]);
-    var ytemp = a2rY(tensors[ind].bbox[5] + tensors[ind].yanchors[jnd]);
+    // var ind = currGrabbed[1];
+    // var jnd = currGrabbed[2];
+    // var xtemp = a2rX(tensors[ind].bbox[4] + tensors[ind].xanchors[jnd]);
+    // var ytemp = a2rY(tensors[ind].bbox[5] + tensors[ind].yanchors[jnd]);
     
-    ctxT.lineWidth = 2;
-    ctxT.strokeStyle = '#c4c4c4';
-    ctxT.beginPath();
-    ctxT.moveTo(xtemp, ytemp);
-    ctxT.lineTo(mousePos[0], mousePos[1]);
-    ctxT.closePath();
-    ctxT.stroke();
+    // ctxT.lineCap = "butt";
+    // ctxT.strokeStyle = indexConfigs[0].color;
+    // ctxT.lineWidth = indexConfigs[0].weight;
+    // var tempStyle = indexConfigs[0].style;
+    // if (tempStyle == "Solid") {
+    //   ctxT.setLineDash([]);
+    // } else if (tempStyle == "Dash") {
+    //   ctxT.setLineDash([20,5]);
+    // } else if (tempStyle == "Dot") {
+    //   ctxT.setLineDash([5,5]);
+    // } else if (tempStyle == "DashDot") {
+    //   ctxT.setLineDash([15, 3, 3, 3]);
+    // }
     
-    drawIndexHandles(0.5*(mousePos[0]+xtemp), 
-                     0.5*(mousePos[1]+ytemp), 
-                     mousePos[0]-xtemp, 
-                     mousePos[1]-ytemp);
+    // ctxT.lineWidth = 2;
+    // ctxT.strokeStyle = '#c4c4c4';
+    // ctxT.beginPath();
+    // ctxT.moveTo(xtemp, ytemp);
+    // ctxT.lineTo(mousePos[0], mousePos[1]);
+    // ctxT.stroke();
+    
+    // drawIndexHandles(0.5*(mousePos[0]+xtemp), 
+    //                  0.5*(mousePos[1]+ytemp), 
+    //                  mousePos[0]-xtemp, 
+    //                  mousePos[1]-ytemp);
   }
   
   for (var i = 0; i < tensors.length; i++) {
@@ -294,7 +320,10 @@ function drawTextBox(i,ctx,theFillColor,theOutlineColor,opac,theSelectColor) {
       ctx.font = "12px Verdana";
       ctx.textAlign = "left";
       ctx.fillStyle = "black";
-      ctx.fillText("B" + i + ":" + textBoxes[i].name, roundHP(x0)+4, roundHP(y0)+4);
+      ctx.fillText("B" + i + ":" + textBoxes[i].name, roundHP(x0)+4, roundHP(y0)+5);
+      if (i < allTextBoxTags.length) {
+        allTextBoxTags[i].style.display = 'none';
+      }
     } else {
       allTextBoxTags[i].style.left = Math.round(x0 + leftMenuWidth)+'px';
       allTextBoxTags[i].style.top = Math.round(y0 + topMenuHeight)+'px';
@@ -368,20 +397,57 @@ function drawTensorName(i,ctx) {
       ctx.font = "12px Verdana";
       ctx.textAlign = "center";
       ctx.fillStyle = "black";
-      ctx.fillText("T" + i + ":" + tensors[i].name, Math.round(xmid), Math.round(ymid)); 
+      if (tensors[i].conj) {
+        ctx.fillText("T" + i + ":" + tensors[i].name + "*", Math.round(xmid), Math.round(ymid)); 
+      } else {
+        ctx.fillText("T" + i + ":" + tensors[i].name, Math.round(xmid), Math.round(ymid)); 
+      }
     }
   } else {
     if (stateOfMouse == "renaming" && currGrabbed[1] == i) {
       allNameTags[i].style.display = "none";
     } else {
-      allNameTags[i].style.left = Math.round(xmid - allNameTags[i].offsetWidth/2 + leftMenuWidth)+'px';
-      allNameTags[i].style.top = Math.round(ymid - allNameTags[i].offsetHeight/2 + topMenuHeight)+'px';
+      var temptop = Math.round(ymid - allNameTags[i].offsetHeight/2 + topMenuHeight)+'px';
+      if (allNameTags[i].style.top != temptop) {
+        allNameTags[i].style.top = temptop;
+      }
+      var templeft = Math.round(xmid - allNameTags[i].offsetWidth/2 + leftMenuWidth)+'px';
+      if (allNameTags[i].style.left != templeft) {
+        allNameTags[i].style.left = templeft;
+      }
     }
   }
 }
 
+
 function drawIndices() {
-  for (var ind = 1; ind < indices.length; ind++) {
+  if (stateOfMouse == "connecting") {
+    var tempInd = Math.abs(tensors[currGrabbed[1]].connects[currGrabbed[2]]);
+  } else {
+    var tempInd = 0;
+  }
+  if (objUnderMouse[0] == "openind") {
+    var tempOver = objUnderMouse[1];
+    tensorIcons[4].style.visibility = 'visible';
+    tensorIcons[3].style.visibility = 'visible';
+  } else {
+    var tempOver = -1;
+    tensorIcons[4].style.visibility = 'hidden';
+    tensorIcons[3].style.visibility = 'hidden';
+  }
+  if (objUnderMouse[0] == "indexhandle") {
+    var tempIndHandle = objUnderMouse[1];
+    tensorIcons[5].style.visibility = 'visible';
+    tensorIcons[6].style.visibility = 'visible';
+    tensorIcons[7].style.visibility = 'visible';
+  } else {
+    var tempIndHandle = -1;
+    tensorIcons[5].style.visibility = 'hidden';
+    tensorIcons[6].style.visibility = 'hidden';
+    tensorIcons[7].style.visibility = 'hidden';
+  }
+ 
+  for (var ind = 1; ind < indices.length; ind++) { 
     var wasOpen = false;
     if (indices[ind].connects[0]<0 || indices[ind].connects[2]<0) { //open index
       var i0 = Math.max(indices[ind].connects[0], indices[ind].connects[2]);
@@ -391,7 +457,6 @@ function drawIndices() {
       var x1 = Math.round(a2rX(tensors[i0].bbox[4] + indices[ind].end[0]));
       var y1 = Math.round(a2rY(tensors[i0].bbox[5] + indices[ind].end[1]));
       wasOpen = true;
-      
       
     } else { //closed index
       var i0 = indices[ind].connects[0];
@@ -405,52 +470,58 @@ function drawIndices() {
     }
 
     // draw index
-    ctxT.lineWidth = 2;
-    ctxT.strokeStyle = '#c4c4c4';
+    ctxT.lineCap = "butt";
+    ctxT.strokeStyle = indexConfigs[indices[ind].type].color;
+    ctxT.lineWidth = indexConfigs[indices[ind].type].weight;
+    var tempStyle = indexConfigs[indices[ind].type].style;
+    if (tempStyle == "Solid") {
+      ctxT.setLineDash([]);
+    } else if (tempStyle == "Dash") {
+      ctxT.setLineDash([6,3]);
+    } else if (tempStyle == "Dot") {
+      ctxT.setLineDash([3,3]);
+    } else if (tempStyle == "DashDot") {
+      ctxT.setLineDash([6, 3, 3, 3]);
+    }
+    
     ctxT.beginPath();
     ctxT.moveTo(x0, y0);
     ctxT.lineTo(x1, y1);
-    ctxT.closePath();
     ctxT.stroke();
+    ctxT.setLineDash([]);
     
-    if (wasOpen) {//draw endpoint
+    if (wasOpen && (ind != tempInd)) {//draw endpoint
       var tempLab = indices[ind].label;
       ctxT.fillStyle = allAnchorColors[tempLab % (allAnchorColors.length)];      
       ctxT.beginPath();
       ctxT.arc(x1, y1, openIndexRadius, 0, 2 * Math.PI, false);
       ctxT.fill();
+      ctxT.strokeStyle = 'black';
       ctxT.lineWidth = 1;
-      if (objUnderMouse[0] == "openind" && objUnderMouse[1] == ind) {
-        ctxT.strokeStyle = rectBorderCol;
-        if (objUnderMouse[2] == 0) {
-          ctxT.strokeStyle = "white";
-          ctxT.drawImage(endIcons[0],
-                         Math.round(x1 + iconPosEnd.x[0] - fieldIconWidth / 2),
-                         Math.round(y1 + iconPosEnd.y[0] - fieldIconHeight / 2))
-          ctxT.drawImage(endIcons[1],
-                         Math.round(x1 + iconPosEnd.x[1] - fieldIconWidth / 2),
-                         Math.round(y1 + iconPosEnd.y[1] - fieldIconHeight / 2))
-        } else if (objUnderMouse[2] == 1) {
-          ctxT.drawImage(endIcons[0],
-                         Math.round(x1 + iconPosEnd.x[0] - fieldIconWidth / 2),
-                         Math.round(y1 + iconPosEnd.y[0] - fieldIconHeight / 2))
-          ctxT.drawImage(endIcons[3],
-                         Math.round(x1 + iconPosEnd.x[1] - fieldIconWidth / 2),
-                         Math.round(y1 + iconPosEnd.y[1] - fieldIconHeight / 2))
-        } else if (objUnderMouse[2] == 2) {
-          ctxT.drawImage(endIcons[2],
-                         Math.round(x1 + iconPosEnd.x[0] - fieldIconWidth / 2),
-                         Math.round(y1 + iconPosEnd.y[0] - fieldIconHeight / 2))
-          ctxT.drawImage(endIcons[1],
-                         Math.round(x1 + iconPosEnd.x[1] - fieldIconWidth / 2),
-                         Math.round(y1 + iconPosEnd.y[1] - fieldIconHeight / 2))
-        }
+      
+      if (ind == tempOver) {
+        var xposL = x1 + openIconPos.x[0] - fieldIconWidth/2 + leftMenuWidth;
+        var yposL = y1 + openIconPos.y[0] - fieldIconHeight/2 + topMenuHeight;
+        var xposR = x1 + openIconPos.x[1] - fieldIconWidth/2 + leftMenuWidth;
+        var yposR = y1 + openIconPos.y[1] - fieldIconHeight/2 + topMenuHeight;
+
+        tensorIcons[4].style.left = xposL + 'px';
+        tensorIcons[4].style.top = yposL + 'px';
+        tensorIcons[3].style.left = xposR + 'px';
+        tensorIcons[3].style.top = yposR + 'px';
+
+        tensorIcons[3].setAttribute("stroke", "#a4a4a4");
+        tensorIcons[4].setAttribute("stroke", "#a4a4a4");
+        if (objUnderMouse[2] == 0) {// end anchor
+          ctxT.strokeStyle = 'white';
+        } else if (objUnderMouse[2] == 1) {// minus anchor
+          tensorIcons[3].setAttribute("stroke", "white");  
+        } else if (objUnderMouse[2] == 2) {// plus icon
+          tensorIcons[4].setAttribute("stroke", "white");
+        } 
       }
       ctxT.stroke();
-      
-      // draw endpoint icons
-      
-    
+          
       // draw index numbers
       if (numericalInds) {
         ctxT.textAlign = "center";
@@ -470,24 +541,91 @@ function drawIndices() {
     if (indices[ind].curved) {
       
     } else { // index is straight
-      drawIndexHandles(0.5*(x1+x0), 0.5*(y1+y0), x1-x0, y1-y0);
+      // var xc = a2rX(indices[ind].center[0]);
+      // var yc = a2rY(indices[ind].center[1]);
+      var xc = 0.5*(x1+x0);
+      var yc = 0.5*(y1+y0);
+      if (tensors[i0].connects[j0] < 0) {
+        drawIndexHandles(ind, xc, yc, x1-x0, y1-y0);
+      } else {
+        drawIndexHandles(ind, xc, yc, x0-x1, y0-y1);
+      }
     }
+    
+    if (ind == tempIndHandle) {
+      for (var kic=0; kic<indexIconPos.x.length; kic++) {
+        var xpos = xc + indexIconPos.x[kic] - fieldIconWidth/2 + leftMenuWidth;
+        var ypos = yc + indexIconPos.y[kic] - fieldIconHeight/2 + topMenuHeight;
+        tensorIcons[kic+5].style.left = xpos + 'px';
+        tensorIcons[kic+5].style.top = ypos + 'px';
+        if ((objUnderMouse[2]-1) == kic) {
+          tensorIcons[kic+5].setAttribute("stroke", "white");
+        } else {
+          tensorIcons[kic+5].setAttribute("stroke", "#a4a4a4");
+        }
+      }
+    }
+
+    // tensorIcons[3].setAttribute("stroke", "#c4c4c4");
+    // tensorIcons[4].setAttribute("stroke", "#c4c4c4");
+    // if (objUnderMouse[2] == 0) {// end anchor
+    //   ctxT.strokeStyle = 'white';
+    // } else if (objUnderMouse[2] == 1) {// minus anchor
+    //   tensorIcons[3].setAttribute("stroke", "white");  
+    // } else if (objUnderMouse[2] == 2) {// plus icon
+    //   tensorIcons[4].setAttribute("stroke", "white");
+    // } 
   }
 }
 
-function drawIndexHandles(xc, yc, dx, dy) {
-  if (Math.abs(dx) < 1e-5 && Math.abs(dy) < 1e-5) {
-    dx += 1e-5;
-    dy += 1e-5;
-  };
-  var cn = Math.sqrt(dx*dx + dy*dy);
-  var indRad = 5;
-  var tempRot = Math.atan2(dx, dy);
-  ctxT.beginPath();
-  ctxT.fillStyle = '#c4c4c4';
-  ctxT.ellipse(xc-indRad*dx/cn, yc-indRad*dy/cn, indRad, 2*indRad, -tempRot+Math.PI, Math.PI, 2*Math.PI)
-  ctxT.closePath();
-  ctxT.fill();
+function drawIndexHandles(ind, xc, yc, dx, dy) {
+  if ((dx*dx + dy*dy)/windowPos.zoom >= 100) {
+    if (Math.abs(dx) < 1e-5 && Math.abs(dy) < 1e-5) {
+      dx += 1e-5;
+      dy += 1e-5;
+    };
+    
+    var cn = Math.sqrt(dx*dx + dy*dy);
+    var tempRot = Math.atan2(dx, dy);
+    
+    // if ((objUnderMouse[0] == "indexhandle") && (objUnderMouse[1] == ind)) {
+    //   indHandleRad *= 1.5;
+    // }
+    
+    if (showIndNames) {
+      var tempRad = indHandleRad;
+    } else {
+      var tempRad = 0.5*indHandleRad;
+    }
+     
+    ctxT.beginPath();
+    ctxT.fillStyle = indexConfigs[indices[ind].type].color;
+    ctxT.ellipse(xc-tempRad*dx/cn, yc-tempRad*dy/cn, tempRad, 2*tempRad, -tempRot+Math.PI, Math.PI, 2*Math.PI)
+    ctxT.closePath();
+    ctxT.fill();
+    
+    if ((objUnderMouse[0] == "indexhandle") && (objUnderMouse[1] == ind)) {
+      ctxT.strokeStyle = "white";
+      ctxT.stroke();
+    }
+    
+    if (showIndNames) {
+      ctxT.fillStyle = "black";
+      ctxT.font = "bold 11px Verdana";
+      ctxT.textBaseline = "middle";
+      ctxT.textAlign = "center";
+      
+      var tempName = indexConfigs[indices[ind].type].codeName;
+      if ((tempName.charAt(0) == '&') && (tempName.charAt(1) == '#')) {
+        // interpret unicode name
+        var tempSym = tempName.slice(3);
+        ctxT.fillText(String.fromCharCode(parseInt(tempSym, 16)), xc, yc);
+      } else {
+        // print alphanumeric name
+        ctxT.fillText(tempName, xc, yc);
+      } 
+    }
+  }
 }
 
 function drawAnchors(i,ctx) {
@@ -542,13 +680,13 @@ function drawTextBoxIcons(i,ctx) {
     if (objUnderMouse[0] == "boxrename" && objUnderMouse[1] == i) {
       tensorIcons[1].setAttribute("stroke", "white");
     } else {
-      tensorIcons[1].setAttribute("stroke", "#c4c4c4");
+      tensorIcons[1].setAttribute("stroke", "#a4a4a4");
     }      
   }
 }
 
 function drawTensorIcons(i,ctx) {
-  for (var j=0; j<numTensorIcons; j++) {
+  for (var j=0; j<iconPos.x.length; j++) {
     var xmid = Math.round(a2rX(tensors[i].bbox[4]));
     var ymid = Math.round(a2rY(tensors[i].bbox[5]));
     var xpos = xmid + iconPos.x[j] - fieldIconWidth/2 + leftMenuWidth;
@@ -559,7 +697,7 @@ function drawTensorIcons(i,ctx) {
     if (objUnderMouse[0] == "rename" && objUnderMouse[1] == i && objUnderMouse[2] == j) {
       tensorIcons[j].setAttribute("stroke", "white");
     } else {
-      tensorIcons[j].setAttribute("stroke", "#c4c4c4");
+      tensorIcons[j].setAttribute("stroke", "#a4a4a4");
     }
   }
 }
